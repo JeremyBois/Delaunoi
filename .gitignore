@@ -43,10 +43,6 @@ sysinfo.txt
 # End of https://www.gitignore.io/api/unity
 
 
-# Image
-*.png
-*.PNG
-
 # Sublime text
 *.sublime-project
 *.sublime-workspace
