@@ -1,4 +1,4 @@
-# Delaunay / Voronoi diagram (Delaunoi)
+# Delaunay / Voronoi diagram (Delaunoï)
 
 `2D Delaunay triangulation` and `Voronoi diagram` construction based on **Leonidas J. Guibas** and **Jorge Stolfi** paper
 [Primitives for the manipulation of general subdivisions and the computation of Voronoi diagrams](https://dl.acm.org/citation.cfm?doid=282918.282923).
