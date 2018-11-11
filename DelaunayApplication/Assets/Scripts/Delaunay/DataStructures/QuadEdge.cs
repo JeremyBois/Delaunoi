@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 
 
 namespace Delaunay.DataStructures
@@ -301,6 +303,51 @@ namespace Delaunay.DataStructures
         {
             get {return _data;}
             set {_data = value;}
+        }
+
+    // Enumerators
+
+        /// <summary>
+        /// Get edges of a triangle in CW order where edge.Origin is the first vertex.
+        /// Each edges have the same right face. Iteration first return edge parameter.
+        /// </summary>
+        public IEnumerable<QuadEdge<T>> TriangleEdges(QuadEdge<T> edge)
+        {
+            QuadEdge<T> current = edge;
+            do
+            {
+                yield return current;
+                current = current.Rprev;
+
+            } while (current != edge);
+        }
+
+        /// <summary>
+        /// Get triangle vertices position in CW order where edge.Origin is the first vertex.
+        /// </summary>
+        public IEnumerable<Vec3> TriangleVertices(QuadEdge<T> edge)
+        {
+            QuadEdge<T> current = edge;
+            do
+            {
+                yield return current.Origin;
+                current = current.Rprev;
+
+            } while (current != edge);
+        }
+
+        /// <summary>
+        /// Iterate over every edges in a CW order that have edge origin as origin.
+        /// </summary>
+        public IEnumerable<QuadEdge<T>> EdgesFrom(QuadEdge<T> edge)
+        {
+            QuadEdge<T> current = edge;
+            do
+            {
+                yield return current;
+                current = current.Oprev;
+
+            } while (current != edge);
         }
     }
 }
