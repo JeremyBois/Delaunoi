@@ -146,7 +146,7 @@ Camera:
   m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 2
-  m_BackGroundColor: {r: 0.3529412, g: 0.44705886, b: 0.59607846, a: 0}
+  m_BackGroundColor: {r: 0.806, g: 0.7838165, b: 0.7209633, a: 1}
   m_projectionMatrixMode: 1
   m_SensorSize: {x: 36, y: 24}
   m_LensShift: {x: 0, y: 0}
@@ -160,8 +160,8 @@ Camera:
   near clip plane: 0.3
   far clip plane: 1000
   field of view: 40
-  orthographic: 0
-  orthographic size: 35
+  orthographic: 1
+  orthographic size: 90
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -230,14 +230,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e1a4a209d3cc6fe41a2e037e1a1f0cc0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  pointNumber: 365
+  pointNumber: 100
   boundaries: 2c01000096000000
-  sequenceInit: 213
+  sequenceInit: 432
   bases: 0200000003000000
   shapes:
   - {fileID: 1299362892703848, guid: 5bd056414346da7408618b5b49b996b1, type: 2}
-  - {fileID: 1299362892703848, guid: ee59a7737d20d14479dd0dd54b151730, type: 2}
+  - {fileID: 1299362892703848, guid: 5bd056414346da7408618b5b49b996b1, type: 2}
   scale: 1
+  lineScale: 1.5
   mat: {fileID: 2100000, guid: 55b3a03e98edfad42b2c3bb5e8452cfa, type: 2}
   gradient:
     serializedVersion: 2
@@ -271,10 +272,10 @@ MonoBehaviour:
   D_points: 1
   D_lines: 0
   D_faces: 0
-  celltype: 2
+  celltype: 0
   V_points: 1
   V_lines: 1
-  V_faces: 1
+  V_faces: 0
   V_circles: 0
 --- !u!1 &1774482939
 GameObject:

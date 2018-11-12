@@ -33,6 +33,8 @@ public class GuibasStolfiTest : MonoBehaviour
     private GameObject[] shapes = new GameObject[2];
     [SerializeField]
     private float scale = 1.0f;
+    [SerializeField]
+    private float lineScale = 1.5f;
     [Tooltip("Material used for Line Renderer.")]
     [SerializeField]
     private Material mat;
@@ -113,7 +115,7 @@ public class GuibasStolfiTest : MonoBehaviour
         }
         if (D_lines)
         {
-            TriangleDrawer.DrawLine(triangles, transform, mat, Color.black, 1.5f);
+            TriangleDrawer.DrawLine(triangles, transform, mat, Color.black, lineScale);
         }
         if (D_points)
         {
@@ -135,7 +137,7 @@ public class GuibasStolfiTest : MonoBehaviour
             }
             if (V_lines)
             {
-                cell.DrawLine(transform, mat, Color.blue, 1.5f, loop:true);
+                cell.DrawLine(transform, mat, Color.blue, lineScale, loop:true);
             }
             if (V_points)
             {
