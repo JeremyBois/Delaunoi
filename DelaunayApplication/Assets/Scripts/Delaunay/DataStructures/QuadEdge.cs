@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 
 
 namespace Delaunay.DataStructures
@@ -301,6 +303,136 @@ namespace Delaunay.DataStructures
         {
             get {return _data;}
             set {_data = value;}
+        }
+
+    // Helpers enumerables used to abstract structure complexity
+
+        /// <summary>
+        /// Iterate over edges with same RIGHT face (default to CW order)
+        /// starting from this.
+        /// </summary>
+        /// <param name="CCW">Select in which order vertices should be returned.</param>
+        public IEnumerable<QuadEdge<T>> RightEdges(bool CCW=false)
+        {
+            QuadEdge<T> current = this;
+            do
+            {
+                yield return current;
+                current = CCW ? current.Rnext : current.Rprev;
+
+            } while (current != this);
+        }
+
+        /// <summary>
+        /// Iterate over edges with same LEFT face (default to CW order)
+        /// starting from this.
+        /// </summary>
+        /// <param name="CCW">Select in which order vertices should be returned.</param>
+        public IEnumerable<QuadEdge<T>> LeftEdges(bool CCW=false)
+        {
+            QuadEdge<T> current = this;
+            do
+            {
+                yield return current;
+                current = CCW ? current.Lnext : current.Lprev;
+
+            } while (current != this);
+        }
+
+        /// <summary>
+        /// Iterate over edges with same RIGHT face (default to CW order)
+        /// starting from this and return their origin.
+        /// </summary>
+        /// <param name="CCW">Select in which order vertices should be returned.</param>
+        public IEnumerable<Vec3> RightVertices(bool CCW=false)
+        {
+            QuadEdge<T> current = this;
+            do
+            {
+                yield return current.Origin;
+                current = CCW ? current.Rnext : current.Rprev;
+
+            } while (current != this);
+        }
+
+        /// <summary>
+        /// Iterate over edges with same LEFT face (default to CW order)
+        /// starting from this and return their origin.
+        /// </summary>
+        /// <param name="CCW">Select in which order vertices should be returned.</param>
+        public IEnumerable<Vec3> LeftVertices(bool CCW=false)
+        {
+            QuadEdge<T> current = this;
+            do
+            {
+                yield return current.Origin;
+                current = CCW ? current.Lnext : current.Lprev;
+
+            } while (current != this);
+        }
+
+        /// <summary>
+        /// Iterate over every edges sharing the same origin (default to CW order)
+        /// </summary>
+        /// <param name="CCW">Select in which order edges should be returned.</param>
+        public IEnumerable<QuadEdge<T>> EdgesFrom(bool CCW=false)
+        {
+            QuadEdge<T> current = this;
+            do
+            {
+                yield return current;
+                current = CCW ? current.Onext : current.Oprev;
+
+            } while (current != this);
+        }
+
+        /// <summary>
+        /// Iterate over every edge destination sharing the same origin (default to CW order)
+        /// </summary>
+        /// <param name="CCW">Select in which order vertices should be returned.</param>
+        public IEnumerable<Vec3> DestinationsFrom(bool CCW=false)
+        {
+            QuadEdge<T> current = this;
+            do
+            {
+                yield return current.Destination;
+                current = CCW ? current.Onext : current.Oprev;
+
+            } while (current != this);
+        }
+
+        /// <summary>
+        /// Iterate over every edges forming a cell around this edge origin
+        /// (default to CW order) assuming each edge cell share the same left face.
+        /// </summary>
+        /// <param name="CCW">Select in which order edges should be returned.</param>
+        public IEnumerable<QuadEdge<T>> CellEdges(bool CCW=false)
+        {
+            QuadEdge<T> current = this.Rot;
+            var first = current;
+            do
+            {
+                yield return current;
+                current = CCW ? current.Lnext : current.Lprev;
+
+            } while (current != first);
+        }
+
+        /// <summary>
+        /// Iterate over every vertices forming a cell around this edge origin
+        /// (default to CW order) assuming each edge cell share the same left face.
+        /// </summary>
+        /// <param name="CCW">Select in which order vertices should be returned.</param>
+        public IEnumerable<Vec3> CellVertices(bool CCW=false)
+        {
+            QuadEdge<T> current = this.Rot;
+            var first = current;
+            do
+            {
+                yield return current.Origin;
+                current = CCW ? current.Lnext : current.Lprev;
+
+            } while (current != first);
         }
     }
 }

@@ -7,7 +7,7 @@ using Delaunay.Algorithms;
 using Delaunay.Generators;
 using Delaunay.DataStructures;
 using Delaunay.DataStructures.Extensions;
-using Delaunay.Tools;
+using Delaunay.Tools.Extensions;
 
 
 public class GuibasStolfiTest : MonoBehaviour
@@ -108,7 +108,7 @@ public class GuibasStolfiTest : MonoBehaviour
         previousTime = System.DateTime.Now;
 
         // Draw Delaunay
-        var triangles = triangulator.ExportDelaunayTriangles();
+        var triangles = triangulator.ExportDelaunay();
         if (D_faces)
         {
             TriangleDrawer.DrawFace(triangles, transform, mat, gradient);

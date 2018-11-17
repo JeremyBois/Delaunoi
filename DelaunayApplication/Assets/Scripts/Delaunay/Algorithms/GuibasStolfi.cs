@@ -2,9 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 
-// using UnityEngine;
-
-
 namespace Delaunay.Algorithms
 {
     using Delaunay.DataStructures;
@@ -19,13 +16,20 @@ namespace Delaunay.Algorithms
     /// </summary>
     public class GuibasStolfi<T>
     {
+
+// FIELDS
+
         private Vec3[]     _points;
-        private QuadEdge<T>[] _convexHulls;
+        private QuadEdge<T>[] _leftRightEdges;
         private bool       visitedTagState;
 
-        // // Can be used to store aditional information
-        // private int edgeCount = 0;
-        // private int edgeFirstID = 0;
+
+// CONSTRUCTORS
+
+        private GuibasStolfi()
+        {
+            visitedTagState = false;
+        }
 
         /// <summary>
         /// Load an array of position to be triangulate.
@@ -46,31 +50,27 @@ namespace Delaunay.Algorithms
             }
         }
 
-        private GuibasStolfi()
+
+// PROPERTIES
+
+        /// <summary>
+        /// Return the leftmost edge if triangulation already done, else null.
+        /// </summary>
+        public QuadEdge<T> LeftMostEdge
         {
-            visitedTagState = false;
+            get {return _leftRightEdges[0];}
         }
 
         /// <summary>
-        /// Return two QuadEdges:
-        ///   - [0] --> CCW convex hull QuadEdge<T> out of the leftmost vertex
-        ///   - [1] --> CW  convex hull QuadEdge<T> out of the rightmost vertex
-        /// Will be an array of null if triangulation not yet done.
+        /// Return the rightmost edge if triangulation already done, else null.
         /// </summary>
-        public QuadEdge<T>[] ConvexHulls
+        public QuadEdge<T> RightMostEdge
         {
-            get {return _convexHulls;}
+            get {return _leftRightEdges[1];}
         }
 
-        /// <summary>
-        /// Return true if Geometry.RightOf(edge.Destination, base1) is true.
-        /// </summary>
-        private bool IsValid(QuadEdge<T> edge, QuadEdge<T> base1)
-        {
-            // Geometry.Ccw called directly.
-            return Geometry.Ccw(edge.Destination, base1.Destination, base1.Origin);
-        }
 
+// METHODS (PUBLIC)
 
         /// <summary>
         /// Return an array of Vec3 from the triangulation.
@@ -87,7 +87,7 @@ namespace Delaunay.Algorithms
             }
 
             // Triangulate recursively
-            _convexHulls = Triangulate(_points);
+            _leftRightEdges = Triangulate(_points);
 
             return true;
         }
@@ -119,8 +119,63 @@ namespace Delaunay.Algorithms
             }
 
             throw new NotImplementedException();
-
         }
+
+        /// <summary>
+        /// Construct triangles based on Delaunay triangulation.
+        /// </summary>
+        public List<Vec3> ExportDelaunay()
+        {
+            // Container for triangles vertices
+            var triangles = new List<Vec3>();
+            // FIFO
+            var queue = new Queue<QuadEdge<T>>();
+
+            // Start at the far right
+            QuadEdge<T> first = _leftRightEdges[1];
+            queue.Enqueue(first);
+
+            // Find the segment with no vertex on its right
+            // starting from the far right vertex
+            while (Geometry.RightOf(first.Oprev.Destination, first))
+            {
+                first = first.Oprev;
+            }
+
+            // Visit all edge of the convex hull in CW order and
+            // add opposite edges to queue
+            foreach (QuadEdge<T> hullEdge in first.RightEdges(CCW:false))
+            {
+                // Enqueue same edge but with opposite direction
+                queue.Enqueue(hullEdge.Sym);
+                hullEdge.Tag = !visitedTagState;
+            }
+
+            // Convex hull now closed. Start triangles construction
+            while (queue.Count > 0)
+            {
+                QuadEdge<T> edge = queue.Dequeue();
+                if (edge.Tag == visitedTagState)
+                {
+                    foreach (QuadEdge<T> current in edge.RightEdges(CCW:false))
+                    {
+                        triangles.Add(current.Origin);
+                        if (current.Sym.Tag == visitedTagState)
+                        {
+                            queue.Enqueue(current.Sym);
+                        }
+                        current.Tag = !visitedTagState;
+                    }
+                }
+            }
+
+            // Inverse flag to be able to traverse again at next call
+            visitedTagState = !visitedTagState;
+            return triangles;
+        }
+
+
+// METHODS (PRIVATE)
 
         /// <summary>
         /// Construct voronoi cell based on Delaunay triangulation. Vertices at infinity
@@ -140,7 +195,7 @@ namespace Delaunay.Algorithms
             var queue = new Queue<QuadEdge<T>>();
 
             // Start at the far right
-            QuadEdge<T> first = _convexHulls[1];
+            QuadEdge<T> first = _leftRightEdges[1];
 
             // Find the segment with no vertex on its left
             // starting from the far right vertex
@@ -149,37 +204,33 @@ namespace Delaunay.Algorithms
                 first = first.Onext;
             }
 
-            // Visit all edge of the convex hull in CCW order to compute dual vertices
-            // at infinity. Also add symetrical edges to queue.
-            QuadEdge<T> current = first;
-            bool convexHullNotClosed = true;
-            while (convexHullNotClosed)
+            // Visit all edge of the convex hull to compute dual vertices
+            // at infinity by looping in a CW order over edges with same left face.
+            foreach (QuadEdge<T> hullEdge in first.LeftEdges(CCW:false))
             {
-                QuadEdge<T> cellFirst = current;
-
                 // Start construction of a new cell
-                voronoiCells.Add(new Cell(current.Origin, true));
+                voronoiCells.Add(new Cell(hullEdge.Origin, true));
                 Cell currentCell = voronoiCells.Last();
                 // First infinite voronoi vertex
-                if (current.Rot.Destination == null)
+                if (hullEdge.Rot.Destination == null)
                 {
-                    current.Rot.Destination = ConstructVoronoiAtInfinity(current.Sym,
-                                                                         radius,
-                                                                         centerCalculator);
+                    hullEdge.Rot.Destination = ConstructAtInfinity(hullEdge.Sym,
+                                                                   radius,
+                                                                   centerCalculator);
                 }
-                currentCell.Add(current.Rot.Destination);
+                currentCell.Add(hullEdge.Rot.Destination);
 
-                // Add other vertices by looping over current origin in CW order (Oprev)
-                do
+                // Add other vertices by looping over hullEdge origin in CW order (Oprev)
+                foreach (QuadEdge<T> current in hullEdge.EdgesFrom(CCW:false))
                 {
                     if (current.Rot.Origin == null)
                     {
                         // Delaunay edge on the boundary
                         if (Geometry.LeftOf(current.Oprev.Destination, current))
                         {
-                            current.Rot.Origin = ConstructVoronoiAtInfinity(current,
-                                                                            radius,
-                                                                            centerCalculator);
+                            current.Rot.Origin = ConstructAtInfinity(current,
+                                                                     radius,
+                                                                     centerCalculator);
                         }
                         else
                         {
@@ -195,16 +246,6 @@ namespace Delaunay.Algorithms
                     }
                     current.Tag = !visitedTagState;
                     currentCell.Add(current.Rot.Origin);
-                    current = current.Oprev;
-
-                } while (cellFirst != current);
-
-                // Go to previous segment with same left face (CCW order)
-                current = current.Lprev;
-
-                if (current == first)
-                {
-                    convexHullNotClosed = false;
                 }
             }
 
@@ -216,10 +257,9 @@ namespace Delaunay.Algorithms
                 if (edge.Tag == visitedTagState)
                 {
                     // Construct a new cell
-                    current = edge;
-                    voronoiCells.Add(new Cell(current.Origin, true));
+                    voronoiCells.Add(new Cell(edge.Origin, true));
                     Cell currentCell = voronoiCells.Last();
-                    do
+                    foreach (QuadEdge<T> current in edge.EdgesFrom(CCW:false))
                     {
                         if (current.Rot.Origin == null)
                         {
@@ -231,12 +271,9 @@ namespace Delaunay.Algorithms
                         {
                             queue.Enqueue(current.Sym);
                         }
-
                         current.Tag = !visitedTagState;
                         currentCell.Add(current.Rot.Origin);
-                        current = current.Oprev;
                     }
-                    while (current != edge);
                 }
             }
 
@@ -252,7 +289,7 @@ namespace Delaunay.Algorithms
         /// Point computed is the destination of a segment in a direction normal to
         /// the tangent vector of the primalEdge (destination - origin) with
         /// its symetrical (primalEdge.RotSym.Origin) as origin.
-        /// Radius should be choose higher enough to avoid neighbor voronoi point
+        /// Radius should be choose higher enough to avoid neighbor voronoi points
         /// to be further on. A good guest is the maximal distance between non infinite
         /// voronoi vertices or five times the maximal distance between delaunay vertices.
         /// </summary>
@@ -260,7 +297,7 @@ namespace Delaunay.Algorithms
         /// If primalEdge.RotSym.Origin is null, then its value is computed first
         /// using CircumCenter2D because this vertex is always inside a delaunay triangle.
         /// </remarks>
-        private Vec3 ConstructVoronoiAtInfinity(QuadEdge<T> primalEdge, double radius,
+        private Vec3 ConstructAtInfinity(QuadEdge<T> primalEdge, double radius,
                                                 Func<Vec3, Vec3, Vec3, Vec3> centerCalculator)
         {
             // Find previous voronoi point
@@ -295,72 +332,14 @@ namespace Delaunay.Algorithms
             return normal;
         }
 
-
         /// <summary>
-        /// Construct triangles based on Delaunay triangulation.
+        /// Return true if Geometry.RightOf(edge.Destination, baseEdge) is true.
         /// </summary>
-        public List<Vec3> ExportDelaunayTriangles()
+        private bool IsValid(QuadEdge<T> edge, QuadEdge<T> baseEdge)
         {
-            // Container for triangles vertices
-            var triangles = new List<Vec3>();
-            // FIFO
-            var queue = new Queue<QuadEdge<T>>();
-
-            // Start at the far right
-            QuadEdge<T> first = _convexHulls[1];
-            queue.Enqueue(first);
-
-            // Find the segment with no vertex on its right
-            // starting from the far right vertex
-            while (Geometry.RightOf(first.Oprev.Destination, first))
-            {
-                first = first.Oprev;
-            }
-
-            // Visit all edge of the convex hull in CCW order and
-            // add opposite edges to queue
-            QuadEdge<T> current = first;
-            bool convexHullNotClosed = true;
-            while (convexHullNotClosed)
-            {
-                // Enqueue same edge but with opposite direction
-                queue.Enqueue(current.Sym);
-                current.Tag = !visitedTagState;
-                current = current.Rprev;
-
-                if (current == first)
-                {
-                    convexHullNotClosed = false;
-                }
-            }
-
-            // Convex hull now closed. Start triangles construction
-            while (queue.Count > 0)
-            {
-                QuadEdge<T> edge = queue.Dequeue();
-                if (edge.Tag == visitedTagState)
-                {
-                    current = edge;
-                    do
-                    {
-                        triangles.Add(current.Origin);
-                        if (current.Sym.Tag == visitedTagState)
-                        {
-                            queue.Enqueue(current.Sym);
-                        }
-
-                        current.Tag = !visitedTagState;
-                        current = current.Rprev;
-                    }
-                    while (current != edge);
-                }
-            }
-
-            // Inverse flag to be able to traverse again at next call
-            visitedTagState = !visitedTagState;
-            return triangles;
+            // Geometry.Ccw called directly.
+            return Geometry.Ccw(edge.Destination, baseEdge.Destination, baseEdge.Origin);
         }
-
 
         /// <summary>
         /// Triangulate the set of points using a divide and conquer approach.
@@ -401,12 +380,14 @@ namespace Delaunay.Algorithms
                 }
             }
 
-            // More than 3 points
-            // Divide them into half calling recursively Triangulate
+            // SPLITTING
+            // Divide them halfsize recursively
             int halfLength = (pts.Length + 1) / 2;
             QuadEdge<T>[] left = Triangulate(pts.Take(halfLength).ToArray());
             QuadEdge<T>[] right = Triangulate(pts.Skip(halfLength).ToArray());
 
+
+            // MERGING
             // From left to right
             QuadEdge<T> ldo = left[0];
             QuadEdge<T> ldi = left[1];
@@ -432,15 +413,15 @@ namespace Delaunay.Algorithms
             }
 
             // Start merging
-            // 1) Creation of the base1 quad edge (See Fig.21)
-            QuadEdge<T> base1 = QuadEdge<T>.Connect(rdi.Sym, ldi);
+            // 1) Creation of the baseEdge quad edge (See Fig.21)
+            QuadEdge<T> baseEdge = QuadEdge<T>.Connect(rdi.Sym, ldi);
             if (ldi.Origin == ldo.Origin)
             {
-                ldo = base1.Sym;
+                ldo = baseEdge.Sym;
             }
             if (rdi.Origin == rdo.Origin)
             {
-                rdo = base1;
+                rdo = baseEdge;
             }
 
             // 2) Rising bubble (See Fig. 22)
@@ -448,13 +429,13 @@ namespace Delaunay.Algorithms
             while (upperCommonTangentNotFound)
             {
                 // Locate the first L point (lCand.Destination) to be encountered
-                // by the rising bubble, and delete L edges out of base1.Destination
+                // by the rising bubble, and delete L edges out of baseEdge.Destination
                 // that fail the circle test.
-                QuadEdge<T> lCand = base1.Sym.Onext;
-                if (IsValid(lCand, base1))
+                QuadEdge<T> lCand = baseEdge.Sym.Onext;
+                if (IsValid(lCand, baseEdge))
                 {
                     while (Geometry.InCircumCercle2D(lCand.Onext.Destination,
-                                          base1.Destination, base1.Origin, lCand.Destination))
+                                          baseEdge.Destination, baseEdge.Origin, lCand.Destination))
                     {
                         nextCand = lCand.Onext;
                         QuadEdge<T>.Delete(lCand);
@@ -462,19 +443,19 @@ namespace Delaunay.Algorithms
                     }
                 }
                 // Same for the right part (Symetrically)
-                QuadEdge<T> rCand = base1.Oprev;
-                if (IsValid(rCand, base1))
+                QuadEdge<T> rCand = baseEdge.Oprev;
+                if (IsValid(rCand, baseEdge))
                 {
                     while (Geometry.InCircumCercle2D(rCand.Oprev.Destination,
-                                          base1.Destination, base1.Origin, rCand.Destination))
+                                          baseEdge.Destination, baseEdge.Origin, rCand.Destination))
                     {
                         nextCand = rCand.Oprev;
                         QuadEdge<T>.Delete(rCand);
                         rCand = nextCand;
                     }
                 }
-                // Upper common tangent is base1
-                if (!IsValid(lCand, base1) && !IsValid(rCand, base1))
+                // Upper common tangent is baseEdge
+                if (!IsValid(lCand, baseEdge) && !IsValid(rCand, baseEdge))
                 {
                     upperCommonTangentNotFound = false;
                 }
@@ -482,9 +463,9 @@ namespace Delaunay.Algorithms
                 // The next cross edge is to be connected to either lcand.Dest or rCand.Dest
                 // If both are valid, then choose the appropriate one using the
                 // Geometry.InCircumCercle2D test
-                else if (!IsValid(lCand, base1) ||
+                else if (!IsValid(lCand, baseEdge) ||
                             (
-                                IsValid(rCand, base1) &&
+                                IsValid(rCand, baseEdge) &&
                                 Geometry.InCircumCercle2D(rCand.Destination,
                                                           lCand.Destination,
                                                           lCand.Origin,
@@ -492,13 +473,13 @@ namespace Delaunay.Algorithms
                             )
                         )
                 {
-                    // Cross edge base1 added from rCand.Destination to basel.Destination
-                    base1 = QuadEdge<T>.Connect(rCand, base1.Sym);
+                    // Cross edge baseEdge added from rCand.Destination to basel.Destination
+                    baseEdge = QuadEdge<T>.Connect(rCand, baseEdge.Sym);
                 }
                 else
                 {
-                    // Cross edge base1 added from base1.Origin to lCand.Destination
-                    base1 = QuadEdge<T>.Connect(base1.Sym, lCand.Sym);
+                    // Cross edge baseEdge added from baseEdge.Origin to lCand.Destination
+                    baseEdge = QuadEdge<T>.Connect(baseEdge.Sym, lCand.Sym);
                 }
             }
             return new QuadEdge<T>[] {ldo, rdo};

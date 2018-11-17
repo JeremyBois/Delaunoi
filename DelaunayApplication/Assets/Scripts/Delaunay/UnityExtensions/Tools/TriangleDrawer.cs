@@ -7,7 +7,7 @@ using Delaunay.DataStructures;
 using Delaunay.DataStructures.Extensions;
 
 
-namespace Delaunay.Tools
+namespace Delaunay.Tools.Extensions
 {
     public static class TriangleDrawer
     {
