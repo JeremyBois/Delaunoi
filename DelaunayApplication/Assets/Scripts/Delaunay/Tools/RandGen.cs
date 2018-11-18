@@ -14,7 +14,6 @@ namespace Delaunay.Tools
         private static Random _rand = new Random(DateTime.Now.Second);
 
 
-
         public static void Init(int _seedValue)
         {
             _rand = new Random(_seedValue);
@@ -51,7 +50,7 @@ namespace Delaunay.Tools
         }
 
         /// <summary>
-        /// Return a random number in a disk
+        /// Return a random number in a disk with magnitude is radius parameter.
         /// </summary>
         /// <remarks>
         /// For this to work we must use a pdf_integration = int_0^r(PDF(r)dr) = r² / R² == 1
@@ -63,12 +62,33 @@ namespace Delaunay.Tools
         ///     x = r * cos(theta)
         ///     x = r * sin(theta)
         /// </remarks>
-        public static Vec3 InCircle(double scale=1.0, double shift=0.0)
+        public static Vec3 InCircle(double radius)
         {
-            double r = shift + Math.Sqrt(NextDouble()) * scale;
+            double r = radius * Math.Sqrt(NextDouble());
             double theta = NextDouble(TWOPI);
 
             return new Vec3(r * Math.Cos(theta), r * Math.Sin(theta));
+        }
+
+        /// <summary>
+        /// Return a random number in a disk with minimal magnitude defined
+        /// by minRadius and maximal by maxRadius.
+        /// </summary>
+        public static Vec3 InCircle(double minRadius, double maxRadius)
+        {
+            double r = minRadius + (maxRadius - minRadius) * Math.Sqrt(NextDouble());
+            double theta = NextDouble(TWOPI);
+
+            return new Vec3(r * Math.Cos(theta), r * Math.Sin(theta));
+        }
+
+        /// <summary>
+        /// Return a random number in a unit circle perimeter.
+        /// </summary>
+        public static Vec3 UnitCircle()
+        {
+            double theta = NextDouble(TWOPI);
+            return new Vec3(Math.Cos(theta), Math.Sin(theta));
         }
     }
 }
