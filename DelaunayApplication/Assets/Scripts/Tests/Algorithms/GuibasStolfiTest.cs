@@ -1,18 +1,29 @@
 ﻿using UnityEngine;
 
+using System;
 using System.Linq;
 using System.Collections.Generic;
 
 using Delaunay.Algorithms;
 using Delaunay.Generators;
 using Delaunay.DataStructures;
+using Delaunay.Tools;
 using Delaunay.DataStructures.Extensions;
 using Delaunay.Tools.Extensions;
 
 
+public enum Generator
+{
+    Halton,
+    Poisson,
+    Grid
+}
+
 public class GuibasStolfiTest : MonoBehaviour
 {
-    [Header("Generation Settings")]
+    [Header("Generation Global Settings")]
+    [SerializeField]
+    private Generator usedGenerator;
     [Tooltip("Number of points to compute.")]
     [SerializeField]
     private int pointNumber = 10;
@@ -21,10 +32,22 @@ public class GuibasStolfiTest : MonoBehaviour
     private int[] boundaries = {200, 200};
     [Tooltip("Seed used for point generation.")]
     [SerializeField]
-    int sequenceInit = 154;
+    int seed = 154;
+
+    [Space(5)]
+    [Header("Halton Settings")]
     [Tooltip("Base used to compute Halton sequence.")]
     [SerializeField]
     private int[] bases = {2, 3};
+
+    [Space(5)]
+    [Header("Poisson Disk Settings")]
+    [Tooltip("Base used to compute Halton sequence.")]
+    [SerializeField]
+    private float minimalDistance = 15.0f;
+    [SerializeField]
+    private int   maxAttemp = 30;
+    private PoissonDisk2D poissonGen;
     [Space(30)]
 
     [Header("Drawing Settings")]
@@ -61,24 +84,42 @@ public class GuibasStolfiTest : MonoBehaviour
     [Space(30)]
 
 
-    private Vec3[] points;
+    private List<Vec3> points;
     private GuibasStolfi<int> triangulator;
 
     void Awake ()
     {
         // Create random points
-        int n = sequenceInit;
-        points = new Vec3[pointNumber];
+        int n = seed;
+        points = new List<Vec3>();
 
-        for (int i = 0; i < points.Length; i++)
+        switch (usedGenerator)
         {
-            // Random sparse distribution
-            Vec3 temp = HaltonSequence.Halton2D(n, bases[0], bases[1]);
-            points[i] = new Vec3(temp.x * boundaries[0] + transform.position.x,
-                                 temp.y * boundaries[1] + transform.position.y,
-                                 transform.position.z);
-            n++;
+            case Generator.Halton:
+                for (int i = 0; i < pointNumber; i++)
+                {
+                    // Random sparse distribution
+                    Vec3 temp = HaltonSequence.Halton2D(n, bases[0], bases[1]);
+                    points.Add(new Vec3(temp.x * boundaries[0] + transform.position.x,
+                                         temp.y * boundaries[1] + transform.position.y,
+                                         transform.position.z));
+                    n++;
+                }
+                break;
+            case Generator.Poisson:
+                RandGen.Init(seed);
+                poissonGen = new PoissonDisk2D(minimalDistance, boundaries[0], boundaries[1],
+                                               maxAttemp);
+                poissonGen.BuildSample(pointNumber);
+                foreach (Vec3 point in poissonGen)
+                {
+                    points.Add(point);
+                }
+                break;
+            default:
+                throw new NotImplementedException();
         }
+
 
         // Place camera
         var cam = Camera.main;
@@ -90,7 +131,7 @@ public class GuibasStolfiTest : MonoBehaviour
     {
         // INIT  ---  ---  INIT  ---  ---  INIT
         System.DateTime previousTime = System.DateTime.Now;
-        triangulator = new GuibasStolfi<int>(points, false);
+        triangulator = new GuibasStolfi<int>(points.ToArray(), false);
         System.TimeSpan delta = System.DateTime.Now - previousTime;
         Debug.Log(string.Format("INIT *** {0} secondes OU {1} milliseconds *** INIT",
                   delta.TotalSeconds, delta.TotalMilliseconds));
@@ -154,6 +195,7 @@ public class GuibasStolfiTest : MonoBehaviour
         delta = System.DateTime.Now - previousTime;
         Debug.Log(string.Format("DRAWING *** {0} secondes OU {1} milliseconds *** DRAWING",
                   delta.TotalSeconds, delta.TotalMilliseconds));
+        Debug.Log("Points count : " + points.Count);
         Debug.Log("Triangle count : " + triangles.Count / 3);
         Debug.Log("Cell count : " + nbCells);
     }

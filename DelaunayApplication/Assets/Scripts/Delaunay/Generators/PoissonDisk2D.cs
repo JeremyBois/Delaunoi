@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections;
 
+
 namespace Delaunay.Generators
 {
     using Delaunay.DataStructures;
@@ -38,6 +39,8 @@ namespace Delaunay.Generators
         private readonly float _cellSize, _radius, _radiusSq, _width, _height;
         private readonly int   _rows, _cols;
 
+        private int _count;
+
 
         /// <summary>
         /// Initialize a PoissonDisk2D generator.
@@ -64,7 +67,11 @@ namespace Delaunay.Generators
             _radius = radius;
             _width = width;
             _height = height;
+        }
 
+        public int Count
+        {
+            get {return _count;}
         }
 
         /// <summary>
@@ -79,19 +86,17 @@ namespace Delaunay.Generators
             // Cols represent the number of cell for the width (x coordinate)
             // Initialize will null by default
             _grid = new Vec3[_rows, _cols];
-
             _activeList = new List<Vec3>();
+            _count = 0;
 
             // Add first point in the center
             Vec3 firstSample = new Vec3(_width / 2.0f, _height / 2.0f);
             _activeList.Add(firstSample);
             Store(firstSample);
 
-            // Add other sample
-            for (int n = 0; n < sampleSize; n++)
+            // Try adding sampleSize - 1 other samples
+            while (_count < sampleSize && _activeList.Count > 0)
             {
-                if (_activeList.Count > 0)
-                {
                     // Select a site from the list
                     int sampleIndex = RandGen.NextInt(0, _activeList.Count);
                     Vec3 sample = _activeList[sampleIndex];
@@ -102,7 +107,6 @@ namespace Delaunay.Generators
                         // If not possible remove sample from active list
                         _activeList.RemoveAt(sampleIndex);
                     }
-                }
             }
         }
 
@@ -116,22 +120,29 @@ namespace Delaunay.Generators
             {
                 // New candidate chosen uniformly from the spherical annulus
                 // between _radius and 2 x _radius.
-                Vec3 cand = sample + RandGen.InCircle(_radius, _radius);
+                Vec3 cand = sample + RandGen.InCircle(_radius, _radius * 2.0f);
+
                 Coord canCoord = GridCoord(cand);
-                if (InBounds(canCoord))
+                // Inside bounds and not in an already used cell
+                if (InBounds(canCoord) && _grid[canCoord.Row, canCoord.Col] == null)
                 {
+                    bool notTooClose = true;
                     foreach (Vec3 adj in Adjacents(canCoord))
                     {
-                        if ((cand - adj).SquaredMagnitude < _radiusSq)
+                        if (Vec3.DistanceSquared(cand, adj) < _radiusSq)
                         {
-                            return false;
+                            notTooClose = false;
+                            break;
                         }
                     }
 
                     // Found good candidate
-                    _activeList.Add(cand);
-                    Store(cand, canCoord);
-                    return true;
+                    if (notTooClose)
+                    {
+                        _activeList.Add(cand);
+                        Store(cand, canCoord);
+                        return true;
+                    }
                 }
             }
             return false;
@@ -156,11 +167,14 @@ namespace Delaunay.Generators
             int col = (int)Math.Floor(sample.x / _cellSize);
             int row = (int)Math.Floor(sample.y / _cellSize);
             _grid[row, col] = sample;
+
+            _count++;
         }
 
         private void Store(Vec3 sample, Coord coord)
         {
             _grid[coord.Row, coord.Col] = sample;
+            _count++;
         }
 
         private Coord GridCoord(Vec3 sample)
