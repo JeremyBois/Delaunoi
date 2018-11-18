@@ -4,7 +4,13 @@ using Delaunay.DataStructures;
 
 namespace Delaunay.Generators
 {
-    public class HaltonSequence
+    /// <summary>
+    /// Generation of pseudo random points based on a low-discrepancy sequence
+    /// describe by Halton in "On the efficiency of certain quasi-random sequences
+    /// of points in evaluating multi-dimensional integrals, Numerische Mathematik,
+    /// December 1960, Volume 2, Issue 1, pp 84–90" (doi == 10.1007/BF01386213)
+    /// </summary>
+    public static class HaltonSequence
     {
         static public Vec3 Halton2D(int n, int base1, int base2)
         {

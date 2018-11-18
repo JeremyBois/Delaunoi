@@ -11,7 +11,7 @@ namespace Delaunay.DataStructures
     /// <summary>
     /// Implementation of the QuadEdge<T> structure (an edge algebra) define by LEONIDAS GUIBAS and JORGE STOLFI
     /// in Primitives for the Manipulation of General Subdivisions and the Computation of Voronoi Diagrams,
-    /// ACM Transactions on Graphics, Vol. 4, No. 2, April 1985"
+    /// ACM Transactions on Graphics, April 1985, Vol. 4, No. 2" (doi == 10.1145/282918.282923)
     /// Graphical version of class properties (corresponding to Fig.3).
     ///   - ■ Represent primal subdivisions (Delaunay)
     ///   - ○ Represent dual subdivisions (Voronoi)

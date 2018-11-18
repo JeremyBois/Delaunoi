@@ -64,6 +64,12 @@ namespace Delaunay.DataStructures
             return string.Format("Vec({0}, {1}, {2})", _x, _y, _z);
         }
 
+        public Vec3 WithMagnitude(double mag)
+        {
+            double ratio = mag / Vec3.Magnitude(this);
+            return new Vec3(_x * ratio, _y * ratio, _z * ratio);
+        }
+
         public double SquaredMagnitude
         {
             get {return _x * _x + _y * _y + _z * _z;}
@@ -72,6 +78,14 @@ namespace Delaunay.DataStructures
         public static double Magnitude(Vec3 vec)
         {
             return Math.Sqrt(vec._x * vec._x + vec._y * vec._y + vec._z * vec._z);
+        }
+
+        public static double DistanceSquared(Vec3 first, Vec3 second)
+        {
+            double x = second._x - first._x;
+            double y = second._y - first._y;
+            double z = second._z - first._z;
+            return x * x + y * y + z * z;
         }
 
         public static Vec3 operator +(Vec3 first, Vec3 second)
