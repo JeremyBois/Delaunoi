@@ -80,11 +80,14 @@ namespace Delaunoi.DataStructures
             return Math.Sqrt(vec._x * vec._x + vec._y * vec._y + vec._z * vec._z);
         }
 
+        /// <summary>
+        /// Return Distance squared between first and second.
+        /// </summary>
         public static double DistanceSquared(Vec3 first, Vec3 second)
         {
-            double x = second._x - first._x;
-            double y = second._y - first._y;
-            double z = second._z - first._z;
+            double x = first._x - second._x;
+            double y = first._y - second._y;
+            double z = first._z - second._z;
             return x * x + y * y + z * z;
         }
 
