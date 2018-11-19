@@ -162,11 +162,35 @@ namespace Delaunay.DataStructures
         }
 
         /// <summary>
-        /// Only used in the incremental algorithm. Not implemented yet.
+        /// Swap an edge. Used to remove non delaunay triangulation.
         /// </summary>
+        /// <remarks>
+        ///
+        ///    /|\              / \
+        ///   / | \            /   \
+        ///  /  |  \          /     \
+        ///  \  |  /   --->   \-----/
+        ///   \ | /            \   /
+        ///    \|/              \ /
+        ///
+        ///
+        /// </remarks>
         public void Swap(QuadEdge<T> edge)
         {
-            throw new NotImplementedException();
+            QuadEdge<T> a = edge.Oprev;
+            QuadEdge<T> b = edge.Sym.Oprev;
+
+            // Disconnect edge
+            Splice(edge, a);
+            Splice(edge.Sym, b);
+
+            // Reconnect edge
+            Splice(edge, a.Lnext);
+            Splice(edge.Sym, b.Lnext);
+
+            // Update pointer
+            edge._origin = a.Destination;
+            edge.Destination = b.Destination;
         }
 
 

@@ -174,6 +174,56 @@ namespace Delaunay.Algorithms
             return triangles;
         }
 
+        /// <summary>
+        /// Locate the closest with respect to following constraints:
+        ///   - pos is on the line of returned edge
+        ///   - pos is inside the left face of returned edge
+        /// </summary>
+        public QuadEdge<T> Locate(Vec3 pos)
+        {
+            QuadEdge<T> edge = RightMostEdge;
+            while (true)
+            {
+                if (pos == edge.Origin || pos == edge.Destination)
+                {
+                    return edge;
+                }
+                else if (Geometry.RightOf(pos, edge))
+                {
+                    edge = edge.Sym;
+                }
+                else if (Geometry.LeftOf(pos, edge.Onext))
+                {
+                    edge = edge.Onext;
+                }
+                else if (Geometry.LeftOf(pos, edge.Dprev))
+                {
+                    edge = edge.Dprev;
+                }
+                else
+                {
+                    // Previous triangle edge
+                    QuadEdge<T> otherE = edge.Lprev;
+                    if (Geometry.AlmostColinear(pos, otherE.Origin,
+                                                otherE.Destination))
+                    {
+                        return otherE;
+                    }
+
+
+                    // Next triangle edge
+                    otherE = edge.Lnext;
+                    if (Geometry.AlmostColinear(pos, otherE.Origin,
+                                                otherE.Destination))
+                    {
+                        return otherE;
+                    }
+
+                    return edge;
+                }
+            }
+        }
+
 
 // METHODS (PRIVATE)
 
