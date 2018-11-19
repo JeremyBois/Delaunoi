@@ -270,6 +270,25 @@ namespace Delaunay.Tools
         {
             return Ccw(pt, edge.Origin, edge.Destination);
         }
+
+        /// <summary>
+        /// Test if 3 points are on the same line.
+        /// </summary>
+        public static bool AlmostColinear(Vec3 a, Vec3 b, Vec3 c, double epsilon=0.0000001)
+        {
+            Vec3 ac = a - c;
+            Vec3 bc = b - c;
+
+            return Math.Abs(ac.x * bc.y - ac.y * bc.x) < epsilon;
+        }
+
+        /// <summary>
+        /// Test if two points are almost equals.
+        /// </summary>
+        public static bool AlmostEquals(Vec3 a, Vec3 b, double epsilon=0.0000001)
+        {
+            return Vec3.DistanceSquared(a, b) < epsilon;
+        }
     }
 
 }
