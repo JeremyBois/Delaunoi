@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Delaunay.DataStructures.Extensions
+namespace Delaunoi.DataStructures.Extensions
 {
     public static class Vec3Extensions
     {

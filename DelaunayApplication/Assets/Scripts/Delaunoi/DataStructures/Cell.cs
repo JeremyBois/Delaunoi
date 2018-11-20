@@ -3,7 +3,7 @@ using System.Linq;
 using System.Collections.Generic;
 
 
-namespace Delaunay.DataStructures
+namespace Delaunoi.DataStructures
 {
     /// <summary>
     /// Abstraction of a Voronoi or Centroid cell.
@@ -13,13 +13,11 @@ namespace Delaunay.DataStructures
         private static int nextID = 0;
 
         private int _id;
-        private bool _isVoronoi;
         private double _radius;
         private List<Vec3> _points;
 
-        public Cell(Vec3 center, bool isVoronoi=true)
+        public Cell(Vec3 center)
         {
-            this._isVoronoi = isVoronoi;
             this._points = new List<Vec3>();
             this._points.Add(center);
 
@@ -37,22 +35,6 @@ namespace Delaunay.DataStructures
         public int ID
         {
             get {return _id;}
-        }
-
-        /// <summary>
-        /// Voronoi or Centroid
-        /// </summary>
-        public bool IsVoronoi
-        {
-            get {return _isVoronoi;}
-        }
-
-        /// <summary>
-        /// Voronoi or Centroid
-        /// </summary>
-        public bool IsCentroid
-        {
-            get {return !_isVoronoi;}
         }
 
         /// <summary>

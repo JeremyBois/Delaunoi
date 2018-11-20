@@ -1,8 +1,8 @@
 using System;
-using Delaunay.Tools;
-using Delaunay.DataStructures;
+using Delaunoi.Tools;
+using Delaunoi.DataStructures;
 
-namespace Delaunay.Generators
+namespace Delaunoi.Generators
 {
     /// <summary>
     /// Generation of pseudo random points based on a low-discrepancy sequence

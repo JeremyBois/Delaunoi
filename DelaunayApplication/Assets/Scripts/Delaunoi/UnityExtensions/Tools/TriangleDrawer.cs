@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-using Delaunay.DataStructures;
-using Delaunay.DataStructures.Extensions;
+using Delaunoi.DataStructures;
+using Delaunoi.DataStructures.Extensions;
 
 
-namespace Delaunay.Tools.Extensions
+namespace Delaunoi.Tools.Extensions
 {
     public static class TriangleDrawer
     {

@@ -4,12 +4,12 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 
-using Delaunay.Algorithms;
-using Delaunay.Generators;
-using Delaunay.DataStructures;
-using Delaunay.Tools;
-using Delaunay.DataStructures.Extensions;
-using Delaunay.Tools.Extensions;
+using Delaunoi.Algorithms;
+using Delaunoi.Generators;
+using Delaunoi.DataStructures;
+using Delaunoi.Tools;
+using Delaunoi.DataStructures.Extensions;
+using Delaunoi.Tools.Extensions;
 
 
 public enum Generator
@@ -164,7 +164,7 @@ public class GuibasStolfiTest : MonoBehaviour
         }
 
         // Draw cells
-        List<Cell> cells = triangulator.ExportCells(celltype, Mathf.Max(boundaries) * 5.0);
+        List<Cell> cells = triangulator.ExportCells(celltype, Mathf.Max(boundaries) * 5.0, true);
 
         float nbCells = (float)cells.Count;
         int indcolor2 = 0;

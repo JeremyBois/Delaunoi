@@ -1,7 +1,7 @@
 ﻿using System;
 
 
-namespace Delaunay.DataStructures
+namespace Delaunoi.DataStructures
 {
     /// <summary>
     /// A vector class used as data container inside a QuadEdge.

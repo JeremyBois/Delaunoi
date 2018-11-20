@@ -3,9 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 
 
-namespace Delaunay.DataStructures
+namespace Delaunoi.DataStructures
 {
-    using Delaunay.Tools;
+    using Delaunoi.Tools;
 
 
     /// <summary>

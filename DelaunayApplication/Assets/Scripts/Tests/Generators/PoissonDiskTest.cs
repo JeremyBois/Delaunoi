@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-using Delaunay.Generators;
-using Delaunay.Tools;
-using Delaunay.DataStructures;
-using Delaunay.DataStructures.Extensions;
+using Delaunoi.Generators;
+using Delaunoi.Tools;
+using Delaunoi.DataStructures;
+using Delaunoi.DataStructures.Extensions;
 
 public class PoissonDiskTest : MonoBehaviour
 {

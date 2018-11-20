@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using Delaunay.DataStructures;
+using Delaunoi.DataStructures;
 
 
-namespace Delaunay.Tools
+namespace Delaunoi.Tools
 {
     public static class Geometry
     {

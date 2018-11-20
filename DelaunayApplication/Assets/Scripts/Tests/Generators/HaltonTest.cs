@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-using Delaunay.Generators;
-using Delaunay.DataStructures.Extensions;
+using Delaunoi.Generators;
+using Delaunoi.DataStructures.Extensions;
 
 public class HaltonTest : MonoBehaviour
 {

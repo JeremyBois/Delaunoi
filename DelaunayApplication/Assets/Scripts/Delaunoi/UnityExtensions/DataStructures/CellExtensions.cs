@@ -5,7 +5,7 @@ using UnityEngine;
 using System.Linq;
 
 
-namespace Delaunay.DataStructures.Extensions
+namespace Delaunoi.DataStructures.Extensions
 {
     public static class CellExtensions
     {
@@ -27,6 +27,7 @@ namespace Delaunay.DataStructures.Extensions
 
             var trianglesInt = new List<int>();
             var points = cell.Points.Select(vec => vec.AsVector3()).ToList();
+
             for (int idP = 1; idP < points.Count - 1; idP++)
             {
                 trianglesInt.Add(0);

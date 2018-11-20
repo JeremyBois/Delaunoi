@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Collections;
 
 
-namespace Delaunay.Generators
+namespace Delaunoi.Generators
 {
-    using Delaunay.DataStructures;
-    using Delaunay.Tools;
+    using Delaunoi.DataStructures;
+    using Delaunoi.Tools;
 
 
     public struct Coord

@@ -1,6 +1,6 @@
 ﻿
 
-namespace Delaunay.Algorithms
+namespace Delaunoi.Algorithms
 {
     /// <summary>
     /// Geometrical operation used to construct a cell based on Delaunay triangulation.

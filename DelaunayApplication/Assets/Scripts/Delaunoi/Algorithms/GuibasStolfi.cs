@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Delaunay.Algorithms
+namespace Delaunoi.Algorithms
 {
-    using Delaunay.DataStructures;
-    using Delaunay.Tools;
+    using Delaunoi.DataStructures;
+    using Delaunoi.Tools;
 
 
     /// <summary>
@@ -19,16 +19,16 @@ namespace Delaunay.Algorithms
 
 // FIELDS
 
-        private Vec3[]     _points;
+        private Vec3[]        _points;
         private QuadEdge<T>[] _leftRightEdges;
-        private bool       visitedTagState;
+        private bool          _visitedTagState;
 
 
 // CONSTRUCTORS
 
         private GuibasStolfi()
         {
-            visitedTagState = false;
+            _visitedTagState = false;
         }
 
         /// <summary>
@@ -78,7 +78,7 @@ namespace Delaunay.Algorithms
         public bool ComputeDelaunay()
         {
             // Reinit flag state
-            visitedTagState = false;
+            _visitedTagState = false;
 
             // Cannot triangulate only one point
             if (_points.Length < 2)
@@ -99,7 +99,7 @@ namespace Delaunay.Algorithms
         /// </summary>
         /// <param name="radius">Distance used to construct point that are at infinity.</param>
         /// <param name="useZCoord">If true cell center compute in R^3 else in R^2 (matter only if voronoi).</param>
-        public List<Cell> ExportCells(CellConfig cellType, double radius, bool useZCoord=false)
+        public List<Cell> ExportCells(CellConfig cellType, double radius, bool useZCoord=true)
         {
             switch (cellType)
             {
@@ -148,29 +148,29 @@ namespace Delaunay.Algorithms
             {
                 // Enqueue same edge but with opposite direction
                 queue.Enqueue(hullEdge.Sym);
-                hullEdge.Tag = !visitedTagState;
+                hullEdge.Tag = !_visitedTagState;
             }
 
             // Convex hull now closed. Start triangles construction
             while (queue.Count > 0)
             {
                 QuadEdge<T> edge = queue.Dequeue();
-                if (edge.Tag == visitedTagState)
+                if (edge.Tag == _visitedTagState)
                 {
                     foreach (QuadEdge<T> current in edge.RightEdges(CCW:false))
                     {
                         triangles.Add(current.Origin);
-                        if (current.Sym.Tag == visitedTagState)
+                        if (current.Sym.Tag == _visitedTagState)
                         {
                             queue.Enqueue(current.Sym);
                         }
-                        current.Tag = !visitedTagState;
+                        current.Tag = !_visitedTagState;
                     }
                 }
             }
 
             // Inverse flag to be able to traverse again at next call
-            visitedTagState = !visitedTagState;
+            _visitedTagState = !_visitedTagState;
             return triangles;
         }
 
@@ -189,7 +189,7 @@ namespace Delaunay.Algorithms
         private List<Cell> Exportcells(double radius, Func<Vec3, Vec3, Vec3, Vec3> centerCalculator)
         {
             // Container for vorFaces vertices
-            var voronoiCells = new List<Cell>();
+            var cells = new List<Cell>();
 
             // FIFO
             var queue = new Queue<QuadEdge<T>>();
@@ -209,8 +209,8 @@ namespace Delaunay.Algorithms
             foreach (QuadEdge<T> hullEdge in first.LeftEdges(CCW:false))
             {
                 // Start construction of a new cell
-                voronoiCells.Add(new Cell(hullEdge.Origin, true));
-                Cell currentCell = voronoiCells.Last();
+                cells.Add(new Cell(hullEdge.Origin));
+                Cell currentCell = cells.Last();
                 // First infinite voronoi vertex
                 if (hullEdge.Rot.Destination == null)
                 {
@@ -240,11 +240,11 @@ namespace Delaunay.Algorithms
                         }
                     }
 
-                    if (current.Sym.Tag == visitedTagState)
+                    if (current.Sym.Tag == _visitedTagState)
                     {
                         queue.Enqueue(current.Sym);
                     }
-                    current.Tag = !visitedTagState;
+                    current.Tag = !_visitedTagState;
                     currentCell.Add(current.Rot.Origin);
                 }
             }
@@ -254,11 +254,11 @@ namespace Delaunay.Algorithms
             {
                 QuadEdge<T> edge = queue.Dequeue();
 
-                if (edge.Tag == visitedTagState)
+                if (edge.Tag == _visitedTagState)
                 {
                     // Construct a new cell
-                    voronoiCells.Add(new Cell(edge.Origin, true));
-                    Cell currentCell = voronoiCells.Last();
+                    cells.Add(new Cell(edge.Origin));
+                    Cell currentCell = cells.Last();
                     foreach (QuadEdge<T> current in edge.EdgesFrom(CCW:false))
                     {
                         if (current.Rot.Origin == null)
@@ -267,19 +267,19 @@ namespace Delaunay.Algorithms
                                                                   current.Destination,
                                                                   current.Oprev.Destination);
                         }
-                        if (current.Sym.Tag  == visitedTagState)
+                        if (current.Sym.Tag  == _visitedTagState)
                         {
                             queue.Enqueue(current.Sym);
                         }
-                        current.Tag = !visitedTagState;
+                        current.Tag = !_visitedTagState;
                         currentCell.Add(current.Rot.Origin);
                     }
                 }
             }
 
             // Inverse flag to be able to traverse again at next call
-            visitedTagState = !visitedTagState;
-            return voronoiCells;
+            _visitedTagState = !_visitedTagState;
+            return cells;
         }
 
         /// <summary>

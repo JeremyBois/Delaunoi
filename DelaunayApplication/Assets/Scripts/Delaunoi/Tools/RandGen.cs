@@ -1,10 +1,10 @@
 ﻿using System;
 
 
-namespace Delaunay.Tools
+namespace Delaunoi.Tools
 {
 
-    using Delaunay.DataStructures;
+    using Delaunoi.DataStructures;
 
 
     public static class RandGen

@@ -1,5 +1,5 @@
 ﻿
-namespace Delaunay.Tools
+namespace Delaunoi.Tools
 {
     public static class Helper
     {
