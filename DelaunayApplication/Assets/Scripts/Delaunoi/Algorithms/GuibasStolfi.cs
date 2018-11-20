@@ -300,15 +300,17 @@ namespace Delaunoi.Algorithms
         private Vec3 ConstructAtInfinity(QuadEdge<T> primalEdge, double radius,
                                                 Func<Vec3, Vec3, Vec3, Vec3> centerCalculator)
         {
+            var rotSym = primalEdge.RotSym;
+
             // Find previous voronoi point
-            if (primalEdge.RotSym.Origin == null)
+            if (rotSym.Origin == null)
             {
-                primalEdge.RotSym.Origin = centerCalculator(primalEdge.Origin,
+                rotSym.Origin = centerCalculator(primalEdge.Origin,
                                                             primalEdge.Destination,
                                                             primalEdge.Onext.Destination);
             }
-            double xCenter = primalEdge.RotSym.Origin.x;
-            double yCenter = primalEdge.RotSym.Origin.y;
+            double xCenter = rotSym.Origin.x;
+            double yCenter = rotSym.Origin.y;
 
             // Compute normalized tangent of primal edge scaled by radius
             double xTangent = primalEdge.Destination.x - primalEdge.Origin.x;
@@ -321,13 +323,13 @@ namespace Delaunoi.Algorithms
 
             // Add vertex using edge dual destination as origin
             // in direction normal to the primal edge
-            Vec3 normal = new Vec3(xCenter - yTangent, yCenter + xTangent);
+            Vec3 normal = new Vec3(xCenter - yTangent, yCenter + xTangent, rotSym.Origin.z);
 
             // If new voronoi vertex is on the left of the primal edge
             // we used the wrong normal vector --> get its opposite
             if (Geometry.LeftOf(normal, primalEdge))
             {
-                normal = new Vec3(xCenter + yTangent, yCenter - xTangent);
+                normal = new Vec3(xCenter + yTangent, yCenter - xTangent, rotSym.Origin.z);
             }
             return normal;
         }
