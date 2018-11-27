@@ -231,7 +231,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   usedGenerator: 0
-  pointNumber: 93
+  pointNumber: 10
   boundaries: 2c01000096000000
   seed: 154
   bases: 0200000003000000
@@ -273,12 +273,12 @@ MonoBehaviour:
     m_NumColorKeys: 5
     m_NumAlphaKeys: 2
   D_points: 1
-  D_lines: 0
+  D_lines: 1
   D_faces: 0
   celltype: 0
-  V_points: 1
-  V_lines: 1
-  V_faces: 1
+  V_points: 0
+  V_lines: 0
+  V_faces: 0
   V_circles: 0
 --- !u!1 &1774482939
 GameObject:

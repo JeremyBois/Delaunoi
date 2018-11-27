@@ -145,6 +145,33 @@ public class GuibasStolfiTest : MonoBehaviour
                   delta.TotalSeconds, delta.TotalMilliseconds));
 
 
+        // Locate Test
+        // points 10 | seed 154
+        Vec3 pos = new Vec3(216.7969, 82.09876, 0.0);
+        var newGo = GameObject.Instantiate(shapes[0]);
+        newGo.name = "PointLocated";
+        newGo.transform.SetParent(transform);
+        newGo.transform.position = pos.AsVector3();
+        newGo.transform.localScale = new Vector3(5.0f, 5.0f, 5.0f);
+        // Color
+        var meshR = newGo.GetComponent<MeshRenderer>();
+        if (meshR != null)
+        {
+            meshR.materials[0].color = Color.green;
+        }
+
+
+        // LOCATE  ---  ---  LOCATE  ---  ---  LOCATE
+        previousTime = System.DateTime.Now;
+        var edge = triangulator.Locate(pos);
+
+        delta = System.DateTime.Now - previousTime;
+        Debug.Log(string.Format("LOCATE *** {0} secondes OU {1} milliseconds *** LOCATE",
+                  delta.TotalSeconds, delta.TotalMilliseconds));
+        Debug.Log(triangulator.InsideConvexHull(pos));
+        Debug.Log(edge.Origin);
+
+
         // DRAWING  ---  ---  DRAWING  ---  ---  DRAWING
         previousTime = System.DateTime.Now;
 

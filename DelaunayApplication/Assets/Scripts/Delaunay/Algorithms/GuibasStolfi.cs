@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 
+using UnityEngine;
+
+
 namespace Delaunay.Algorithms
 {
     using Delaunay.DataStructures;
@@ -58,7 +61,18 @@ namespace Delaunay.Algorithms
         /// </summary>
         public QuadEdge<T> LeftMostEdge
         {
-            get {return _leftRightEdges[0];}
+            get
+            {
+                // Find the segment with no vertex on its left
+                // starting from the far left vertex
+                QuadEdge<T> boundEdge = _leftRightEdges[0];
+
+                while (Geometry.LeftOf(boundEdge.Onext.Destination, boundEdge))
+                {
+                    boundEdge = boundEdge.Onext;
+                }
+                return boundEdge;
+            }
         }
 
         /// <summary>
@@ -66,7 +80,18 @@ namespace Delaunay.Algorithms
         /// </summary>
         public QuadEdge<T> RightMostEdge
         {
-            get {return _leftRightEdges[1];}
+            get
+            {
+                QuadEdge<T> boundEdge = _leftRightEdges[1];
+                // Find the segment with no vertex on its right
+                // starting from the far right vertex
+                while (Geometry.RightOf(boundEdge.Oprev.Destination, boundEdge))
+                {
+                    boundEdge = boundEdge.Oprev;
+                }
+
+                return boundEdge;
+            }
         }
 
 
@@ -132,15 +157,8 @@ namespace Delaunay.Algorithms
             var queue = new Queue<QuadEdge<T>>();
 
             // Start at the far right
-            QuadEdge<T> first = _leftRightEdges[1];
+            QuadEdge<T> first = RightMostEdge;
             queue.Enqueue(first);
-
-            // Find the segment with no vertex on its right
-            // starting from the far right vertex
-            while (Geometry.RightOf(first.Oprev.Destination, first))
-            {
-                first = first.Oprev;
-            }
 
             // Visit all edge of the convex hull in CW order and
             // add opposite edges to queue
@@ -175,31 +193,111 @@ namespace Delaunay.Algorithms
         }
 
         /// <summary>
-        /// Locate the closest with respect to following constraints:
-        ///   - pos is on the line of returned edge
-        ///   - pos is inside the left face of returned edge
+        /// If <paramref name="pos"/> is outside the convex hull of the triangulation
+        /// return edge with <paramref name="pos"/> on its left face.
+        /// If inside the triangulation return null.
         /// </summary>
-        public QuadEdge<T> Locate(Vec3 pos)
+        /// <param name="pos">The position to locate</param>
+        public QuadEdge<T> ClosestBoundingEdge(Vec3 pos)
         {
-            QuadEdge<T> edge = RightMostEdge;
+            var boundEdge = RightMostEdge;
+
+            // No one can be larger than the larger one, right ??
+            double lastDistFromPos = double.PositiveInfinity;
+            bool found = false;
+
+            // Visit all edge of the convex hull in CW order and
+            // add opposite edges to queue
+            foreach (QuadEdge<T> hullEdge in boundEdge.RightEdges(CCW:false))
+            {
+                // Find an edge from convex hull where
+                if (Geometry.RightOf(pos, hullEdge))
+                {
+                    double distFromPos = Vec3.DistanceSquared(pos, hullEdge.Origin);
+
+                    // Continues until we move away
+                    if (distFromPos < lastDistFromPos)
+                    {
+                        lastDistFromPos = distFromPos;
+                        found = true;
+                    }
+                    else
+                    {
+                        // Found the closest one
+                        return hullEdge.Rnext.Sym;
+                    }
+                }
+                else if (found)
+                {
+                    return hullEdge.Rnext.Sym;
+                }
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// True if <paramref name="pos"/> inside the convex hull formed by the triangulation.
+        /// </summary>
+        /// <param name="pos">The position to test</param>
+        public bool InsideConvexHull(Vec3 pos)
+        {
+            QuadEdge<T> boundEdge = RightMostEdge;
+            foreach (QuadEdge<T> hullEdge in boundEdge.RightEdges(CCW:false))
+            {
+                if (Geometry.RightOf(pos, hullEdge))
+                {
+                    // Must be outside because hullEdge right face is outside
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Locate the closest with respect to following constraints:
+        ///   - <paramref name="pos"/> is on the line of returned edge
+        ///   - <paramref name="pos"/> is inside the left face of returned edge
+        ///
+        /// If point outside the convex hull Locate will loop forever looking for
+        /// a corresponding edge that does not exists ... unless you first check
+        /// you are in the convex hull or set <paramref name="checkBoundFirst"/> to true.
+        /// </summary>
+        /// <param name="pos">The position to locate</param>
+        /// <param name="edge">Edge used to start locate process. Can be used to speed up search.</param>
+        /// <param name="checkBoundsFirst">If true, locate first check if pos in convex hull of triangulation</param>
+        public QuadEdge<T> Locate(Vec3 pos, QuadEdge<T> edge=null, bool checkBoundsFirst=true)
+        {
+            // Check boundary first
+            if (checkBoundsFirst)
+            {
+                QuadEdge<T> result = ClosestBoundingEdge(pos);
+                if (result != null)
+                {
+                    // pos outside
+                    Debug.Log("Outside");
+                    return result;
+                }
+            }
+
+            // Start somewhere if no hint
+            if (edge == null)
+            {
+                edge = _leftRightEdges[1];
+            }
+
+            // Not outside ... must be inside ...
             while (true)
             {
                 if (pos == edge.Origin || pos == edge.Destination)
-                {
                     return edge;
-                }
                 else if (Geometry.RightOf(pos, edge))
-                {
                     edge = edge.Sym;
-                }
                 else if (Geometry.LeftOf(pos, edge.Onext))
-                {
                     edge = edge.Onext;
-                }
                 else if (Geometry.LeftOf(pos, edge.Dprev))
-                {
                     edge = edge.Dprev;
-                }
                 else
                 {
                     // Previous triangle edge
@@ -207,6 +305,7 @@ namespace Delaunay.Algorithms
                     if (Geometry.AlmostColinear(pos, otherE.Origin,
                                                 otherE.Destination))
                     {
+                        Debug.Log("Prev");
                         return otherE;
                     }
 
@@ -216,6 +315,7 @@ namespace Delaunay.Algorithms
                     if (Geometry.AlmostColinear(pos, otherE.Origin,
                                                 otherE.Destination))
                     {
+                        Debug.Log("Next");
                         return otherE;
                     }
 
