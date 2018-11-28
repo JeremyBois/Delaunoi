@@ -175,7 +175,7 @@ namespace Delaunoi.DataStructures
         ///
         ///
         /// </remarks>
-        public void Swap(QuadEdge<T> edge)
+        public static void Swap(QuadEdge<T> edge)
         {
             QuadEdge<T> a = edge.Oprev;
             QuadEdge<T> b = edge.Sym.Oprev;
