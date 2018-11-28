@@ -133,6 +133,7 @@ public class GuibasStolfiTest : MonoBehaviour
         System.DateTime previousTime = System.DateTime.Now;
         triangulator = new GuibasStolfi<int>(points.ToArray(), false);
         System.TimeSpan delta = System.DateTime.Now - previousTime;
+        Debug.Log("***");
         Debug.Log(string.Format("*** INIT *** {0} secondes OU {1} milliseconds *** INIT",
                   delta.TotalSeconds, delta.TotalMilliseconds));
 
@@ -141,6 +142,7 @@ public class GuibasStolfiTest : MonoBehaviour
         previousTime = System.DateTime.Now;
         triangulator.ComputeDelaunay();
         delta = System.DateTime.Now - previousTime;
+        Debug.Log("***");
         Debug.Log(string.Format("*** TRIANGULATION *** {0} secondes OU {1} milliseconds *** TRIANGULATION",
                   delta.TotalSeconds, delta.TotalMilliseconds));
 
@@ -162,13 +164,14 @@ public class GuibasStolfiTest : MonoBehaviour
 
         // Start locate
         previousTime = System.DateTime.Now;
-        var edge = triangulator.Locate(pos);
+        var edge = triangulator.Locate(pos, checkBoundsFirst:true);
 
         delta = System.DateTime.Now - previousTime;
+        Debug.Log("***");
         Debug.Log(string.Format("*** LOCATE *** {0} secondes OU {1} milliseconds *** LOCATE",
                   delta.TotalSeconds, delta.TotalMilliseconds));
-        Debug.Log(triangulator.InsideConvexHull(pos));
-        Debug.Log(edge.Origin);
+        Debug.Log("Point is inside: " + triangulator.InsideConvexHull(pos));
+        Debug.Log("Edge origin is: " + edge.Origin);
 
 
         // DRAWING  ---  ---  DRAWING  ---  ---  DRAWING
@@ -219,6 +222,7 @@ public class GuibasStolfiTest : MonoBehaviour
         }
 
         delta = System.DateTime.Now - previousTime;
+        Debug.Log("***");
         Debug.Log(string.Format("*** DRAWING *** {0} secondes OU {1} milliseconds *** DRAWING",
                   delta.TotalSeconds, delta.TotalMilliseconds));
         Debug.Log("Points count : " + points.Count);
