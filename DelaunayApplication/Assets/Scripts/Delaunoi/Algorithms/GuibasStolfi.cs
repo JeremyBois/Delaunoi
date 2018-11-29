@@ -262,11 +262,11 @@ namespace Delaunoi.Algorithms
         /// </summary>
         /// <param name="pos">The position to locate</param>
         /// <param name="edge">Edge used to start locate process. Can be used to speed up search.</param>
-        /// <param name="checkBoundsFirst">If true, locate first check if pos in convex hull of triangulation</param>
-        public QuadEdge<T> Locate(Vec3 pos, QuadEdge<T> edge=null, bool checkBoundsFirst=false)
+        /// <param name="safe">If true, first check if pos in convex hull of triangulation</param>
+        public QuadEdge<T> Locate(Vec3 pos, QuadEdge<T> edge=null, bool safe=false)
         {
             // Check boundary first
-            if (checkBoundsFirst)
+            if (safe)
             {
                 QuadEdge<T> result = ClosestBoundingEdge(pos);
                 if (result != null)
@@ -325,7 +325,7 @@ namespace Delaunoi.Algorithms
         /// <param name="newPos">The position to of new site</param>
         /// <param name="edge">Edge used to start locate process. Can be used to speed up search.</param>
         /// <param name="safe">If true, check if <paramref name="safe"/> inside the convex hull.</param>
-        public bool InsertSite(Vec3 newPos, QuadEdge<T> edge, bool safe=false)
+        public bool InsertSite(Vec3 newPos, QuadEdge<T> edge=null, bool safe=false)
         {
             if (safe)
             {
@@ -337,17 +337,23 @@ namespace Delaunoi.Algorithms
                 }
             }
 
-            // Locate edge
-            QuadEdge<T> foundE = Locate(newPos, edge, checkBoundsFirst:false);
+            // Start somewhere if no hint
+            if (edge == null)
+            {
+                edge = _leftRightEdges[1];
+            }
 
-            // Already triangulate
+            // Locate edge (must be inside the boundary)
+            QuadEdge<T> foundE = Locate(newPos, edge, safe:false);
+
+            // Site already triangulated
             if (Geometry.AlmostEquals(foundE.Origin, newPos) ||
                 Geometry.AlmostEquals(foundE.Destination, newPos))
             {
                 return false;
             }
 
-            // On the edge ?
+            // On an edge ?
             if (Geometry.AlmostColinear(foundE.Origin, foundE.Destination, newPos))
             {
                 var temp = foundE.Oprev;
@@ -355,12 +361,10 @@ namespace Delaunoi.Algorithms
                 foundE = temp;
             }
 
-            // Create new edge to connect new site
+            // Create new edge to connect new site to neighbors
             QuadEdge<T> baseE = QuadEdge<T>.MakeEdge(foundE.Origin, newPos);
             Vec3 first = baseE.Origin;
             QuadEdge<T>.Splice(baseE, foundE);
-
-            // Connect to neighbors
             // Up to 4 vertices if new site on an edge
             do
             {
@@ -370,7 +374,8 @@ namespace Delaunoi.Algorithms
             } while (foundE.Destination != first);
 
 
-            // Fill star shaped polygon and checking for bad triangles
+            // Fill star shaped polygon and swap suspect edges
+            // Adding a new point can break old condition about InCircle test
             foundE = baseE.Oprev;
             bool shouldExit = false;
             do
