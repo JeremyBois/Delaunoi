@@ -18,7 +18,6 @@ namespace Delaunoi.Algorithms
     {
 
 // FIELDS
-
         private Vec3[]        _points;
         private QuadEdge<T>[] _leftRightEdges;
         private bool          _visitedTagState;
@@ -58,7 +57,18 @@ namespace Delaunoi.Algorithms
         /// </summary>
         public QuadEdge<T> LeftMostEdge
         {
-            get {return _leftRightEdges[0];}
+            get
+            {
+                // Find the segment with no vertex on its left
+                // starting from the far left vertex
+                QuadEdge<T> boundEdge = _leftRightEdges[0];
+
+                while (Geometry.LeftOf(boundEdge.Onext.Destination, boundEdge))
+                {
+                    boundEdge = boundEdge.Onext;
+                }
+                return boundEdge;
+            }
         }
 
         /// <summary>
@@ -66,7 +76,18 @@ namespace Delaunoi.Algorithms
         /// </summary>
         public QuadEdge<T> RightMostEdge
         {
-            get {return _leftRightEdges[1];}
+            get
+            {
+                QuadEdge<T> boundEdge = _leftRightEdges[1];
+                // Find the segment with no vertex on its right
+                // starting from the far right vertex
+                while (Geometry.RightOf(boundEdge.Oprev.Destination, boundEdge))
+                {
+                    boundEdge = boundEdge.Oprev;
+                }
+
+                return boundEdge;
+            }
         }
 
 
@@ -80,7 +101,7 @@ namespace Delaunoi.Algorithms
             // Reinit flag state
             _visitedTagState = false;
 
-            // Cannot triangulate only one point
+            // Cannot triangulate only one site
             if (_points.Length < 2)
             {
                 return false;
@@ -97,7 +118,7 @@ namespace Delaunoi.Algorithms
         /// are define based on radius parameter. It should be large enough to avoid
         /// some circumcenters (finite voronoi vertices) to be further on.
         /// </summary>
-        /// <param name="radius">Distance used to construct point that are at infinity.</param>
+        /// <param name="radius">Distance used to construct site that are at infinity.</param>
         /// <param name="useZCoord">If true cell center compute in R^3 else in R^2 (matter only if voronoi).</param>
         public List<Cell> ExportCells(CellConfig cellType, double radius, bool useZCoord=true)
         {
@@ -132,15 +153,8 @@ namespace Delaunoi.Algorithms
             var queue = new Queue<QuadEdge<T>>();
 
             // Start at the far right
-            QuadEdge<T> first = _leftRightEdges[1];
+            QuadEdge<T> first = RightMostEdge;
             queue.Enqueue(first);
-
-            // Find the segment with no vertex on its right
-            // starting from the far right vertex
-            while (Geometry.RightOf(first.Oprev.Destination, first))
-            {
-                first = first.Oprev;
-            }
 
             // Visit all edge of the convex hull in CW order and
             // add opposite edges to queue
@@ -174,6 +188,221 @@ namespace Delaunoi.Algorithms
             return triangles;
         }
 
+        /// <summary>
+        /// If <paramref name="pos"/> is outside the convex hull of the triangulation
+        /// return edge with <paramref name="pos"/> on its left face.
+        /// If inside the triangulation return null.
+        /// </summary>
+        /// <param name="pos">The position to locate</param>
+        public QuadEdge<T> ClosestBoundingEdge(Vec3 pos)
+        {
+            var boundEdge = RightMostEdge;
+
+            // No one can be larger than the larger one, right ??
+            double lastDistFromPos = double.PositiveInfinity;
+            bool found = false;
+
+            // Visit all edge of the convex hull in CW order and
+            // add opposite edges to queue
+            foreach (QuadEdge<T> hullEdge in boundEdge.RightEdges(CCW:false))
+            {
+                // Find an edge from convex hull where
+                if (Geometry.RightOf(pos, hullEdge))
+                {
+                    double distFromPos = Vec3.DistanceSquared(pos, hullEdge.Origin);
+
+                    // Continues until we move away
+                    if (distFromPos < lastDistFromPos)
+                    {
+                        lastDistFromPos = distFromPos;
+                        found = true;
+                    }
+                    else
+                    {
+                        // Found the closest one
+                        return hullEdge.Rnext.Sym;
+                    }
+                }
+                else if (found)
+                {
+                    return hullEdge.Rnext.Sym;
+                }
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// True if <paramref name="pos"/> inside the convex hull formed by the triangulation.
+        /// </summary>
+        /// <param name="pos">The position to test</param>
+        public bool InsideConvexHull(Vec3 pos)
+        {
+            QuadEdge<T> boundEdge = RightMostEdge;
+            foreach (QuadEdge<T> hullEdge in boundEdge.RightEdges(CCW:false))
+            {
+                if (Geometry.RightOf(pos, hullEdge))
+                {
+                    // Must be outside because hullEdge right face is outside
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Locate the closest with respect to following constraints:
+        ///   - <paramref name="pos"/> is on the line of returned edge
+        ///   - <paramref name="pos"/> is inside the left face of returned edge
+        ///
+        /// If site outside the convex hull Locate will loop forever looking for
+        /// a corresponding edge that does not exists ... unless you first check
+        /// you are in the convex hull or set <paramref name="checkBoundFirst"/> to true.
+        /// </summary>
+        /// <param name="pos">The position to locate</param>
+        /// <param name="edge">Edge used to start locate process. Can be used to speed up search.</param>
+        /// <param name="safe">If true, first check if pos in convex hull of triangulation</param>
+        public QuadEdge<T> Locate(Vec3 pos, QuadEdge<T> edge=null, bool safe=false)
+        {
+            // Check boundary first
+            if (safe)
+            {
+                QuadEdge<T> result = ClosestBoundingEdge(pos);
+                if (result != null)
+                {
+                    // pos outside
+                    return result;
+                }
+            }
+
+            // Start somewhere if no hint
+            if (edge == null)
+            {
+                edge = _leftRightEdges[1];
+            }
+
+            // Assume it must be inside ...
+            while (true)
+            {
+                if (pos == edge.Origin || pos == edge.Destination)
+                    return edge;
+                else if (Geometry.RightOf(pos, edge))
+                    edge = edge.Sym;
+                else if (Geometry.LeftOf(pos, edge.Onext))
+                    edge = edge.Onext;
+                else if (Geometry.LeftOf(pos, edge.Dprev))
+                    edge = edge.Dprev;
+                else
+                {
+                    // Previous triangle edge
+                    QuadEdge<T> otherE = edge.Lprev;
+                    if (Geometry.AlmostColinear(pos, otherE.Origin,
+                                                otherE.Destination))
+                    {
+                        return otherE;
+                    }
+
+
+                    // Next triangle edge
+                    otherE = edge.Lnext;
+                    if (Geometry.AlmostColinear(pos, otherE.Origin,
+                                                otherE.Destination))
+                    {
+                        return otherE;
+                    }
+
+                    return edge;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Insert a new site inside an existing delaunay triangulation. New site
+        /// must be inside the convex hull of previoulsy added sites.
+        /// Set <paramref name="safe"/> to true to first test if new site is correct.
+        /// </summary>
+        /// <param name="newPos">The position to of new site</param>
+        /// <param name="edge">Edge used to start locate process. Can be used to speed up search.</param>
+        /// <param name="safe">If true, check if <paramref name="safe"/> inside the convex hull.</param>
+        public bool InsertSite(Vec3 newPos, QuadEdge<T> edge=null, bool safe=false)
+        {
+            if (safe)
+            {
+                bool result = InsideConvexHull(newPos);
+                if (!result)
+                {
+                    // Cannot add site not already inside the convex hull
+                    return false;
+                }
+            }
+
+            // Start somewhere if no hint
+            if (edge == null)
+            {
+                edge = _leftRightEdges[1];
+            }
+
+            // Locate edge (must be inside the boundary)
+            QuadEdge<T> foundE = Locate(newPos, edge, safe:false);
+
+            // Site already triangulated
+            if (Geometry.AlmostEquals(foundE.Origin, newPos) ||
+                Geometry.AlmostEquals(foundE.Destination, newPos))
+            {
+                return false;
+            }
+
+            // On an edge ?
+            if (Geometry.AlmostColinear(foundE.Origin, foundE.Destination, newPos))
+            {
+                var temp = foundE.Oprev;
+                QuadEdge<T>.Delete(foundE);
+                foundE = temp;
+            }
+
+            // Create new edge to connect new site to neighbors
+            QuadEdge<T> baseE = QuadEdge<T>.MakeEdge(foundE.Origin, newPos);
+            Vec3 first = baseE.Origin;
+            QuadEdge<T>.Splice(baseE, foundE);
+            // Up to 4 vertices if new site on an edge
+            do
+            {
+                baseE = QuadEdge<T>.Connect(foundE, baseE.Sym);
+                foundE = baseE.Oprev;
+
+            } while (foundE.Destination != first);
+
+
+            // Fill star shaped polygon and swap suspect edges
+            // Adding a new point can break old condition about InCircle test
+            foundE = baseE.Oprev;
+            bool shouldExit = false;
+            do
+            {
+                var tempE = foundE.Oprev;
+                if (Geometry.RightOf(tempE.Destination, foundE) &&
+                    Geometry.InCircumCercle2D(newPos, foundE.Origin, tempE.Destination, foundE.Destination))
+                {
+                    QuadEdge<T>.Swap(foundE);
+                    // tempE != foundE.Oprev after swap
+                    foundE = foundE.Oprev;
+                }
+                else if (foundE.Origin == first)
+                {
+                    // No more suspect edge ... exit
+                    shouldExit = true;
+                }
+                else
+                {
+                    // Get next suspect edge from top to bottom
+                    foundE = foundE.Onext.Lprev;
+                }
+            } while (!shouldExit);
+
+            return true;
+        }
+
 
 // METHODS (PRIVATE)
 
@@ -185,7 +414,7 @@ namespace Delaunoi.Algorithms
         /// <remarks>
         /// Using delegate to implement strategy pattern.
         /// </remarks>
-        /// <param name="radius">Distance used to construct point that are at infinity.</param>
+        /// <param name="radius">Distance used to construct site that are at infinity.</param>
         private List<Cell> Exportcells(double radius, Func<Vec3, Vec3, Vec3, Vec3> centerCalculator)
         {
             // Container for vorFaces vertices
@@ -283,10 +512,10 @@ namespace Delaunoi.Algorithms
         }
 
         /// <summary>
-        /// Find correct position for a voronoi point that should be at infinite
+        /// Find correct position for a voronoi site that should be at infinite
         /// Assume primalEdge.Rot.Origin as the vertex to compute, that is
         /// there should be no vertex on the right of primalEdge.
-        /// Point computed is the destination of a segment in a direction normal to
+        /// Site computed is the destination of a segment in a direction normal to
         /// the tangent vector of the primalEdge (destination - origin) with
         /// its symetrical (primalEdge.RotSym.Origin) as origin.
         /// Radius should be choose higher enough to avoid neighbor voronoi points
@@ -302,7 +531,7 @@ namespace Delaunoi.Algorithms
         {
             var rotSym = primalEdge.RotSym;
 
-            // Find previous voronoi point
+            // Find previous voronoi site
             if (rotSym.Origin == null)
             {
                 rotSym.Origin = centerCalculator(primalEdge.Origin,
@@ -430,7 +659,7 @@ namespace Delaunoi.Algorithms
             bool upperCommonTangentNotFound = true;
             while (upperCommonTangentNotFound)
             {
-                // Locate the first L point (lCand.Destination) to be encountered
+                // Locate the first L site (lCand.Destination) to be encountered
                 // by the rising bubble, and delete L edges out of baseEdge.Destination
                 // that fail the circle test.
                 QuadEdge<T> lCand = baseEdge.Sym.Onext;

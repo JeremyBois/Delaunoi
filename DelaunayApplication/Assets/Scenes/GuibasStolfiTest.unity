@@ -213,7 +213,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1130150504}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 100}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -231,7 +231,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   usedGenerator: 0
-  pointNumber: 93
+  pointNumber: 876
   boundaries: 2c01000096000000
   seed: 154
   bases: 0200000003000000
@@ -272,11 +272,11 @@ MonoBehaviour:
     m_Mode: 0
     m_NumColorKeys: 5
     m_NumAlphaKeys: 2
-  D_points: 0
+  D_points: 1
   D_lines: 0
   D_faces: 0
   celltype: 0
-  V_points: 0
+  V_points: 1
   V_lines: 1
   V_faces: 1
   V_circles: 0
