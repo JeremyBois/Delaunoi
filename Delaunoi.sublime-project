@@ -5,5 +5,6 @@
 			"path": "."
 		}
 	],
-	"solution_file": "./DelaunayApplication/DelaunayApplication.sln"
+    // "solution_file": "./DelaunoiApplication/DelaunoiApplication.sln"
+    "solution_file": "./Lib/Delaunoi/Delaunoi.sln"
 }

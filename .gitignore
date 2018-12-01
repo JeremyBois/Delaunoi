@@ -100,3 +100,11 @@ GitHub.sublime-settings
 .history
 
 # End of https://www.gitignore.io/api/visualstudiocode
+
+
+### Delaunoi Lib
+!Delaunoi*.pdb
+!Delaunoi.pdb.meta
+!Delaunoi.csproj
+!DelaunoiFramework.csproj
+!Delaunoi.sln

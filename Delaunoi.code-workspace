@@ -1,7 +1,16 @@
 {
 	"folders": [
 		{
-			"path": "."
+			"path": "Lib",
+			"name": "Delaunoi"
+		},
+		{
+			"path": "Application",
+			"name": "Unity Application"
+		},
+		{
+			"path": ".",
+			"name": "Root"
 		}
 	],
 	"settings": {}

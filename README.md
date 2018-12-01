@@ -6,6 +6,11 @@ by **Leonidas J. Guibas** and **Jorge Stolfi** in the paper
 [Primitives for the manipulation of general subdivisions and the computation of Voronoi diagrams](https://dl.acm.org/citation.cfm?doid=282918.282923).
 
 
+This library target `.NET framework 4.6.1`. In order to please **Unity** you must update your
+**Scripting Runtime Version** to **4.X** (`Edit/ProjectSettings/Player/OtherSettings`)
+
+
+
 
 # Getting started:
 
