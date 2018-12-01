@@ -8,6 +8,7 @@
 ## Building
 
   - [dotnet](https://docs.microsoft.com/en-us/dotnet/core/tools/dotnet-build?tabs=netcore2x)
+  - [Solution creation](https://andrewlock.net/creating-and-editing-solution-files-with-the-net-cli/)
   - [packages](https://docs.microsoft.com/en-us/dotnet/core/packages)
   - [Example](https://msdn.microsoft.com/en-us/magazine/mt842506.aspx)
 

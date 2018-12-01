@@ -6,7 +6,7 @@ SET me=%~n0
 SET parent=%~dp0
 
 :: Define here relative folder path
-SET "localizationTarget=../Application\Assets\Plugins\Delaunoi\"
+SET "localizationTarget=../DelaunoiApplication\Assets\Plugins\Delaunoi\"
 SET "localizationOrigin=Delaunoi\bin\Debug\"
 
 :: Display first folders used

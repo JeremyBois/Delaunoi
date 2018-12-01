@@ -150,7 +150,7 @@ public class GuibasStolfiTest : MonoBehaviour
 
         // LOCATE  ---  ---  LOCATE  ---  ---  LOCATE
         // points >= 10 | seed 154
-        pos = new Vec3(216.7969, 82.09876, 0.0);
+        pos = new Vec3(0.72 * boundaries[0], 0.546 * boundaries[1], 0.0);
         // var newGo = GameObject.Instantiate(shapes[0]);
         // newGo.name = "PointLocated";
         // newGo.transform.SetParent(transform);
@@ -177,13 +177,13 @@ public class GuibasStolfiTest : MonoBehaviour
         // INSERT  ---  ---  INSERT  ---  ---  INSERT
         // points >= 10 | seed 154
         previousTime = System.DateTime.Now;
-        pos = new Vec3(310.0, 132.0, 0.0);
+        pos = new Vec3(1.1 * boundaries[0], 0.8 * boundaries[1], 0.0);
         bool result = triangulator.InsertSite(pos, safe:true);
         Debug.Log("Site outside --> Not added: " + !result);
-        pos = new Vec3(216.7969, 82.09876, 0.0);
+        pos = new Vec3(0.72265633333 * boundaries[0], 0.54732506667 * boundaries[1], 0.0);
         result = triangulator.InsertSite(pos);
         Debug.Log("Site already existing --> Not added: " + !result);
-        pos = new Vec3(230.0, pos.y, pos.z);
+        pos = new Vec3(0.76666666666667 * boundaries[0], pos.y, pos.z);
         result = triangulator.InsertSite(pos);
         Debug.Log("Inside convex Hull --> Added: " + result);
         delta = System.DateTime.Now - previousTime;
