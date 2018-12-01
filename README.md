@@ -17,8 +17,8 @@ This library targets `.NET framework 4.6.1`. In order to please **Unity** you mu
 Unity examples can be found in `Assets/Scenes/GuibasStolfiTest`.
 
 
-![Delaunay edges](Docs/Delaunay_unfilled.PNG)
-![Voronoï cells](Docs/Voronoi.PNG)
+![Delaunay edges](Lib/Docs/Delaunay_unfilled.PNG)
+![Voronoï cells](Lib/Docs/Voronoi.PNG)
 
 
 
