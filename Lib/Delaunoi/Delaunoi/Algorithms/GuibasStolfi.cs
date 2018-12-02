@@ -116,6 +116,9 @@ namespace Delaunoi.Algorithms
         /// Return all cell based on Delaunay triangulation. Vertices at infinity
         /// are define based on radius parameter. It should be large enough to avoid
         /// some circumcenters (finite voronoi vertices) to be further on.
+        /// Using <see cref="CellConfig.RandomUniform"/> and <see cref="CellConfig.RandomNonUniform"/>
+        /// can leads to intersection with cell area constructed for points at infinity because
+        /// they are calculated based on <see cref="CellConfig.Voronoi"/> strategy.
         /// </summary>
         /// <param name="radius">Distance used to construct site that are at infinity.</param>
         /// <param name="useZCoord">If true cell center compute in R^3 else in R^2 (matter only if voronoi).</param>
@@ -136,6 +139,10 @@ namespace Delaunoi.Algorithms
                     }
                 case CellConfig.InCenter:
                     return Exportcells(radius, Geometry.InCenter);
+                case CellConfig.RandomUniform:
+                    return Exportcells(radius, RandGen.TriangleUniform);
+                case CellConfig.RandomNonUniform:
+                    return Exportcells(radius, RandGen.TriangleNonUniform);
             }
 
             throw new NotImplementedException();
@@ -465,6 +472,14 @@ namespace Delaunoi.Algorithms
                             current.Rot.Origin = centerCalculator(current.Origin,
                                                                   current.Destination,
                                                                   current.Oprev.Destination);
+
+                            // Speed up computation of point coordinates
+                            // All edges sharing the same origin have same
+                            // geometrical origin
+                            foreach (QuadEdge<T> otherDual in current.Rot.EdgesFrom())
+                            {
+                                otherDual.Origin = current.Rot.Origin;
+                            }
                         }
                     }
 
@@ -494,6 +509,13 @@ namespace Delaunoi.Algorithms
                             current.Rot.Origin = centerCalculator(current.Origin,
                                                                   current.Destination,
                                                                   current.Oprev.Destination);
+                            // Speed up computation of point coordinates
+                            // All edges sharing the same origin have same
+                            // geometrical origin
+                            foreach (QuadEdge<T> otherDual in current.Rot.EdgesFrom())
+                            {
+                                otherDual.Origin = current.Rot.Origin;
+                            }
                         }
                         if (current.Sym.Tag  == _visitedTagState)
                         {

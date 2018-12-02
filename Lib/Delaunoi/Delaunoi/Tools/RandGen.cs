@@ -90,6 +90,47 @@ namespace Delaunoi.Tools
             double theta = NextDouble(TWOPI);
             return new Vec3(Math.Cos(theta), Math.Sin(theta));
         }
+
+        /// <summary>
+        /// Compute a random point uniformly distributed inside a triangle
+        /// defined by vertices a, b, c.
+        /// </summary>
+        /// <remarks>
+        /// More at http://mathworld.wolfram.com/TrianglePointPicking.html
+        /// </remarks>
+        public static Vec3 TriangleUniform(Vec3 a, Vec3 b, Vec3 c)
+        {
+            double rand_one = NextDouble();
+            double rand_two = NextDouble();
+
+            if (rand_two + rand_one >= 1)
+            {
+                // Remap point to triangle interior (mirror it)
+                rand_two = 1 - rand_two;
+                rand_one = 1 - rand_one;
+            }
+
+            return a + rand_one * (b - a) + rand_two * (c - a);
+        }
+
+        /// <summary>
+        /// Compute a random point inside a triangle defined by vertices a, b, c.
+        /// Unlike <see cref="TriangleUniform"/>, more points are close to triangle
+        /// centroid.
+        /// </summary>
+        /// <remarks>
+        /// Interactive trilinear point construction at https://www.geogebra.org/m/ybS3SaRS
+        /// </remarks>
+        public static Vec3 TriangleNonUniform(Vec3 a, Vec3 b, Vec3 c)
+        {
+            // https://en.wikipedia.org/wiki/Trilinear_coordinates
+            double alpha = NextDouble() * Vec3.Distance(c, b);
+            double beta  = NextDouble() * Vec3.Distance(a, c);
+            double gamma = NextDouble() * Vec3.Distance(b, a);
+            double denominatorInv = 1.0 / (alpha + beta + gamma);
+
+            return (a * alpha + b * beta + c * gamma) * denominatorInv;
+        }
     }
 }
 

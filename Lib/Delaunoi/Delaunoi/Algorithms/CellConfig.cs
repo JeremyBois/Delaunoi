@@ -10,6 +10,8 @@ namespace Delaunoi.Algorithms
         Voronoi,
         Centroid,
         InCenter,
+        RandomUniform,
+        RandomNonUniform,
         OrthoCenter
     }
 
