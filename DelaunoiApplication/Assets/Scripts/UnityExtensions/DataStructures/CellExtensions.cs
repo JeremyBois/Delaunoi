@@ -10,8 +10,8 @@ namespace Delaunoi.DataStructures.Extensions
     public static class CellExtensions
     {
 
-        public static void DrawFace(this Cell cell, Transform parent, Material mat,
-                                    Color color)
+        public static void DrawFace<T>(this Cell<T> cell, Transform parent, Material mat,
+                                       Color color)
         {
             GameObject newGo = new GameObject();
             newGo.name = "Cell Face " + cell.ID.ToString();
@@ -42,16 +42,18 @@ namespace Delaunoi.DataStructures.Extensions
             filter.mesh.triangles = trianglesInt.ToArray();
         }
 
-        public static void DrawPoints(this Cell cell, Transform parent,
-                                      GameObject shape, Material mat,
-                                      Color color, float scale=0.5f)
+        public static void DrawPoints<T>(this Cell<T> cell, Transform parent,
+                                         GameObject shape, Material mat,
+                                         Color color, float scale=0.5f)
         {
-            for (int i = 0; i < cell.Bounds.Length; i++)
+            Vector3[] bounds = cell.Bounds.Select(vec => vec.AsVector3()).ToArray();
+
+            for (int i = 0; i < bounds.Length; i++)
             {
                 var point = GameObject.Instantiate(shape);
                 point.name = string.Format("Cell Point {0}", cell.ID.ToString());
                 point.transform.SetParent(parent);
-                point.transform.position = cell.Bounds[i].AsVector3();
+                point.transform.position = bounds[i];
                 point.transform.localScale = new Vector3(scale, scale, scale);
 
                 // Color
@@ -63,73 +65,74 @@ namespace Delaunoi.DataStructures.Extensions
             }
         }
 
-        public static void DrawLine(this Cell cell, Transform parent, Material mat,
-                                    Color color, float scale=1.0f, bool loop=true)
+        public static void DrawLine<T>(this Cell<T> cell, Transform parent, Material mat,
+                                       Color color, float scale=1.0f, bool loop=true)
         {
             GameObject newGo = new GameObject();
             newGo.name = string.Format("Cell Line {0}", cell.ID.ToString());
             newGo.transform.SetParent(parent);
 
             // Construct line
+            Vector3[] bounds = cell.Bounds.Select(vec => vec.AsVector3()).ToArray();
+
             var lr = newGo.AddComponent<LineRenderer>();
             lr.material = mat;
-            lr.positionCount = cell.Bounds.Length;
+            lr.positionCount = bounds.Length;
             lr.loop = loop;
             lr.material.color = color;
             lr.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
             lr.receiveShadows = false;
             lr.startWidth = 0.2f * scale;
             lr.endWidth = 0.2f * scale;
-            lr.SetPositions(cell.Bounds.Select(vec => vec.AsVector3()).ToArray());
+            lr.SetPositions(bounds);
         }
 
-        public static void DrawCircumCercle(this Cell cell, Transform parent,
-                                            Material mat, Color color, float scale=1.0f)
-        {
-            GameObject newGo = new GameObject();
-            newGo.name = string.Format("Cell Circle {0}", cell.ID.ToString());
-            newGo.transform.SetParent(parent);
+        // public static void DrawCircumCercle<T>(this Cell<T> cell, Transform parent,
+        //                                        Material mat, Color color, float scale=1.0f)
+        // {
+        //     GameObject newGo = new GameObject();
+        //     newGo.name = string.Format("Cell Circle {0}", cell.ID.ToString());
+        //     newGo.transform.SetParent(parent);
 
-            // One Circle for each point
-            for (int i = 0; i < cell.Bounds.Length; i++)
-            {
-                GameObject child = new GameObject();
-                child.name = string.Format("{0}", i.ToString());
-                child.transform.SetParent(newGo.transform);
+        //     // One Circle for each point
+        //     for (int i = 0; i < cell.Bounds.Length; i++)
+        //     {
+        //         GameObject child = new GameObject();
+        //         child.name = string.Format("{0}", i.ToString());
+        //         child.transform.SetParent(newGo.transform);
 
-                // Construct line
-                var lr = child.AddComponent<LineRenderer>();
-                lr.material = mat;
-                lr.positionCount = 50;
-                lr.loop = true;
-                lr.material.color = color;
-                lr.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
-                lr.receiveShadows = false;
-                lr.startWidth = 0.2f * scale;
-                lr.endWidth = 0.2f * scale;
+        //         // Construct line
+        //         var lr = child.AddComponent<LineRenderer>();
+        //         lr.material = mat;
+        //         lr.positionCount = 50;
+        //         lr.loop = true;
+        //         lr.material.color = color;
+        //         lr.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+        //         lr.receiveShadows = false;
+        //         lr.startWidth = 0.2f * scale;
+        //         lr.endWidth = 0.2f * scale;
 
-                int segments = lr.positionCount;
-                var center = cell.Bounds[i].AsVector3();
-                float radius = (float)cell.GetRadius(i);
+        //         int segments = lr.positionCount;
+        //         var center = cell.Bounds[i].AsVector3();
+        //         float radius = (float)cell.GetRadius(i);
 
-                float x;
-                float y;
-                float z = 0f;
+        //         float x;
+        //         float y;
+        //         float z = 0f;
 
-                float angle = 20f;
+        //         float angle = 20f;
 
-                for (int partInd = 0; partInd < segments; partInd++)
-                {
-                    x = center.x + Mathf.Sin(Mathf.Deg2Rad * angle) * radius;
-                    y = center.y + Mathf.Cos(Mathf.Deg2Rad * angle) * radius;
+        //         for (int partInd = 0; partInd < segments; partInd++)
+        //         {
+        //             x = center.x + Mathf.Sin(Mathf.Deg2Rad * angle) * radius;
+        //             y = center.y + Mathf.Cos(Mathf.Deg2Rad * angle) * radius;
 
-                    lr.SetPosition (partInd, new Vector3(x, y, z) );
+        //             lr.SetPosition (partInd, new Vector3(x, y, z) );
 
-                    angle += (360f / segments);
-                }
-            }
-
-        }
+        //             angle += (360f / segments);
+        //         }
+        //     }
+        // }
     }
 }
 

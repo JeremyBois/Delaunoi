@@ -6,21 +6,43 @@ using System.Collections.Generic;
 namespace Delaunoi.DataStructures
 {
     /// <summary>
-    /// Abstraction of a Voronoi or Centroid cell.
+    /// Abstraction of a triangulation (primal graph) dual graph element.
     /// </summary>
-    public class Cell
+    public class Cell<T>
     {
         private static int nextID = 0;
-
         private int _id;
-        private List<Vec3> _points;
 
-        public Cell(Vec3 center)
+        private QuadEdge<T> _primal;
+        private bool        _onBounds;
+
+        /// <summary>
+        /// Construct a cell abstraction based on a <paramref name="primal"/> edge.
+        /// </summary>
+        /// <param name="primal">Delaunay edge with Origin as cell center.</param>
+        /// <param name="onBounds">Must be true if cell has a site at infinity.</param>
+        public Cell(QuadEdge<T> primal, bool onBounds)
         {
-            this._points = new List<Vec3>();
-            this._points.Add(center);
+            this._primal  = primal;
+            this._onBounds = onBounds;
 
-            _id = nextID++;
+            this._id = nextID++;
+        }
+
+        /// <summary>
+        /// Get primal Edge with Origin as cell center.
+        /// </summary>
+        public QuadEdge<T> PrimalEdge
+        {
+            get {return _primal;}
+        }
+
+        /// <summary>
+        /// True if cell primal edge origin is on the convex hull of Delaunay triangulation.
+        /// </summary>
+        public bool IsOnBounds
+        {
+            get {return _onBounds;}
         }
 
         /// <summary>
@@ -28,7 +50,7 @@ namespace Delaunoi.DataStructures
         /// </summary>
         public Vec3 Center
         {
-            get {return _points[0];}
+            get {return _primal.Origin;}
         }
 
         public int ID
@@ -39,35 +61,39 @@ namespace Delaunoi.DataStructures
         /// <summary>
         /// Get cell boundary points.
         /// </summary>
-        public Vec3[] Bounds
+        public IEnumerable<Vec3> Bounds
         {
-            get {return _points.Skip(1).ToArray();}
+            get
+            {
+                // Missing edge at infinity
+                if (_onBounds)
+                {
+                    yield return _primal.Rot.Destination;
+                }
+
+                // Bounds
+                foreach (Vec3 site in _primal.CellLeftVertices())
+                {
+                    yield return site;
+                }
+            }
         }
 
         /// <summary>
         /// Get all points. Center is first one followed by cell bounds.
         /// </summary>
-        public Vec3[] Points
+        public IEnumerable<Vec3> Points
         {
-            get {return _points.ToArray();}
-        }
-
-        /// <summary>
-        /// Add a new point on the boundary.
-        /// </summary>
-        public void Add(Vec3 point)
-        {
-            _points.Add(point);
-        }
-
-        /// <summary>
-        /// Compute Radius for bound point with index is ptInd.
-        /// </summary>
-        public double GetRadius(int ptInd)
-        {
-            double diffX = _points[ptInd + 1].x - _points[0].x;
-            double diffY = _points[ptInd + 1].y - _points[0].y;
-            return Math.Sqrt(diffX * diffX + diffY * diffY);
+            get
+            {
+                // Center
+                yield return _primal.Origin;
+                // Bounds
+                foreach (Vec3 site in Bounds)
+                {
+                    yield return site;
+                }
+            }
         }
     }
 }

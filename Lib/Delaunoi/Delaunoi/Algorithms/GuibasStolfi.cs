@@ -9,11 +9,20 @@ namespace Delaunoi.Algorithms
 
 
     /// <summary>
-    /// Delaunay triangulation based on a divide and conquer algorithm.
-    /// It has been defined by LEONIDAS GUIBAS and JORGE STOLFI.
-    /// in Primitives for the Manipulation of General Subdivisions and the Computation of Voronoi Diagrams,
-    /// ACM Transactions on Graphics, Vol. 4, No. 2, April 1985"
+    /// 2D Delaunay triangulation based on a divide and conquer algorithm allowing incremental
+    /// insertion in an already triangulated area. That is, new site can be added on the fly
+    /// (Incremental) and/or each at the same time (Divide and Conquer). This approach
+    /// constructs at the same time the primal (Delaunay) and the dual (Voronoi, Centroid, ...)
+    /// The divide and conquer approach allows to build both, primal and dual, in O(nlog(n)) time
+    /// and the insertion of a new site in O(n) time.
+    /// Each directed edge contains a generic data field allowing to store
+    /// whatever information you need.
     /// </summary>
+    /// <remarks>
+    /// It has been defined by LEONIDAS GUIBAS and JORGE STOLFI in
+    /// Primitives for the Manipulation of General Subdivisions and the Computation of Voronoi Diagrams,
+    /// ACM Transactions on Graphics, Vol. 4, No. 2, April 1985"
+    /// </remarks>
     public class GuibasStolfi<T>
     {
 
@@ -122,7 +131,7 @@ namespace Delaunoi.Algorithms
         /// </summary>
         /// <param name="radius">Distance used to construct site that are at infinity.</param>
         /// <param name="useZCoord">If true cell center compute in R^3 else in R^2 (matter only if voronoi).</param>
-        public List<Cell> ExportCells(CellConfig cellType, double radius, bool useZCoord=true)
+        public List<Cell<T>> ExportCells(CellConfig cellType, double radius, bool useZCoord=true)
         {
             switch (cellType)
             {
@@ -421,31 +430,24 @@ namespace Delaunoi.Algorithms
         /// Using delegate to implement strategy pattern.
         /// </remarks>
         /// <param name="radius">Distance used to construct site that are at infinity.</param>
-        private List<Cell> Exportcells(double radius, Func<Vec3, Vec3, Vec3, Vec3> centerCalculator)
+        private List<Cell<T>> Exportcells(double radius, Func<Vec3, Vec3, Vec3, Vec3> centerCalculator)
         {
             // Container for vorFaces vertices
-            var cells = new List<Cell>();
+            var cells = new List<Cell<T>>();
 
             // FIFO
             var queue = new Queue<QuadEdge<T>>();
 
-            // Start at the far right
-            QuadEdge<T> first = _leftRightEdges[1];
-
-            // Find the segment with no vertex on its left
-            // starting from the far right vertex
-            while (Geometry.LeftOf(first.Onext.Destination, first))
-            {
-                first = first.Onext;
-            }
+            // Start at the far left
+            QuadEdge<T> first = LeftMostEdge;
 
             // Visit all edge of the convex hull to compute dual vertices
             // at infinity by looping in a CW order over edges with same left face.
             foreach (QuadEdge<T> hullEdge in first.LeftEdges(CCW:false))
             {
                 // Start construction of a new cell
-                cells.Add(new Cell(hullEdge.Origin));
-                Cell currentCell = cells.Last();
+                cells.Add(new Cell<T>(hullEdge, true));
+                // Cell currentCell = cells.Last();
                 // First infinite voronoi vertex
                 if (hullEdge.Rot.Destination == null)
                 {
@@ -453,7 +455,7 @@ namespace Delaunoi.Algorithms
                                                                    radius,
                                                                    centerCalculator);
                 }
-                currentCell.Add(hullEdge.Rot.Destination);
+                // currentCell.Add(hullEdge.Rot.Destination);
 
                 // Add other vertices by looping over hullEdge origin in CW order (Oprev)
                 foreach (QuadEdge<T> current in hullEdge.EdgesFrom(CCW:false))
@@ -474,7 +476,7 @@ namespace Delaunoi.Algorithms
                                                                   current.Oprev.Destination);
 
                             // Speed up computation of point coordinates
-                            // All edges sharing the same origin have same
+                            // All edges sharing the same origin should have same
                             // geometrical origin
                             foreach (QuadEdge<T> otherDual in current.Rot.EdgesFrom())
                             {
@@ -488,7 +490,7 @@ namespace Delaunoi.Algorithms
                         queue.Enqueue(current.Sym);
                     }
                     current.Tag = !_visitedTagState;
-                    currentCell.Add(current.Rot.Origin);
+                    // currentCell.Add(current.Rot.Origin);
                 }
             }
 
@@ -500,8 +502,8 @@ namespace Delaunoi.Algorithms
                 if (edge.Tag == _visitedTagState)
                 {
                     // Construct a new cell
-                    cells.Add(new Cell(edge.Origin));
-                    Cell currentCell = cells.Last();
+                    cells.Add(new Cell<T>(edge, false));
+                    // Cell currentCell = cells.Last();
                     foreach (QuadEdge<T> current in edge.EdgesFrom(CCW:false))
                     {
                         if (current.Rot.Origin == null)
@@ -522,7 +524,7 @@ namespace Delaunoi.Algorithms
                             queue.Enqueue(current.Sym);
                         }
                         current.Tag = !_visitedTagState;
-                        currentCell.Add(current.Rot.Origin);
+                        // currentCell.Add(current.Rot.Origin);
                     }
                 }
             }

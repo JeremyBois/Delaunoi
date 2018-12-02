@@ -209,15 +209,15 @@ public class GuibasStolfiTest : MonoBehaviour
         }
         if (D_points)
         {
-            TriangleDrawer.DrawPoints(triangles, transform, shapes[0], Color.black, 1.1f * scale);
+            TriangleDrawer.DrawPoints(triangles, transform, shapes[0], Color.red, 1.1f * scale);
         }
 
         // Draw cells
-        List<Cell> cells = triangulator.ExportCells(celltype, Mathf.Max(boundaries) * 5.0, true);
+        List<Cell<int>> cells = triangulator.ExportCells(celltype, Mathf.Max(boundaries) * 5.0, true);
 
         float nbCells = (float)cells.Count;
         int indcolor2 = 0;
-        foreach (Cell cell in cells)
+        foreach (Cell<int> cell in cells)
         {
             var color = gradient.Evaluate(indcolor2 / nbCells);
 
@@ -227,16 +227,16 @@ public class GuibasStolfiTest : MonoBehaviour
             }
             if (V_lines)
             {
-                cell.DrawLine(transform, mat, Color.blue, lineScale, loop:true);
+                cell.DrawLine(transform, mat, Color.white, lineScale, loop:true);
             }
             if (V_points)
             {
                 cell.DrawPoints(transform, shapes[1], mat, Color.blue, 0.8f * scale);
             }
-            if (V_circles)
-            {
-                cell.DrawCircumCercle(transform, mat, color);
-            }
+            // if (V_circles)
+            // {
+            //     cell.DrawCircumCercle(transform, mat, color);
+            // }
 
             indcolor2++;
         }
