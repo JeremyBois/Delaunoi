@@ -83,12 +83,12 @@ namespace Delaunoi.Tools
         /// </summary>
         public static Vec3 InCenter(Vec3 a, Vec3 b, Vec3 c)
         {
-            double bc = Vec3.Magnitude(b - c);
-            double ca = Vec3.Magnitude(c - a);
-            double ab = Vec3.Magnitude(a - b);
+            double bc = Vec3.Distance(b, c);
+            double ca = Vec3.Distance(c, a);
+            double ab = Vec3.Distance(a, b);
             double lengthSum = bc + ca + ab;
 
-            return (bc / lengthSum) * a + (ca / lengthSum) * b + (ab / lengthSum) * c;
+            return (bc * a + ca * b + ab * c) * (1.0 / lengthSum);
         }
 
 

@@ -66,7 +66,7 @@ namespace Delaunoi.DataStructures
 
         public Vec3 WithMagnitude(double mag)
         {
-            double ratio = mag / Vec3.Magnitude(this);
+            double ratio = mag / this.Magnitude;
             return new Vec3(_x * ratio, _y * ratio, _z * ratio);
         }
 
@@ -75,9 +75,9 @@ namespace Delaunoi.DataStructures
             get {return _x * _x + _y * _y + _z * _z;}
         }
 
-        public static double Magnitude(Vec3 vec)
+        public double Magnitude
         {
-            return Math.Sqrt(vec._x * vec._x + vec._y * vec._y + vec._z * vec._z);
+            get {return Math.Sqrt(_x * _x + _y * _y + _z * _z);}
         }
 
         /// <summary>
@@ -89,6 +89,14 @@ namespace Delaunoi.DataStructures
             double y = first._y - second._y;
             double z = first._z - second._z;
             return x * x + y * y + z * z;
+        }
+
+        /// <summary>
+        /// Return Euclidean distance between first and second.
+        /// </summary>
+        public static double Distance(Vec3 first, Vec3 second)
+        {
+            return Math.Sqrt(DistanceSquared(first, second));
         }
 
         public static Vec3 operator +(Vec3 first, Vec3 second)
