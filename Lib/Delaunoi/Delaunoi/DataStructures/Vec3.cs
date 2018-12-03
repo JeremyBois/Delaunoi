@@ -158,6 +158,16 @@ namespace Delaunoi.DataStructures
                     first.z - second.z
                 );
         }
+
+        public static Vec3 Zero
+        {
+            get {return new Vec3(0.0, 0.0, 0.0);}
+        }
+
+        public static Vec3 One
+        {
+            get {return new Vec3(1.0, 1.0, 1.0);}
+        }
     }
 }
 
