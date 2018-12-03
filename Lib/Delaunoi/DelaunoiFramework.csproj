@@ -66,7 +66,6 @@
     <Compile Include="Delaunoi/DataStructures/QuadEdge.cs" />
     <Compile Include="Delaunoi/DataStructures/Cell.cs" />
 
-    <Compile Include="Delaunoi/Algorithms/CellConfig.cs" />
     <Compile Include="Delaunoi/Algorithms/GuibasStolfi.cs" />
     <Compile Include="Delaunoi/Algorithms/CellBuilder.cs" />
 

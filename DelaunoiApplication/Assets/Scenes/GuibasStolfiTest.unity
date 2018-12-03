@@ -240,7 +240,7 @@ MonoBehaviour:
   D_points: 1
   D_lines: 0
   D_faces: 0
-  celltype: 0
+  celltype: 2
   V_points: 1
   V_lines: 1
   V_faces: 1

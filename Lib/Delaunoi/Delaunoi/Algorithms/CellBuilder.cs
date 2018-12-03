@@ -10,6 +10,24 @@ namespace Delaunoi.Algorithms
     using Delaunoi.DataStructures;
     using Delaunoi.Tools;
 
+
+    /// <summary>
+    /// Geometrical operation used to construct a cell based on Delaunay triangulation.
+    /// </summary>
+    public enum CellConfig
+    {
+        Voronoi,
+        Centroid,
+        InCenter,
+        RandomUniform,
+        RandomNonUniform,
+        OrthoCenter
+    }
+
+
+    /// <summary>
+    /// An abstraction over triangulation result to construct and extract cells.
+    /// </summary>
     public class CellBuilder<T>
     {
         private GuibasStolfi<T>      _triangulation;
@@ -70,36 +88,55 @@ namespace Delaunoi.Algorithms
             return this;
         }
 
+        /// <summary>
+        /// Keep only cells with at least one boundary site at infinity.
+        /// </summary>
         public CellBuilder<T> AtInfinity()
         {
             _context = _context.Where(x => x.Reconstructed);
             return this;
         }
 
+        /// <summary>
+        /// Keep only cells on the convex hull boundary.
+        /// </summary>
         public CellBuilder<T> Bounds()
         {
             _context = _context.Where(x => x.IsOnBounds);
             return this;
         }
 
+        /// <summary>
+        /// Keep only cells on the convex hull boundary with finite cell bounds.
+        /// </summary>
         public CellBuilder<T> FiniteBounds()
         {
             _context = _context.Where(x => (x.IsOnBounds && !x.Reconstructed));
             return this;
         }
 
+        /// <summary>
+        /// Keep only cells with finite area.
+        /// </summary>
         public CellBuilder<T> Finite()
         {
             _context = _context.Where(x => !x.Reconstructed);
             return this;
         }
 
+        /// <summary>
+        /// Keep only cells inside the convex hull excluding boundary cells.
+        /// </summary>
         public CellBuilder<T> InsideHull()
         {
             _context = _context.Where(x => !x.IsOnBounds);
             return this;
         }
 
+        /// <summary>
+        /// Keep cells where their center is at a distance from <paramref name="origin"/>
+        /// smaller than <paramref name="radius"/>.
+        /// </summary>
         public CellBuilder<T> CenterCloseTo(Vec3 origin, double radius)
         {
             double radiusSq = Math.Pow(radius, 2.0);
@@ -107,6 +144,12 @@ namespace Delaunoi.Algorithms
             return this;
         }
 
+        /// <summary>
+        /// Keep cells where each of its boundary sites is at a distance from
+        /// <paramref name="origin"/> smaller than <paramref name="radius"/>.
+        /// </summary>
+        /// <param name="origin">Origin used as reference for distance calculation.</param>
+        /// <param name="radius">Minimal distance from origin.</param>
         public CellBuilder<T> CloseTo(Vec3 origin, double radius)
         {
             double radiusSq = Math.Pow(radius, 2.0);
@@ -114,22 +157,37 @@ namespace Delaunoi.Algorithms
             return this;
         }
 
+        /// <summary>
+        /// Keep cells living inside a box defined by an <paramref name="origin"/>
+        /// and its size (<paramref name="extends"/>).
+        /// <param name="origin">Origin used for the box.</param>
+        /// <param name="origin">Size of the box.</param>
+        /// </summary>
         public CellBuilder<T> Inside(Vec3 origin, Vec3 extends)
         {
             _context = _context.Where(x => IsInBounds(x, origin, extends));
             return this;
         }
 
+        /// <summary>
+        /// Can be used to use fluent extensions from LINQ (<see cref="System.Linq"/>).
+        /// </summary>
         public IEnumerable<Cell<T>> Select()
         {
             return _context;
         }
 
+        /// <summary>
+        /// Build a list of cell which accounts for previous operations.
+        /// </summary>
         public List<Cell<T>> ToList()
         {
             return _context.ToList();
         }
 
+        /// <summary>
+        /// Build an array of cell which accounts for previous operations.
+        /// </summary>
         public Cell<T>[] ToArray()
         {
             return _context.ToArray();
