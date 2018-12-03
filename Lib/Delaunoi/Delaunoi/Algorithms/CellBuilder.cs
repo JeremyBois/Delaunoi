@@ -88,9 +88,15 @@ namespace Delaunoi.Algorithms
             return this;
         }
 
+        public CellBuilder<T> Finite()
+        {
+            _context = _context.Where(x => !x.Reconstructed);
+            return this;
+        }
+
         public CellBuilder<T> InsideHull()
         {
-            _context = _context.Where(x => x.IsOnBounds);
+            _context = _context.Where(x => !x.IsOnBounds);
             return this;
         }
 

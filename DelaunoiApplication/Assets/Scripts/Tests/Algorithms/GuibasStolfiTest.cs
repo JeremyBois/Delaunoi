@@ -216,11 +216,11 @@ public class GuibasStolfiTest : MonoBehaviour
         CellBuilder<int> cellsBuilder = new CellBuilder<int>(triangulator);
 
         List<Cell<int>> cells = cellsBuilder.Cells(celltype, Mathf.Max(boundaries) * 5.0, true)
-                                            // .Inside()
+                                            .InsideHull()
                                             // .FiniteBounds()
                                             // .Bounds()
-                                            .AtInfinity()
-                                            // .CenterCloseTo(new Vec3(boundaries[0] / 2.0, boundaries[1] / 2.0, 0.0), 200.0)
+                                            // .AtInfinity()
+                                            .CenterCloseTo(new Vec3(boundaries[0] / 2.0, boundaries[1] / 2.0, 0.0), 100.0)
                                             // .CloseTo(new Vec3(boundaries[0] / 2.0, boundaries[1] / 2.0, 0.0), 100.0)
                                             // .Inside(Vec3.Zero, new Vec3(boundaries[0] * 1.1, boundaries[1] * 1.1, 1.0))
                                             .ToList();
