@@ -15,16 +15,19 @@ namespace Delaunoi.DataStructures
 
         private QuadEdge<T> _primal;
         private bool        _onBounds;
+        private bool        _reconstructed;
 
         /// <summary>
         /// Construct a cell abstraction based on a <paramref name="primal"/> edge.
         /// </summary>
         /// <param name="primal">Delaunay edge with Origin as cell center.</param>
-        /// <param name="onBounds">Must be true if cell has a site at infinity.</param>
-        public Cell(QuadEdge<T> primal, bool onBounds)
+        /// <param name="onBounds">Mark cell as a cell on the cells bounds.</param>
+        /// <param name="reconstructed">Must be true if cell has a site at infinity.</param>
+        public Cell(QuadEdge<T> primal, bool onBounds, bool reconstructed)
         {
             this._primal  = primal;
             this._onBounds = onBounds;
+            this._reconstructed = reconstructed;
 
             this._id = nextID++;
         }
@@ -43,6 +46,14 @@ namespace Delaunoi.DataStructures
         public bool IsOnBounds
         {
             get {return _onBounds;}
+        }
+
+        /// <summary>
+        /// True if cell has been constructed because of a missing primal site (at infinity).
+        /// </summary>
+        public bool Reconstructed
+        {
+            get {return _reconstructed;}
         }
 
         /// <summary>
@@ -65,7 +76,7 @@ namespace Delaunoi.DataStructures
         {
             get
             {
-                // Missing edge at infinity
+                // Handle missing edge at infinity
                 if (_onBounds)
                 {
                     yield return _primal.Rot.Destination;

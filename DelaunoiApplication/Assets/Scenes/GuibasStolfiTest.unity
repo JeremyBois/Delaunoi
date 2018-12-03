@@ -231,7 +231,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   usedGenerator: 0
-  pointNumber: 324
+  pointNumber: 234
   boundaries: 2c01000096000000
   seed: 154
   bases: 0200000003000000
