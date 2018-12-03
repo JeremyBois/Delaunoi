@@ -103,8 +103,9 @@ GitHub.sublime-settings
 
 
 ### Delaunoi Lib
-!Delaunoi*.pdb
-!Delaunoi.pdb.meta
 !Delaunoi.csproj
 !DelaunoiFramework.csproj
 !Delaunoi.sln
+
+Plugins/
+[Bb]in/
