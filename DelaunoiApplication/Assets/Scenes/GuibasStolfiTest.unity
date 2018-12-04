@@ -200,8 +200,8 @@ MonoBehaviour:
   boundaries: 2c01000096000000
   seed: 154
   bases: 0200000003000000
-  minimalDistance: 15
-  maxAttemp: 30
+  minimalDistance: 3
+  maxAttemp: 10
   shapes:
   - {fileID: 1299362892703848, guid: 5bd056414346da7408618b5b49b996b1, type: 2}
   - {fileID: 1299362892703848, guid: 5bd056414346da7408618b5b49b996b1, type: 2}
@@ -238,9 +238,9 @@ MonoBehaviour:
     m_NumColorKeys: 5
     m_NumAlphaKeys: 2
   D_points: 1
-  D_lines: 0
+  D_lines: 1
   D_faces: 0
-  celltype: 2
+  celltype: 1
   V_points: 1
   V_lines: 1
   V_faces: 1

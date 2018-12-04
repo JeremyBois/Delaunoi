@@ -107,5 +107,6 @@ GitHub.sublime-settings
 !DelaunoiFramework.csproj
 !Delaunoi.sln
 
-Plugins/
+Plugins/*
+!Plugins/git.txt
 [Bb]in/
