@@ -34,6 +34,16 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
 
+<!-- UNITY DEBUG -->
+<!--   <ItemGroup>
+    <Reference Include="UnityEngine">
+      <HintPath>C:\Program Files\Unity\Hub\Editor\2018.2.12f1\Editor\Data\Managed/UnityEngine/UnityEngine.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.CoreModule">
+      <HintPath>C:/Program Files/Unity/Hub/Editor/2018.2.12f1/Editor/Data/Managed/UnityEngine/UnityEngine.CoreModule.dll</HintPath>
+    </Reference>
+  </ItemGroup> -->
+
   <ItemGroup>
     <Reference Include="System"/>
 
@@ -54,10 +64,10 @@
   <ItemGroup>
     <Compile Include="Delaunoi/DataStructures/Vec3.cs" />
     <Compile Include="Delaunoi/DataStructures/QuadEdge.cs" />
-    <Compile Include="Delaunoi/DataStructures/Cell.cs" />
+    <Compile Include="Delaunoi/DataStructures/Face.cs" />
 
-    <Compile Include="Delaunoi/Algorithms/CellConfig.cs" />
     <Compile Include="Delaunoi/Algorithms/GuibasStolfi.cs" />
+    <Compile Include="Delaunoi/Algorithms/FaceBuilder.cs" />
 
     <Compile Include="Delaunoi/Generators/HaltonSequence.cs" />
     <Compile Include="Delaunoi/Generators/PoissonDisk2D.cs" />

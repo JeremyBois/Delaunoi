@@ -113,83 +113,48 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
---- !u!1 &663516767
-GameObject:
+--- !u!1001 &801787506
+Prefab:
   m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 663516770}
-  - component: {fileID: 663516769}
-  - component: {fileID: 663516768}
-  m_Layer: 0
-  m_Name: Main Camera
-  m_TagString: MainCamera
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!81 &663516768
-AudioListener:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 663516767}
-  m_Enabled: 1
---- !u!20 &663516769
-Camera:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 663516767}
-  m_Enabled: 1
   serializedVersion: 2
-  m_ClearFlags: 2
-  m_BackGroundColor: {r: 0.806, g: 0.7838165, b: 0.7209633, a: 1}
-  m_projectionMatrixMode: 1
-  m_SensorSize: {x: 36, y: 24}
-  m_LensShift: {x: 0, y: 0}
-  m_FocalLength: 50
-  m_NormalizedViewPortRect:
-    serializedVersion: 2
-    x: 0
-    y: 0
-    width: 1
-    height: 1
-  near clip plane: 0.3
-  far clip plane: 1000
-  field of view: 40
-  orthographic: 1
-  orthographic size: 90
-  m_Depth: -1
-  m_CullingMask:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_RenderingPath: -1
-  m_TargetTexture: {fileID: 0}
-  m_TargetDisplay: 0
-  m_TargetEye: 3
-  m_HDR: 1
-  m_AllowMSAA: 1
-  m_AllowDynamicResolution: 0
-  m_ForceIntoRT: 0
-  m_OcclusionCulling: 1
-  m_StereoConvergence: 10
-  m_StereoSeparation: 0.022
---- !u!4 &663516770
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 663516767}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1, z: -10}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 4365328020693964, guid: c7754fad3eaa0b1458426a930148b413, type: 2}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4365328020693964, guid: c7754fad3eaa0b1458426a930148b413, type: 2}
+      propertyPath: m_LocalPosition.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4365328020693964, guid: c7754fad3eaa0b1458426a930148b413, type: 2}
+      propertyPath: m_LocalPosition.z
+      value: -10
+      objectReference: {fileID: 0}
+    - target: {fileID: 4365328020693964, guid: c7754fad3eaa0b1458426a930148b413, type: 2}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4365328020693964, guid: c7754fad3eaa0b1458426a930148b413, type: 2}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4365328020693964, guid: c7754fad3eaa0b1458426a930148b413, type: 2}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4365328020693964, guid: c7754fad3eaa0b1458426a930148b413, type: 2}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4365328020693964, guid: c7754fad3eaa0b1458426a930148b413, type: 2}
+      propertyPath: m_RootOrder
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: c7754fad3eaa0b1458426a930148b413, type: 2}
+  m_IsPrefabAsset: 0
 --- !u!1 &1130150504
 GameObject:
   m_ObjectHideFlags: 0
@@ -231,17 +196,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   usedGenerator: 0
-  pointNumber: 32
+  pointNumber: 1456
   boundaries: 2c01000096000000
   seed: 154
   bases: 0200000003000000
-  minimalDistance: 15
-  maxAttemp: 30
+  minimalDistance: 3
+  maxAttemp: 10
   shapes:
   - {fileID: 1299362892703848, guid: 5bd056414346da7408618b5b49b996b1, type: 2}
   - {fileID: 1299362892703848, guid: 5bd056414346da7408618b5b49b996b1, type: 2}
   scale: 1
-  lineScale: 1.5
+  lineScale: 1
   mat: {fileID: 2100000, guid: 55b3a03e98edfad42b2c3bb5e8452cfa, type: 2}
   gradient:
     serializedVersion: 2
@@ -273,7 +238,7 @@ MonoBehaviour:
     m_NumColorKeys: 5
     m_NumAlphaKeys: 2
   D_points: 1
-  D_lines: 0
+  D_lines: 1
   D_faces: 0
   celltype: 2
   V_points: 1
@@ -312,7 +277,7 @@ Light:
   m_CookieSize: 10
   m_Shadows:
     m_Type: 0
-    m_Resolution: -1
+    m_Resolution: 2
     m_CustomResolution: -1
     m_Strength: 1
     m_Bias: 0.05

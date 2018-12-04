@@ -9,11 +9,20 @@ namespace Delaunoi.Algorithms
 
 
     /// <summary>
-    /// Delaunay triangulation based on a divide and conquer algorithm.
-    /// It has been defined by LEONIDAS GUIBAS and JORGE STOLFI.
-    /// in Primitives for the Manipulation of General Subdivisions and the Computation of Voronoi Diagrams,
-    /// ACM Transactions on Graphics, Vol. 4, No. 2, April 1985"
+    /// 2D Delaunay triangulation based on a divide and conquer algorithm allowing incremental
+    /// insertion in an already triangulated area. That is, new site can be added on the fly
+    /// (Incremental) and/or each at the same time (Divide and Conquer). This approach
+    /// constructs at the same time the primal (Delaunay) and the dual (Voronoi, Centroid, ...)
+    /// The divide and conquer approach allows to build both, primal and dual, in O(nlog(n)) time
+    /// and the insertion of a new site in O(n) time.
+    /// Each directed edge contains a generic data field allowing to store
+    /// whatever information you need.
     /// </summary>
+    /// <remarks>
+    /// It has been defined by LEONIDAS GUIBAS and JORGE STOLFI in
+    /// Primitives for the Manipulation of General Subdivisions and the Computation of Voronoi Diagrams,
+    /// ACM Transactions on Graphics, Vol. 4, No. 2, April 1985"
+    /// </remarks>
     public class GuibasStolfi<T>
     {
 
@@ -110,42 +119,6 @@ namespace Delaunoi.Algorithms
             _leftRightEdges = Triangulate(_points);
 
             return true;
-        }
-
-        /// <summary>
-        /// Return all cell based on Delaunay triangulation. Vertices at infinity
-        /// are define based on radius parameter. It should be large enough to avoid
-        /// some circumcenters (finite voronoi vertices) to be further on.
-        /// Using <see cref="CellConfig.RandomUniform"/> and <see cref="CellConfig.RandomNonUniform"/>
-        /// can leads to intersection with cell area constructed for points at infinity because
-        /// they are calculated based on <see cref="CellConfig.Voronoi"/> strategy.
-        /// </summary>
-        /// <param name="radius">Distance used to construct site that are at infinity.</param>
-        /// <param name="useZCoord">If true cell center compute in R^3 else in R^2 (matter only if voronoi).</param>
-        public List<Cell> ExportCells(CellConfig cellType, double radius, bool useZCoord=true)
-        {
-            switch (cellType)
-            {
-                case CellConfig.Centroid:
-                    return Exportcells(radius, Geometry.Centroid);
-                case CellConfig.Voronoi:
-                    if (useZCoord)
-                    {
-                        return Exportcells(radius, Geometry.CircumCenter3D);
-                    }
-                    else
-                    {
-                        return Exportcells(radius, Geometry.CircumCenter2D);
-                    }
-                case CellConfig.InCenter:
-                    return Exportcells(radius, Geometry.InCenter);
-                case CellConfig.RandomUniform:
-                    return Exportcells(radius, RandGen.TriangleUniform);
-                case CellConfig.RandomNonUniform:
-                    return Exportcells(radius, RandGen.TriangleNonUniform);
-            }
-
-            throw new NotImplementedException();
         }
 
         /// <summary>
@@ -409,43 +382,33 @@ namespace Delaunoi.Algorithms
             return true;
         }
 
-
-// METHODS (PRIVATE)
-
         /// <summary>
-        /// Construct voronoi cell based on Delaunay triangulation. Vertices at infinity
+        /// Construct voronoi face based on Delaunay triangulation. Vertices at infinity
         /// are define based on radius parameter. It should be large enough to avoid
         /// some circumcenters (finite voronoi vertices) to be further on.
         /// </summary>
         /// <remarks>
-        /// Using delegate to implement strategy pattern.
+        /// Each face is yield just after their construction. Then it's neighborhood
+        /// is not guarantee to be constructed.
         /// </remarks>
         /// <param name="radius">Distance used to construct site that are at infinity.</param>
-        private List<Cell> Exportcells(double radius, Func<Vec3, Vec3, Vec3, Vec3> centerCalculator)
+        public IEnumerable<Face<T>> ExportFaces(double radius, Func<Vec3, Vec3, Vec3, Vec3> centerCalculator)
         {
-            // Container for vorFaces vertices
-            var cells = new List<Cell>();
-
             // FIFO
             var queue = new Queue<QuadEdge<T>>();
 
-            // Start at the far right
-            QuadEdge<T> first = _leftRightEdges[1];
+            // Start at the far left
+            QuadEdge<T> first = LeftMostEdge;
 
-            // Find the segment with no vertex on its left
-            // starting from the far right vertex
-            while (Geometry.LeftOf(first.Onext.Destination, first))
-            {
-                first = first.Onext;
-            }
+            // @TODO Bounds
+            List<QuadEdge<T>> bounds = new List<QuadEdge<T>>();
+
 
             // Visit all edge of the convex hull to compute dual vertices
             // at infinity by looping in a CW order over edges with same left face.
             foreach (QuadEdge<T> hullEdge in first.LeftEdges(CCW:false))
             {
-                // Start construction of a new cell
-                cells.Add(new Cell(hullEdge.Origin));
-                Cell currentCell = cells.Last();
+                // Construct a new face
                 // First infinite voronoi vertex
                 if (hullEdge.Rot.Destination == null)
                 {
@@ -453,7 +416,6 @@ namespace Delaunoi.Algorithms
                                                                    radius,
                                                                    centerCalculator);
                 }
-                currentCell.Add(hullEdge.Rot.Destination);
 
                 // Add other vertices by looping over hullEdge origin in CW order (Oprev)
                 foreach (QuadEdge<T> current in hullEdge.EdgesFrom(CCW:false))
@@ -474,7 +436,7 @@ namespace Delaunoi.Algorithms
                                                                   current.Oprev.Destination);
 
                             // Speed up computation of point coordinates
-                            // All edges sharing the same origin have same
+                            // All edges sharing the same origin should have same
                             // geometrical origin
                             foreach (QuadEdge<T> otherDual in current.Rot.EdgesFrom())
                             {
@@ -486,22 +448,23 @@ namespace Delaunoi.Algorithms
                     if (current.Sym.Tag == _visitedTagState)
                     {
                         queue.Enqueue(current.Sym);
+                        bounds.Add(current.Sym);
                     }
                     current.Tag = !_visitedTagState;
-                    currentCell.Add(current.Rot.Origin);
                 }
+
+                // After face construction over
+                yield return new Face<T>(hullEdge, true, true);
             }
 
-            // Convex hull now closed --> Construct bounded voronoi cells
+            // Convex hull now closed --> Construct bounded voronoi faces
             while (queue.Count > 0)
             {
                 QuadEdge<T> edge = queue.Dequeue();
 
                 if (edge.Tag == _visitedTagState)
                 {
-                    // Construct a new cell
-                    cells.Add(new Cell(edge.Origin));
-                    Cell currentCell = cells.Last();
+                    // Construct a new face
                     foreach (QuadEdge<T> current in edge.EdgesFrom(CCW:false))
                     {
                         if (current.Rot.Origin == null)
@@ -522,15 +485,26 @@ namespace Delaunoi.Algorithms
                             queue.Enqueue(current.Sym);
                         }
                         current.Tag = !_visitedTagState;
-                        currentCell.Add(current.Rot.Origin);
+                    }
+
+                    // After face construction over
+                    if (bounds.Contains(edge))
+                    {
+                        yield return new Face<T>(edge, true, false);
+                    }
+                    else
+                    {
+                        yield return new Face<T>(edge, false, false);
                     }
                 }
             }
 
             // Inverse flag to be able to traverse again at next call
             _visitedTagState = !_visitedTagState;
-            return cells;
         }
+
+
+// METHODS (PRIVATE)
 
         /// <summary>
         /// Find correct position for a voronoi site that should be at infinite
