@@ -7,14 +7,14 @@ using System.Linq;
 
 namespace Delaunoi.DataStructures.Extensions
 {
-    public static class CellExtensions
+    public static class FaceExtensions
     {
 
-        public static void DrawFace<T>(this Cell<T> cell, Transform parent, Material mat,
+        public static void DrawFace<T>(this Face<T> cell, Transform parent, Material mat,
                                        Color color)
         {
             GameObject newGo = new GameObject();
-            newGo.name = "Cell Face " + cell.ID.ToString();
+            newGo.name = "Face Face " + cell.ID.ToString();
             newGo.transform.SetParent(parent);
             newGo.AddComponent<MeshFilter>();
             newGo.AddComponent<MeshRenderer>();
@@ -42,7 +42,7 @@ namespace Delaunoi.DataStructures.Extensions
             filter.mesh.triangles = trianglesInt.ToArray();
         }
 
-        public static void DrawPoints<T>(this Cell<T> cell, Transform parent,
+        public static void DrawPoints<T>(this Face<T> cell, Transform parent,
                                          GameObject shape, Material mat,
                                          Color color, float scale=0.5f)
         {
@@ -51,7 +51,7 @@ namespace Delaunoi.DataStructures.Extensions
             for (int i = 0; i < bounds.Length; i++)
             {
                 var point = GameObject.Instantiate(shape);
-                point.name = string.Format("Cell Point {0}", cell.ID.ToString());
+                point.name = string.Format("Face Point {0}", cell.ID.ToString());
                 point.transform.SetParent(parent);
                 point.transform.position = bounds[i];
                 point.transform.localScale = new Vector3(scale, scale, scale);
@@ -65,11 +65,11 @@ namespace Delaunoi.DataStructures.Extensions
             }
         }
 
-        public static void DrawLine<T>(this Cell<T> cell, Transform parent, Material mat,
+        public static void DrawLine<T>(this Face<T> cell, Transform parent, Material mat,
                                        Color color, float scale=1.0f, bool loop=true)
         {
             GameObject newGo = new GameObject();
-            newGo.name = string.Format("Cell Line {0}", cell.ID.ToString());
+            newGo.name = string.Format("Face Line {0}", cell.ID.ToString());
             newGo.transform.SetParent(parent);
 
             // Construct line
@@ -87,11 +87,11 @@ namespace Delaunoi.DataStructures.Extensions
             lr.SetPositions(bounds);
         }
 
-        // public static void DrawCircumCercle<T>(this Cell<T> cell, Transform parent,
+        // public static void DrawCircumCercle<T>(this Face<T> cell, Transform parent,
         //                                        Material mat, Color color, float scale=1.0f)
         // {
         //     GameObject newGo = new GameObject();
-        //     newGo.name = string.Format("Cell Circle {0}", cell.ID.ToString());
+        //     newGo.name = string.Format("Face Circle {0}", cell.ID.ToString());
         //     newGo.transform.SetParent(parent);
 
         //     // One Circle for each point

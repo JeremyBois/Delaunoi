@@ -426,13 +426,16 @@ namespace Delaunoi.DataStructures
         }
 
         /// <summary>
-        /// Iterate over every edges forming a cell around this edge origin
-        /// (default to CW order) assuming each edge cell share the same left face.
-        /// Edge between two sites at infinity does not exists (occurs for a cell
+        /// Iterate over every edges forming a face around this edge origin
+        /// (default to CW order) assuming each edge face share the same left face.
+        /// Edge between two sites at infinity does not exists (occurs for a face
         /// on the convex hull) and then will not be yield.
         /// </summary>
+        /// <remarks>
+        /// If face on the boundary then their is a missing edge linking voronoi sites at infinity.
+        /// </remarks>
         /// <param name="CCW">Select in which order edges should be returned.</param>
-        public IEnumerable<QuadEdge<T>> CellLeftEdges(bool CCW=false)
+        public IEnumerable<QuadEdge<T>> FaceLeftEdges(bool CCW=false)
         {
             QuadEdge<T> current = this.Rot;
             var first = current;
@@ -445,18 +448,17 @@ namespace Delaunoi.DataStructures
         }
 
         /// <summary>
-        /// Iterate over every vertices forming a cell around this edge origin
-        /// (default to CW order) assuming each edge cell share the same left face.
-        /// Edge between two sites at infinity does not exists (occurs for a cell
+        /// Iterate over every vertices forming a face around this edge origin
+        /// (default to CW order) assuming each edge face share the same left face.
+        /// Edge between two sites at infinity does not exists (occurs for a face
         /// on the convex hull) and then a site will be missing.
         /// </summary>
-        /// <remarks>
         /// <remarks>
         /// In case of CCW == false missing edge Origin can be found by first taking
         /// left most edge (in primal graph) and then its Destination.
         /// </remarks>
         /// <param name="CCW">Select in which order vertices should be returned.</param>
-        public IEnumerable<Vec3> CellLeftVertices(bool CCW=false)
+        public IEnumerable<Vec3> FaceLeftVertices(bool CCW=false)
         {
             QuadEdge<T> current = this.Rot;
             var first = current;

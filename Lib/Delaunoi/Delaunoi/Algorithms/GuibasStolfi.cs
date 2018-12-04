@@ -383,16 +383,16 @@ namespace Delaunoi.Algorithms
         }
 
         /// <summary>
-        /// Construct voronoi cell based on Delaunay triangulation. Vertices at infinity
+        /// Construct voronoi face based on Delaunay triangulation. Vertices at infinity
         /// are define based on radius parameter. It should be large enough to avoid
         /// some circumcenters (finite voronoi vertices) to be further on.
         /// </summary>
         /// <remarks>
-        /// Each cell is yield just after their construction. Then it's neighborhood
+        /// Each face is yield just after their construction. Then it's neighborhood
         /// is not guarantee to be constructed.
         /// </remarks>
         /// <param name="radius">Distance used to construct site that are at infinity.</param>
-        public IEnumerable<Cell<T>> Exportcells(double radius, Func<Vec3, Vec3, Vec3, Vec3> centerCalculator)
+        public IEnumerable<Face<T>> ExportFaces(double radius, Func<Vec3, Vec3, Vec3, Vec3> centerCalculator)
         {
             // FIFO
             var queue = new Queue<QuadEdge<T>>();
@@ -408,7 +408,7 @@ namespace Delaunoi.Algorithms
             // at infinity by looping in a CW order over edges with same left face.
             foreach (QuadEdge<T> hullEdge in first.LeftEdges(CCW:false))
             {
-                // Construct a new cell
+                // Construct a new face
                 // First infinite voronoi vertex
                 if (hullEdge.Rot.Destination == null)
                 {
@@ -453,18 +453,18 @@ namespace Delaunoi.Algorithms
                     current.Tag = !_visitedTagState;
                 }
 
-                // After cell construction over
-                yield return new Cell<T>(hullEdge, true, true);
+                // After face construction over
+                yield return new Face<T>(hullEdge, true, true);
             }
 
-            // Convex hull now closed --> Construct bounded voronoi cells
+            // Convex hull now closed --> Construct bounded voronoi faces
             while (queue.Count > 0)
             {
                 QuadEdge<T> edge = queue.Dequeue();
 
                 if (edge.Tag == _visitedTagState)
                 {
-                    // Construct a new cell
+                    // Construct a new face
                     foreach (QuadEdge<T> current in edge.EdgesFrom(CCW:false))
                     {
                         if (current.Rot.Origin == null)
@@ -487,14 +487,14 @@ namespace Delaunoi.Algorithms
                         current.Tag = !_visitedTagState;
                     }
 
-                    // After cell construction over
+                    // After face construction over
                     if (bounds.Contains(edge))
                     {
-                        yield return new Cell<T>(edge, true, false);
+                        yield return new Face<T>(edge, true, false);
                     }
                     else
                     {
-                        yield return new Cell<T>(edge, false, false);
+                        yield return new Face<T>(edge, false, false);
                     }
                 }
             }

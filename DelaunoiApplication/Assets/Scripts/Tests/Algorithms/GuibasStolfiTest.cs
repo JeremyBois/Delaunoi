@@ -72,10 +72,10 @@ public class GuibasStolfiTest : MonoBehaviour
     public bool D_faces = false;
     [Space(30)]
 
-    [Header("Cell Settings")]
+    [Header("Face Settings")]
     [Space(5)]
     [SerializeField]
-    private CellConfig celltype;
+    private FaceConfig celltype;
     [Space(5)]
     public bool V_points = false;
     public bool V_lines = false;
@@ -212,41 +212,42 @@ public class GuibasStolfiTest : MonoBehaviour
             TriangleDrawer.DrawPoints(triangles, transform, shapes[0], Color.red, 1.1f * scale);
         }
 
-        // Draw cells
-        CellBuilder<int> cellsBuilder = new CellBuilder<int>(triangulator);
+        // Draw faces
+        FaceBuilder<int> facesBuilder = new FaceBuilder<int>(triangulator);
 
-        List<Cell<int>> cells = cellsBuilder.Cells(celltype, Mathf.Max(boundaries) * 5.0, true)
+        List<Face<int>> faces = facesBuilder.Faces(celltype, Mathf.Max(boundaries) * 5.0, true)
                                             // .InsideHull()
                                             // .FiniteBounds()
-                                            .Finite()
+                                            // .Finite()
                                             // .Bounds()
                                             // .AtInfinity()
-                                            // .CenterCloseTo(new Vec3(boundaries[0] / 2.0, boundaries[1] / 2.0, 0.0), 100.0)
-                                            // .CloseTo(new Vec3(boundaries[0] / 2.0, boundaries[1] / 2.0, 0.0), 100.0)
-                                            .Inside(Vec3.Zero, new Vec3(boundaries[0] * 1.1, boundaries[1] * 1.1, 1.0))
+                                            // .CenterCloseTo(new Vec3(boundaries[0] / 2.0, boundaries[1] / 2.0, 0.0), 50.0)
+                                            // .CloseTo(new Vec3(boundaries[0] / 2.0, boundaries[1] / 2.0, 0.0), 50.0)
+                                            // .Inside(Vec3.Zero, new Vec3(boundaries[0] * 0.25, boundaries[1] * 1.0, 1.0))
+                                            // .Inside(Vec3.Zero, new Vec3(boundaries[0] * 0.25, boundaries[1] * 0.5, 1.0))
                                             .ToList();
 
-        float nbCells = (float)cells.Count;
+        float nbCells = (float)faces.Count;
         int indcolor2 = 0;
-        foreach (Cell<int> cell in cells)
+        foreach (Face<int> face in faces)
         {
             var color = gradient.Evaluate(indcolor2 / nbCells);
 
             if (V_faces)
             {
-                cell.DrawFace(transform, mat, color);
+                face.DrawFace(transform, mat, color);
             }
             if (V_lines)
             {
-                cell.DrawLine(transform, mat, Color.white, lineScale, loop:true);
+                face.DrawLine(transform, mat, Color.white, lineScale, loop:true);
             }
             if (V_points)
             {
-                cell.DrawPoints(transform, shapes[1], mat, Color.blue, 0.8f * scale);
+                face.DrawPoints(transform, shapes[1], mat, Color.blue, 0.8f * scale);
             }
             // if (V_circles)
             // {
-            //     cell.DrawCircumCercle(transform, mat, color);
+            //     face.DrawCircumCercle(transform, mat, color);
             // }
 
             indcolor2++;
@@ -258,7 +259,7 @@ public class GuibasStolfiTest : MonoBehaviour
                   delta.TotalSeconds, delta.TotalMilliseconds));
         Debug.Log("Points count : " + points.Count);
         Debug.Log("Triangle count : " + triangles.Count / 3);
-        Debug.Log("Cell count : " + nbCells);
+        Debug.Log("Face count : " + nbCells);
     }
 
 

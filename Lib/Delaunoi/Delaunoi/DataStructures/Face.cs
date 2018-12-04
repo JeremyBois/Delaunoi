@@ -8,7 +8,7 @@ namespace Delaunoi.DataStructures
     /// <summary>
     /// Abstraction of a triangulation (primal graph) dual graph element.
     /// </summary>
-    public class Cell<T>
+    public class Face<T>
     {
         private static int nextID = 0;
         private int _id;
@@ -18,12 +18,12 @@ namespace Delaunoi.DataStructures
         private bool        _reconstructed;
 
         /// <summary>
-        /// Construct a cell abstraction based on a <paramref name="primal"/> edge.
+        /// Construct a face abstraction based on a <paramref name="primal"/> edge.
         /// </summary>
-        /// <param name="primal">Delaunay edge with Origin as cell center.</param>
-        /// <param name="onBounds">Mark cell as a cell on the cells bounds.</param>
-        /// <param name="reconstructed">Must be true if cell has a site at infinity.</param>
-        public Cell(QuadEdge<T> primal, bool onBounds, bool reconstructed)
+        /// <param name="primal">Delaunay edge with Origin as face center.</param>
+        /// <param name="onBounds">Mark face as a face on the faces bounds.</param>
+        /// <param name="reconstructed">Must be true if face has a site at infinity.</param>
+        public Face(QuadEdge<T> primal, bool onBounds, bool reconstructed)
         {
             this._primal  = primal;
             this._onBounds = onBounds;
@@ -33,7 +33,7 @@ namespace Delaunoi.DataStructures
         }
 
         /// <summary>
-        /// Get primal Edge with Origin as cell center.
+        /// Get primal Edge with Origin as face center.
         /// </summary>
         public QuadEdge<T> PrimalEdge
         {
@@ -41,7 +41,7 @@ namespace Delaunoi.DataStructures
         }
 
         /// <summary>
-        /// True if cell primal edge origin is on the convex hull of Delaunay triangulation.
+        /// True if face primal edge origin is on the convex hull of Delaunay triangulation.
         /// </summary>
         public bool IsOnBounds
         {
@@ -49,7 +49,7 @@ namespace Delaunoi.DataStructures
         }
 
         /// <summary>
-        /// True if cell has been constructed because of a missing primal site (at infinity).
+        /// True if face has been constructed because of a missing primal site (at infinity).
         /// </summary>
         public bool Reconstructed
         {
@@ -57,7 +57,7 @@ namespace Delaunoi.DataStructures
         }
 
         /// <summary>
-        /// Get cell center
+        /// Get face center
         /// </summary>
         public Vec3 Center
         {
@@ -70,7 +70,7 @@ namespace Delaunoi.DataStructures
         }
 
         /// <summary>
-        /// Get cell boundary points.
+        /// Get face boundary points.
         /// </summary>
         public IEnumerable<Vec3> Bounds
         {
@@ -83,7 +83,7 @@ namespace Delaunoi.DataStructures
                 }
 
                 // Bounds
-                foreach (Vec3 site in _primal.CellLeftVertices())
+                foreach (Vec3 site in _primal.FaceLeftVertices())
                 {
                     yield return site;
                 }
@@ -91,7 +91,7 @@ namespace Delaunoi.DataStructures
         }
 
         /// <summary>
-        /// Get all points. Center is first one followed by cell bounds.
+        /// Get all points. Center is first one followed by face bounds.
         /// </summary>
         public IEnumerable<Vec3> Points
         {
