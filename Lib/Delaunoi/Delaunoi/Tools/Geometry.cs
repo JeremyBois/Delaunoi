@@ -330,6 +330,20 @@ namespace Delaunoi.Tools
         {
             return Vec3.DistanceSquared(a, b) < epsilon;
         }
+
+        /// <summary>
+        ///  Transform spherical coordinate (phi, theta) to euclidean coordinates (x, y, z).
+        /// </summary>
+        public static Vec3 SphericalToEuclidean(double phi, double theta)
+        {
+            double sinTheta = Math.Sin(theta);
+            return new Vec3
+            (
+                Math.Cos(phi) * sinTheta,
+                Math.Sin(phi) * sinTheta,
+                Math.Cos(theta)
+            );
+        }
     }
 
 }

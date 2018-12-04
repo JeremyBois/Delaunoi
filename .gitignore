@@ -33,6 +33,7 @@ ExportedObj/
 *.pidb.meta
 *.pdb.meta
 
+
 # Unity3D Generated File On Crash Reports
 sysinfo.txt
 
@@ -110,3 +111,5 @@ GitHub.sublime-settings
 Plugins/*
 !Plugins/git.txt
 [Bb]in/
+*.dll.meta
+*.dll
