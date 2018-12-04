@@ -59,7 +59,7 @@ public class PoissonDiskTest : MonoBehaviour
         System.DateTime previousTime = System.DateTime.Now;
         generator.BuildSample(pointNumber);
         System.TimeSpan delta = System.DateTime.Now - previousTime;
-        Debug.Log(string.Format("INIT *** {0} secondes OU {1} milliseconds *** INIT",
+        Debug.Log(string.Format("BUILDING *** {0} secondes OU {1} milliseconds *** BUILDING",
                   delta.TotalSeconds, delta.TotalMilliseconds));
         Debug.Log("Total generated points: " + generator.Count);
 
