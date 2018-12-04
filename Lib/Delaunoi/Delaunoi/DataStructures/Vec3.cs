@@ -149,6 +149,11 @@ namespace Delaunoi.DataStructures
                 );
         }
 
+        public static double Dot(Vec3 first, Vec3 second)
+        {
+            return first.x * second.x + first.y * second.y + first.z * second.z;
+        }
+
         public static Vec3 Substract(Vec3 first, Vec3 second)
         {
             return new Vec3

@@ -240,6 +240,47 @@ namespace Delaunoi.Tools
         }
 
         /// <summary>
+        /// Return true if point pt projection are in the circumcercle of the
+        /// three other ones (a, b, c).
+        /// </summary>
+        /// <remarks>
+        /// More at :
+        ///   - https://gamedev.stackexchange.com/questions/60630/how-do-i-find-the-circumcenter-of-a-triangle-in-3d
+        ///   - https://math.stackexchange.com/questions/544946/determine-if-projection-of-3d-point-onto-plane-is-within-a-triangle
+        ///   - https://math.stackexchange.com/questions/4322/check-whether-a-point-is-within-a-3d-triangle
+        /// </remarks>
+        public static bool InCircumCercle3D(Vec3 pt, Vec3 a, Vec3 b, Vec3 c)
+        {
+            Vec3 ba = b - a;
+            Vec3 ca = c - a;
+            Vec3 pa = pt - a;
+
+            Vec3 normal = Vec3.Cross(ba, ca);
+            double normalMagInv = 1.0 / normal.Magnitude;
+
+            // Note : if one coordinate is 0 and total lower than 1 p lies on
+            // a triangle segment.
+            double gamma = Vec3.Dot(Vec3.Cross(ba, pa), normal) * normalMagInv;
+            double beta = Vec3.Dot(Vec3.Cross(pa, ca), normal) * normalMagInv;
+
+            // Inside if barycentric coordinates sum is lower or equal than 1
+            // Because last coordinate is computed based on gamma and beta
+            // it's not necessary to compute it, just test sum of first two
+            // does not exceed 1 already.
+            return (gamma + beta) >= 1.0;
+
+        }
+
+        /// <summary>
+        /// Return true if point pt are in the circumsphere of the fourth other ones
+        /// (a, b, c, d).
+        /// </summary>
+        public static bool InCircumSphere3D(Vec3 pt, Vec3 a, Vec3 b, Vec3 c, Vec3 d)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
         /// Return true if the points (a, b, c) are in a counter clockwise order, else false.
         /// </summary>
         /// <remarks>
