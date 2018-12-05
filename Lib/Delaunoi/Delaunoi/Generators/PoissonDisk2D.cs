@@ -164,8 +164,8 @@ namespace Delaunoi.Generators
 
         private void Store(Vec3 sample)
         {
-            int col = (int)Math.Floor(sample.x / _cellSize);
-            int row = (int)Math.Floor(sample.y / _cellSize);
+            int col = (int)Math.Floor(sample.X / _cellSize);
+            int row = (int)Math.Floor(sample.Y / _cellSize);
             _grid[row, col] = sample;
 
             _count++;
@@ -179,8 +179,8 @@ namespace Delaunoi.Generators
 
         private Coord GridCoord(Vec3 sample)
         {
-            int col = (int)Math.Floor(sample.x / _cellSize);
-            int row = (int)Math.Floor(sample.y / _cellSize);
+            int col = (int)Math.Floor(sample.X / _cellSize);
+            int row = (int)Math.Floor(sample.Y / _cellSize);
 
             return new Coord(row, col);
         }

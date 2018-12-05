@@ -100,8 +100,8 @@ public class GuibasStolfiTest : MonoBehaviour
                 {
                     // Random sparse distribution
                     Vec3 temp = HaltonSequence.Halton2D(n, bases[0], bases[1]);
-                    points.Add(new Vec3(temp.x * boundaries[0] + transform.position.x,
-                                         temp.y * boundaries[1] + transform.position.y,
+                    points.Add(new Vec3(temp.X * boundaries[0] + transform.position.x,
+                                         temp.Y * boundaries[1] + transform.position.y,
                                          transform.position.z));
                     n++;
                 }
@@ -183,7 +183,7 @@ public class GuibasStolfiTest : MonoBehaviour
         pos = new Vec3(0.72265633333 * boundaries[0], 0.54732506667 * boundaries[1], 0.0);
         result = triangulator.InsertSite(pos);
         Debug.Log("Site already existing --> Not added: " + !result);
-        pos = new Vec3(0.76666666666667 * boundaries[0], pos.y, pos.z);
+        pos = new Vec3(0.76666666666667 * boundaries[0], pos.Y, pos.Z);
         result = triangulator.InsertSite(pos);
         Debug.Log("Inside convex Hull --> Added: " + result);
         delta = System.DateTime.Now - previousTime;
@@ -273,8 +273,8 @@ public class GuibasStolfiTest : MonoBehaviour
         if (!alreadySorted)
         {
             return points.Select(val => new Vec3(x:val.x, y:val.y, z:val.z))
-                                          .OrderBy(vec => vec.x)
-                                          .ThenBy(vec => vec.y)
+                                          .OrderBy(vec => vec.X)
+                                          .ThenBy(vec => vec.Y)
                                           .ToArray();
         }
         else

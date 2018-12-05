@@ -140,10 +140,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2d36b7ed996fb17419e4462b79e2db83, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  pointNumber: 1000
+  pointNumber: 10000
   radius: 50
   shape: {fileID: 1299362892703848, guid: 5bd056414346da7408618b5b49b996b1, type: 2}
   scale: 0.5
+  lineScale: 1.5
+  mat: {fileID: 2100000, guid: 0d449b6f6ac7ee64c8780aab0a60362c, type: 2}
+  triangulate: 1
 --- !u!4 &66717360
 Transform:
   m_ObjectHideFlags: 0

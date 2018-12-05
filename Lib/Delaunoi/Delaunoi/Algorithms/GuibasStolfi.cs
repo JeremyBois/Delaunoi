@@ -47,8 +47,8 @@ namespace Delaunoi.Algorithms
             if (!alreadySorted)
             {
                 // Linq faster than Sort even when only sorting needed
-                this._points = points.OrderBy(vec => vec.x)
-                                     .ThenBy(vec => vec.y)
+                this._points = points.OrderBy(vec => vec.X)
+                                     .ThenBy(vec => vec.Y)
                                      .ToArray();
             }
             else
@@ -533,12 +533,12 @@ namespace Delaunoi.Algorithms
                                                             primalEdge.Destination,
                                                             primalEdge.Onext.Destination);
             }
-            double xCenter = rotSym.Origin.x;
-            double yCenter = rotSym.Origin.y;
+            double xCenter = rotSym.Origin.X;
+            double yCenter = rotSym.Origin.Y;
 
             // Compute normalized tangent of primal edge scaled by radius
-            double xTangent = primalEdge.Destination.x - primalEdge.Origin.x;
-            double yTangent = primalEdge.Destination.y - primalEdge.Origin.y;
+            double xTangent = primalEdge.Destination.X - primalEdge.Origin.X;
+            double yTangent = primalEdge.Destination.Y - primalEdge.Origin.Y;
             double dist = Math.Sqrt(xTangent * xTangent + yTangent * yTangent);
             xTangent /= dist;
             yTangent /= dist;
@@ -547,13 +547,13 @@ namespace Delaunoi.Algorithms
 
             // Add vertex using edge dual destination as origin
             // in direction normal to the primal edge
-            Vec3 normal = new Vec3(xCenter - yTangent, yCenter + xTangent, rotSym.Origin.z);
+            Vec3 normal = new Vec3(xCenter - yTangent, yCenter + xTangent, rotSym.Origin.Z);
 
             // If new voronoi vertex is on the left of the primal edge
             // we used the wrong normal vector --> get its opposite
             if (Geometry.LeftOf(normal, primalEdge))
             {
-                normal = new Vec3(xCenter + yTangent, yCenter - xTangent, rotSym.Origin.z);
+                normal = new Vec3(xCenter + yTangent, yCenter - xTangent, rotSym.Origin.Z);
             }
             return normal;
         }

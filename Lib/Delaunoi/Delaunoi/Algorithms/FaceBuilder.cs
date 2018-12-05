@@ -212,11 +212,11 @@ namespace Delaunoi.Algorithms
             Vec3 upBounds = origin + extends;
             foreach (Vec3 pos in face.Bounds)
             {
-                if (pos.x > upBounds.x || pos.y > upBounds.y || pos.z > upBounds.z)
+                if (pos.X > upBounds.X || pos.Y > upBounds.Y || pos.Z > upBounds.Z)
                 {
                     return false;
                 }
-                else if (pos.x < origin.x || pos.y < origin.y || pos.z < origin.z)
+                else if (pos.X < origin.X || pos.Y < origin.Y || pos.Z < origin.Z)
                 {
                     return false;
                 }
