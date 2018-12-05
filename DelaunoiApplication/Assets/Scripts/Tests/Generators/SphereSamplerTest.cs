@@ -32,6 +32,8 @@ public class SphereSamplerTest : MonoBehaviour
     [Tooltip("Material used for Line Renderer.")]
     [SerializeField]
     private Material mat;
+    [SerializeField]
+    private Gradient gradient;
 
     [SerializeField]
     private bool triangulate = false;
@@ -54,6 +56,7 @@ public class SphereSamplerTest : MonoBehaviour
                   delta.TotalSeconds, delta.TotalMilliseconds));
         Debug.Log("Total generated points: " + points.Count);
 
+
         if (triangulate)
         {
             // INIT  ---  ---  INIT  ---  ---  INIT
@@ -72,6 +75,27 @@ public class SphereSamplerTest : MonoBehaviour
             Debug.Log(string.Format("*** TRIANGULATION *** {0} secondes OU {1} milliseconds *** TRIANGULATION",
                       delta.TotalSeconds, delta.TotalMilliseconds));
 
+
+            // Close sphere
+            var temp = triangulator.LeftMostEdge.Lnext.Sym;
+            var newE = QuadEdge<int>.Connect(triangulator.LeftMostEdge.Onext.Sym, triangulator.RightMostEdge.Oprev);
+            newE = QuadEdge<int>.Connect(triangulator.LeftMostEdge, newE.Sym);
+            // @TODO Handle missing triangle correctly ...
+            // There must be a missing connection due to edges at two extremum.
+
+            // // Helper
+            // Vec3 test = radius * Geometry.InvStereographicProjection(triangulator.RightMostEdge.Origin);
+            // var newGo = GameObject.Instantiate(shape);
+            // newGo.transform.SetParent(transform);
+            // newGo.transform.position = test.AsVector3();
+            // newGo.transform.localScale = new Vector3(2.0f, 2.0f, 2.0f);
+            // // Color
+            // var meshR = newGo.GetComponent<MeshRenderer>();
+            // if (meshR != null)
+            // {
+            //     meshR.materials[0].color = Color.blue;
+            // }
+
             // Draw Delaunay
             var triangles = new List<Vec3>();
             if (triangulationOnSphere)
@@ -83,6 +107,12 @@ public class SphereSamplerTest : MonoBehaviour
                 triangles = triangulator.ExportDelaunay().Select(x => x * radius).ToList();
             }
 
+            // @TODO Handle missing triangle correctly ...
+            triangles.Add(radius * Geometry.InvStereographicProjection(triangulator.RightMostEdge.Origin));
+            triangles.Add(radius * Geometry.InvStereographicProjection(triangulator.RightMostEdge.Rprev.Origin));
+            triangles.Add(radius * Geometry.InvStereographicProjection(triangulator.RightMostEdge.Rprev.Rprev.Origin));
+
+            TriangleDrawer.DrawFace(triangles, transform, mat, gradient);
             TriangleDrawer.DrawLine(triangles, transform, mat, Color.black, lineScale);
             TriangleDrawer.DrawPoints(triangles, transform, shape, Color.red, scale);
         }
