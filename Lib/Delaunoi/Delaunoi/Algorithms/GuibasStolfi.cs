@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
+
 namespace Delaunoi.Algorithms
 {
     using Delaunoi.DataStructures;
@@ -121,12 +122,11 @@ namespace Delaunoi.Algorithms
             // Triangulate recursively
             _leftRightEdges = Triangulate(_points);
 
-            // // Connect left and right most edges together
-            // if (isCycling)
-            // {
-            //     var addedE = QuadEdge<T>.Connect(LeftMostEdge.Onext.Sym, RightMostEdge.Oprev);
-            //     QuadEdge<T>.Connect(LeftMostEdge, addedE.Sym);
-            // }
+            // Connect left and right most edges together
+            if (isCycling)
+            {
+                CyclingMerge();
+            }
 
             return true;
         }
@@ -145,16 +145,18 @@ namespace Delaunoi.Algorithms
             QuadEdge<T> first = RightMostEdge;
             queue.Enqueue(first);
 
-            // // Will be true only when extermum are connected together
-            // // Should be the case for a sphere
-            // if (RightMostEdge.Rprev.Destination == LeftMostEdge.Destination)
-            // {
-            //     foreach (QuadEdge<T> current in first.RightEdges(CCW:false))
-            //     {
-            //         triangles.Add(current.Origin);
-            //         current.Tag = !_visitedTagState;
-            //     }
-            // }
+            // @TODO Possible to handle it properly ???
+            // Will be true only when extermum are connected together
+            // Should be the case for a sphere
+            // Avoid false true when only one triangle
+            if (_points.Length > 3 && _leftRightEdges[0].Destination == _leftRightEdges[1].Origin)
+            {
+                foreach (QuadEdge<T> current in first.RightEdges(CCW:false))
+                {
+                    triangles.Add(current.Origin);
+                    current.Tag = !_visitedTagState;
+                }
+            }
 
             // Visit all edge of the convex hull in CW order and
             // add opposite edges to queue
@@ -582,7 +584,7 @@ namespace Delaunoi.Algorithms
         /// <summary>
         /// Return true if Geometry.RightOf(edge.Destination, baseEdge) is true.
         /// </summary>
-        public bool IsValid(QuadEdge<T> edge, QuadEdge<T> baseEdge)
+        private bool IsValid(QuadEdge<T> edge, QuadEdge<T> baseEdge)
         {
             // Geometry.Ccw called directly.
             return Geometry.Ccw(edge.Destination, baseEdge.Destination, baseEdge.Origin);
@@ -730,6 +732,39 @@ namespace Delaunoi.Algorithms
                 }
             }
             return new QuadEdge<T>[] {ldo, rdo};
+        }
+
+        /// <summary>
+        /// Merge left and right most edges together to construct a cycling triangulation.
+        /// Needed for sphere for example after normal triangulation step.
+        /// </summary>
+        private void CyclingMerge()
+        {
+            QuadEdge<T> baseEdge = RightMostEdge.Rnext;
+            QuadEdge<T> lCand = baseEdge.Sym.Onext;
+            QuadEdge<T> rCand = baseEdge.Oprev;
+
+            // Get edges CCW order from left extremum until reach right extremum
+            // to complete the sphere triangulation
+            // All edges must be stored first because pointer are updated
+            // during construction and will eventually leads to infinite loop ...
+            var toCheckEdge = rCand.LeftEdges(true).ToList();
+            foreach (QuadEdge<T> rightEdge in toCheckEdge)
+            {
+                if (rightEdge.Destination != lCand.Destination)
+                {
+                    // Connect rightEdge.Destination to baseEdge.Destination
+                    // Construct a fan
+                    baseEdge = QuadEdge<T>.Connect(rightEdge, baseEdge.Sym);
+                }
+                else
+                {
+                    // Update extremums
+                    _leftRightEdges[1] = rightEdge;
+                    _leftRightEdges[0] = rightEdge.Sym;
+                    break;
+                }
+            }
         }
     }
 }

@@ -15,13 +15,13 @@ namespace Delaunoi.Generators
 
        /// <summary>
        /// Return an iterator of points in 3D euclidean space representing an uniform
-       /// distribution on points on a sphere.
+       /// distribution on points on a unit sphere.
        /// </summary>
        /// <remarks>
        /// Based on the paper `Spherical Fibonacci Mapping, Benjamin Keinert et al.
        /// Journal ACM Transactions on Graphics, Volume 34 Issue 6, November 2015`.
        /// </remarks>
-       public static IEnumerable<Vec3> FibonnaciSphere(int number, double radius=1.0)
+       public static IEnumerable<Vec3> Fibonnaci(int number)
        {
             // Multiplication cheaper than division
             double oneDivN = 1.0 / (double)number;
@@ -34,7 +34,30 @@ namespace Delaunoi.Generators
 
                 double theta = Math.Acos(1.0 - (2.0 * (double)ind + 1.0) * oneDivN);
 
-                yield return radius * Geometry.SphericalToEuclidean(phi, theta);
+                yield return Geometry.SphericalToEuclidean(phi, theta);
+            }
+       }
+
+       /// <summary>
+       /// Return an iterator of points in 3D euclidean space representing a
+       /// pseudo uniform distribution of points on a unit sphere.
+       /// </summary>
+       /// <remarks>
+       /// Mathematics convention used: Phi represent the elevation [0, PI]
+       /// and Theta the azimuth [0, 2*PI].
+       /// More at http://mathworld.wolfram.com/SphericalCoordinates.html
+       /// </remarks>
+       public static IEnumerable<Vec3> Halton(int number, int seed=110,
+                                              int basePhi=2, int baseTheta=3)
+       {
+            for (int i = 0; i < number; i++)
+            {
+                Vec3 randTemp = HaltonSequence.Halton2D(seed, basePhi, baseTheta);
+                double phi = 2.0 * System.Math.PI * randTemp.X;
+                double theta = System.Math.Acos(2.0 * randTemp.Y - 1.0);
+
+                yield return Geometry.SphericalToEuclidean(phi, theta);
+                seed++;
             }
        }
     }

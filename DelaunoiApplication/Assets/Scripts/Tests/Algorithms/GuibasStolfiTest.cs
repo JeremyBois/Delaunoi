@@ -151,51 +151,52 @@ public class GuibasStolfiTest : MonoBehaviour
 
         Vec3 pos;
 
-        // LOCATE  ---  ---  LOCATE  ---  ---  LOCATE
-        // points >= 10 | seed 154
-        pos = new Vec3(0.72 * boundaries[0], 0.546 * boundaries[1], 0.0);
-        // var newGo = GameObject.Instantiate(shapes[0]);
-        // newGo.name = "PointLocated";
-        // newGo.transform.SetParent(transform);
-        // newGo.transform.position = pos.AsVector3();
-        // newGo.transform.localScale = new Vector3(5.0f, 5.0f, 5.0f);
-        // // Color
-        // var meshR = newGo.GetComponent<MeshRenderer>();
-        // if (meshR != null)
-        // {
-        //     meshR.materials[0].color = Color.green;
-        // }
-        // Start locate
-        previousTime = System.DateTime.Now;
-        var edge = triangulator.Locate(pos, safe: true);
+        // Avoid infinite because safe not used some Insert method (needed for testing)
+        if (points.Count > 10)
+        {
+            // LOCATE  ---  ---  LOCATE  ---  ---  LOCATE
+            // points >= 10 | seed 154
+            pos = new Vec3(0.72 * boundaries[0], 0.546 * boundaries[1], 0.0);
+            // var newGo = GameObject.Instantiate(shapes[0]);
+            // newGo.name = "PointLocated";
+            // newGo.transform.SetParent(transform);
+            // newGo.transform.position = pos.AsVector3();
+            // newGo.transform.localScale = new Vector3(5.0f, 5.0f, 5.0f);
+            // // Color
+            // var meshR = newGo.GetComponent<MeshRenderer>();
+            // if (meshR != null)
+            // {
+            //     meshR.materials[0].color = Color.green;
+            // }
+            // Start locate
+            previousTime = System.DateTime.Now;
+            var edge = triangulator.Locate(pos, safe: true);
 
-        delta = System.DateTime.Now - previousTime;
-        Debug.Log("***");
-        Debug.Log(string.Format("*** LOCATE *** {0} secondes OU {1} milliseconds *** LOCATE",
-                  delta.TotalSeconds, delta.TotalMilliseconds));
-        Debug.Log("Point is inside: " + triangulator.InsideConvexHull(pos));
-        Debug.Log("Edge origin is: " + edge.Origin);
-
-
-        // INSERT  ---  ---  INSERT  ---  ---  INSERT
-        // points >= 10 | seed 154
-        previousTime = System.DateTime.Now;
-        pos = new Vec3(1.1 * boundaries[0], 0.8 * boundaries[1], 0.0);
-        bool result = triangulator.InsertSite(pos, safe:true);
-        Debug.Log("Site outside --> Not added: " + !result);
-        pos = new Vec3(0.72265633333 * boundaries[0], 0.54732506667 * boundaries[1], 0.0);
-        result = triangulator.InsertSite(pos);
-        Debug.Log("Site already existing --> Not added: " + !result);
-        pos = new Vec3(0.76666666666667 * boundaries[0], pos.Y, pos.Z);
-        result = triangulator.InsertSite(pos);
-        Debug.Log("Inside convex Hull --> Added: " + result);
-        delta = System.DateTime.Now - previousTime;
-        Debug.Log("***");
-        Debug.Log(string.Format("*** INSERT *** {0} secondes OU {1} milliseconds *** INSERT",
-                  delta.TotalSeconds, delta.TotalMilliseconds));
+            delta = System.DateTime.Now - previousTime;
+            Debug.Log("***");
+            Debug.Log(string.Format("*** LOCATE *** {0} secondes OU {1} milliseconds *** LOCATE",
+                      delta.TotalSeconds, delta.TotalMilliseconds));
+            Debug.Log("Point is inside: " + triangulator.InsideConvexHull(pos));
+            Debug.Log("Edge origin is: " + edge.Origin);
 
 
-
+            // INSERT  ---  ---  INSERT  ---  ---  INSERT
+            // points >= 10 | seed 154
+            previousTime = System.DateTime.Now;
+            pos = new Vec3(1.1 * boundaries[0], 0.8 * boundaries[1], 0.0);
+            bool result = triangulator.InsertSite(pos, safe:true);
+            Debug.Log("Site outside --> Not added: " + !result);
+            pos = new Vec3(0.72265633333 * boundaries[0], 0.54732506667 * boundaries[1], 0.0);
+            result = triangulator.InsertSite(pos);
+            Debug.Log("Site already existing --> Not added: " + !result);
+            pos = new Vec3(0.76666666666667 * boundaries[0], pos.Y, pos.Z);
+            result = triangulator.InsertSite(pos);
+            Debug.Log("Inside convex Hull --> Added: " + result);
+            delta = System.DateTime.Now - previousTime;
+            Debug.Log("***");
+            Debug.Log(string.Format("*** INSERT *** {0} secondes OU {1} milliseconds *** INSERT",
+                      delta.TotalSeconds, delta.TotalMilliseconds));
+        }
 
         // DRAWING  ---  ---  DRAWING  ---  ---  DRAWING
         previousTime = System.DateTime.Now;

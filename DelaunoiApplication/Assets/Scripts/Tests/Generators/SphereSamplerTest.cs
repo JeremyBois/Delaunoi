@@ -38,7 +38,7 @@ public class SphereSamplerTest : MonoBehaviour
     int seed = 154;
     [Tooltip("Base used to compute Halton sequence.")]
     [SerializeField]
-    private int[] bases = {2, 3};
+    private int[] bases = { 2, 3 };
 
 
     [Header("Drawing Settings")]
@@ -72,31 +72,25 @@ public class SphereSamplerTest : MonoBehaviour
         var points = new List<Vec3>();
         int n = seed;
         RandGen.Init(seed);
+
+
         switch (usedGenerator)
         {
             case Generator.Halton:
-                for (int i = 0; i < pointNumber; i++)
-                {
-                    Vec3 randTemp = HaltonSequence.Halton2D(n, bases[0], bases[1]);
-                    double phi   = 2.0 * System.Math.PI * randTemp.X;
-                    double theta = System.Math.Acos(2.0 * randTemp.Y - 1.0);
-
-                    points.Add(Geometry.SphericalToEuclidean(phi, theta));
-                    n++;
-                }
+                points = SphereSampler.Halton(pointNumber, seed, bases[0], bases[1]).ToList();
                 break;
             case Generator.Uniform:
                 for (int i = 0; i < pointNumber; i++)
                 {
-                    double phi   = 2.0 * System.Math.PI * RandGen.NextDouble();
-                    double theta     = System.Math.Acos(2.0 * RandGen.NextDouble() - 1.0);
+                    double phi = 2.0 * System.Math.PI * RandGen.NextDouble();
+                    double theta = System.Math.Acos(2.0 * RandGen.NextDouble() - 1.0);
 
                     points.Add(Geometry.SphericalToEuclidean(phi, theta));
                     n++;
                 }
                 break;
             case Generator.Fibonnaci:
-                points = SphereSampler.FibonnaciSphere(pointNumber, 1.0).ToList();
+                points = SphereSampler.Fibonnaci(pointNumber).ToList();
                 break;
         }
 
@@ -119,196 +113,85 @@ public class SphereSamplerTest : MonoBehaviour
 
             // TRIANGULATION  ---  ---  TRIANGULATION  ---  ---  TRIANGULATION
             previousTime = System.DateTime.Now;
-            triangulator.ComputeDelaunay(isCycling:false);
+            triangulator.ComputeDelaunay(isCycling: true);
             delta = System.DateTime.Now - previousTime;
             Debug.Log("***");
             Debug.Log(string.Format("*** TRIANGULATION *** {0} secondes OU {1} milliseconds *** TRIANGULATION",
                       delta.TotalSeconds, delta.TotalMilliseconds));
 
-            // // Find lcand, rcand, baseEdge
-            // var lcand = triangulator.LeftMostEdge;
-            // var rcand = triangulator.RightMostEdge;
-            // while (lcand.Origin != rcand.Origin)
+
+            // // START DEBUGTOOLS
+            // // START DEBUGTOOLS
+            // // START DEBUGTOOLS
+
+
+            // // LCand
+            // var test = radius * triangulator.LeftMostEdge.Destination;
+            // if (triangulationOnSphere)
             // {
-            //     lcand = lcand.Lprev;
+            //     test = radius * Geometry.InvStereographicProjection(triangulator.LeftMostEdge.Destination);
             // }
-            // lcand = lcand.Lnext;
-            // var baseEdge = rcand.Oprev;
-            // QuadEdge<int> nextCand;
+            // var newGo = GameObject.Instantiate(shape);
+            // newGo.transform.SetParent(transform);
+            // newGo.transform.position = test.AsVector3();
+            // newGo.transform.localScale = new Vector3(1.0f, 1.0f, 1.0f);
+            // // Color
+            // var meshR = newGo.GetComponent<MeshRenderer>();
+            // if (meshR != null)
+            // {
+            //     meshR.materials[0].color = Color.blue;
+            // }
 
-            // var nextNeeded = lcand.Lnext;
+            // // RCand
+            // var test2 = radius * triangulator.RightMostEdge.Destination;
+            // if (triangulationOnSphere)
+            // {
+            //     test2 = radius * Geometry.InvStereographicProjection(triangulator.RightMostEdge.Destination);
+            // }
+            // var newGo2 = GameObject.Instantiate(shape);
+            // newGo2.transform.SetParent(transform);
+            // newGo2.transform.position = test2.AsVector3();
+            // newGo2.transform.localScale = new Vector3(1.0f, 1.0f, 1.0f);
+            // // Color
+            // var meshR2 = newGo2.GetComponent<MeshRenderer>();
+            // if (meshR2 != null)
+            // {
+            //     meshR2.materials[0].color = Color.red;
+            // }
 
-            QuadEdge<int> nextCand;
-            // QuadEdge<int> baseEdge = triangulator.RightMostEdge.Rnext.Rnext.Sym;
-
-            bool crossEdgeNotFound = true;
-            var ldi = triangulator.LeftMostEdge;
-            var rdi = triangulator.RightMostEdge;
-            while (crossEdgeNotFound)
-            {
-                if (Geometry.LeftOf(rdi.Origin, ldi))
-                {
-                    ldi = ldi.Lnext;
-                }
-                else if (Geometry.RightOf(ldi.Origin, rdi))
-                {
-                    rdi = rdi.Rprev;
-                }
-                else
-                {
-                    crossEdgeNotFound = false;
-                }
-            }
-
-            // var baseEdge = rdi.Sym.Rnext;
-            // var baseEdge = QuadEdge<int>.Connect(rdi.Sym, ldi);
-
-
-            // Debug.Log(triangulator.IsValid(baseEdge.Sym.Oprev, baseEdge));
-            // Debug.Log(triangulator.IsValid(baseEdge.Onext, baseEdge));
-
-
-            // LCand
-            Vec3 test = radius * Geometry.InvStereographicProjection(ldi.Destination);
-            var newGo = GameObject.Instantiate(shape);
-            newGo.transform.SetParent(transform);
-            newGo.transform.position = test.AsVector3();
-            newGo.transform.localScale = new Vector3(2.0f, 2.0f, 2.0f);
-            // Color
-            var meshR = newGo.GetComponent<MeshRenderer>();
-            if (meshR != null)
-            {
-                meshR.materials[0].color = Color.blue;
-            }
-
-            // RCand
-            test = radius * Geometry.InvStereographicProjection(rdi.Destination);
-            newGo = GameObject.Instantiate(shape);
-            newGo.transform.SetParent(transform);
-            newGo.transform.position = test.AsVector3();
-            newGo.transform.localScale = new Vector3(2.0f, 2.0f, 2.0f);
-            // Color
-            meshR = newGo.GetComponent<MeshRenderer>();
-            if (meshR != null)
-            {
-                meshR.materials[0].color = Color.red;
-            }
-
+            // int i = 0;
             // foreach (QuadEdge<int> edge in baseEdge.RightEdges())
             // {
-            //     test = radius * Geometry.InvStereographicProjection(edge.Destination);
-            //     newGo = GameObject.Instantiate(shape);
-            //     newGo.transform.SetParent(transform);
-            //     newGo.transform.position = test.AsVector3();
-            //     newGo.transform.localScale = new Vector3(2.0f, 2.0f, 2.0f);
+            //     var test3 = radius * edge.Destination;
+            //     if (triangulationOnSphere)
+            //     {
+            //         test3 = radius * Geometry.InvStereographicProjection(edge.Destination);
+            //     }
+            //     var newGo3 = GameObject.Instantiate(shape);
+            //     newGo3.transform.SetParent(transform);
+            //     newGo3.transform.position = test3.AsVector3();
+            //     newGo3.transform.localScale = new Vector3(4.0f, 4.0f, 4.0f);
             //     // Color
-            //     meshR = newGo.GetComponent<MeshRenderer>();
-            //     if (meshR != null)
+            //     var meshR3 = newGo3.GetComponent<MeshRenderer>();
+            //     if (meshR3 != null)
             //     {
-            //         meshR.materials[0].color = Color.yellow;
+            //         meshR3.materials[0].color = Color.yellow;
             //     }
-            //     break;
+
+            //     if (i >= 0)
+            //     {
+            //         break;
+            //     }
+            //     i++;
             // }
 
-            // // 2) Rising bubble (See Fig. 22)
-            // bool upperCommonTangentNotFound = true;
-            // while (upperCommonTangentNotFound)
-            // {
-            //     // Locate the first L site (lCand.Destination) to be encountered
-            //     // by the rising bubble, and delete L edges out of baseEdge.Destination
-            //     // that fail the circle test.
-            //     QuadEdge<int> lCand = baseEdge.Sym.Onext;
-            //     if (triangulator.IsValid(lCand, baseEdge))
-            //     {
-            //         while (Geometry.InCircumCercle2D(lCand.Onext.Destination,
-            //                               baseEdge.Destination, baseEdge.Origin, lCand.Destination))
-            //         {
-            //             nextCand = lCand.Onext;
-            //             QuadEdge<int>.Delete(lCand);
-            //             lCand = nextCand;
-            //         }
-            //     }
-            //     // Same for the right part (Symetrically)
-            //     QuadEdge<int> rCand = baseEdge.Oprev;
-            //     if (triangulator.IsValid(rCand, baseEdge))
-            //     {
-            //         while (Geometry.InCircumCercle2D(rCand.Oprev.Destination,
-            //                               baseEdge.Destination, baseEdge.Origin, rCand.Destination))
-            //         {
-            //             nextCand = rCand.Oprev;
-            //             QuadEdge<int>.Delete(rCand);
-            //             rCand = nextCand;
-            //         }
-            //     }
-            //     // Upper common tangent is baseEdge
-            //     if (!triangulator.IsValid(lCand, baseEdge) && !triangulator.IsValid(rCand, baseEdge))
-            //     {
-            //         upperCommonTangentNotFound = false;
-            //     }
-            //     // Construct new cross edge between left and right
-            //     // The next cross edge is to be connected to either lcand.Dest or rCand.Dest
-            //     // If both are valid, then choose the appropriate one using the
-            //     // Geometry.InCircumCercle2D test
-            //     else if (!triangulator.IsValid(lCand, baseEdge) ||
-            //                 (
-            //                     triangulator.IsValid(rCand, baseEdge) &&
-            //                     Geometry.InCircumCercle2D(rCand.Destination,
-            //                                               lCand.Destination,
-            //                                               lCand.Origin,
-            //                                               rCand.Origin)
-            //                 )
-            //             )
-            //     {
-            //         // Cross edge baseEdge added from rCand.Destination to basel.Destination
-            //         baseEdge = QuadEdge<int>.Connect(rCand, baseEdge.Sym);
-            //     }
-            //     else
-            //     {
-            //         // Cross edge baseEdge added from baseEdge.Origin to lCand.Destination
-            //         baseEdge = QuadEdge<int>.Connect(baseEdge.Sym, lCand.Sym);
-            //     }
-            // }
-
-            // var otherE = QuadEdge<int>.Connect(lcand, baseEdge);
-            // QuadEdge<int>.Connect(lcand.Dprev.Dprev.Sym, otherE.Sym);
-            // QuadEdge<int>.Connect(triangulator.LeftMostEdge.Rprev.Rprev.Sym, triangulator.RightMostEdge);
+            // // END DEBUGTOOLS
+            // // END DEBUGTOOLS
+            // // END DEBUGTOOLS
 
 
-            // // Helper
-            // foreach (QuadEdge<int> edge in triangulator.LeftMostEdge.EdgesFrom())
-            // {
-            //     Vec3 test = radius * Geometry.InvStereographicProjection(edge.Destination);
-            //     var newGo = GameObject.Instantiate(shape);
-            //     newGo.transform.SetParent(transform);
-            //     newGo.transform.position = test.AsVector3();
-            //     newGo.transform.localScale = new Vector3(2.0f, 2.0f, 2.0f);
-            //     // Color
-            //     var meshR = newGo.GetComponent<MeshRenderer>();
-            //     if (meshR != null)
-            //     {
-            //         meshR.materials[0].color = Color.blue;
-            //     }
-            //     break;
-            // }
 
-            // foreach (QuadEdge<int> edge in triangulator.RightMostEdge.EdgesFrom())
-            // {
-            //     Vec3 test = radius * Geometry.InvStereographicProjection(edge.Destination);
-            //     var newGo = GameObject.Instantiate(shape);
-            //     newGo.transform.SetParent(transform);
-            //     newGo.transform.position = test.AsVector3();
-            //     newGo.transform.localScale = new Vector3(2.0f, 2.0f, 2.0f);
-            //     // Color
-            //     var meshR = newGo.GetComponent<MeshRenderer>();
-            //     if (meshR != null)
-            //     {
-            //         meshR.materials[0].color = Color.green;
-            //     }
-            //     break;
-            // }
-
-
-            // Draw Delaunay
+            // DRAWING  ---  ---  DRAWING  ---  ---  DRAWING
             var triangles = new List<Vec3>();
             if (triangulationOnSphere)
             {

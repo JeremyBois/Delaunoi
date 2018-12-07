@@ -334,6 +334,12 @@ namespace Delaunoi.Tools
         /// <summary>
         ///  Transform spherical coordinate (phi, theta) to euclidean coordinates (x, y, z).
         /// </summary>
+        /// <remarks>
+        /// Mathematics convention used: Phi represent the elevation [0, PI]
+        /// and Theta the azimuth [0, 2*PI].
+        /// More at http://mathworld.wolfram.com/SphericalCoordinates.html and
+        /// https://en.wikipedia.org/wiki/Stereographic_projection
+        /// </remarks>
         public static Vec3 SphericalToEuclidean(double phi, double theta)
         {
             double sinTheta = Math.Sin(theta);
@@ -349,6 +355,9 @@ namespace Delaunoi.Tools
         /// Projection of a UNIT sphere point into a plane.
         /// </summary>
         /// <remarks>
+        /// Mathematics convention used: Phi represent the elevation [0, PI]
+        /// and Theta the azimuth [0, 2*PI].
+        /// More at http://mathworld.wolfram.com/SphericalCoordinates.html and
         /// https://en.wikipedia.org/wiki/Stereographic_projection
         /// </remarks>
         public static Vec3 StereographicProjection(Vec3 spherePoint)
