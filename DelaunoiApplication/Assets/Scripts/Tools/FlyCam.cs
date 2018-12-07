@@ -28,8 +28,8 @@ public class FlyCam : MonoBehaviour
     private float currentSpeed;
 
     // Rotation
-    private float rotationX = 0.0f;
-    private float rotationY = 0.0f;
+    public float rotationX = 0.0f;
+    public float rotationY = 0.0f;
 
     // Move world
     private Vector3 previousMousePos;
@@ -42,7 +42,9 @@ public class FlyCam : MonoBehaviour
     {
         currentSpeed = normalMoveSpeed;
 
-        rotationX = -180.0f;
+        // Get init value from transform
+        rotationX = transform.rotation.eulerAngles.y;
+        rotationY = transform.rotation.eulerAngles.x;
     }
 
     void Update()
