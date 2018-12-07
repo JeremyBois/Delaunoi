@@ -5,8 +5,8 @@
 			"name": "Delaunoi"
 		},
 		{
-			"path": "Application",
-			"name": "Unity Application"
+			"path": "DelaunoiApplication",
+			"name": "Application"
 		},
 		{
 			"path": ".",
