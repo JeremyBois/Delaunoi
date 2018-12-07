@@ -41,13 +41,13 @@ public class FlyCam : MonoBehaviour
     void Start()
     {
         currentSpeed = normalMoveSpeed;
+
+        rotationX = -180.0f;
     }
 
     void Update()
     {
         float delta = Time.deltaTime;
-
-
 
         // Zoom
         Camera.main.fieldOfView -= Input.GetAxis("Mouse ScrollWheel") *

@@ -41,6 +41,8 @@ namespace Delaunoi.Algorithms
         /// <summary>
         /// Load an array of position to be triangulate.
         /// </summary>
+        /// <param name="points">An array of points to triangulate.</param>
+        /// <param name="alreadySorted">Points already sorted (base on x then y).</param>
         public GuibasStolfi(Vec3[] points, bool alreadySorted=false)
             : this()
         {
@@ -104,7 +106,8 @@ namespace Delaunoi.Algorithms
         /// <summary>
         /// Return an array of Vec3 from the triangulation.
         /// </summary>
-        public bool ComputeDelaunay()
+        /// <param name="isCycling">Cycling point set ? Needed when triangulated a sphere.</param>
+        public bool ComputeDelaunay(bool isCycling=false)
         {
             // Reinit flag state
             _visitedTagState = false;
@@ -117,6 +120,13 @@ namespace Delaunoi.Algorithms
 
             // Triangulate recursively
             _leftRightEdges = Triangulate(_points);
+
+            // // Connect left and right most edges together
+            // if (isCycling)
+            // {
+            //     var addedE = QuadEdge<T>.Connect(LeftMostEdge.Onext.Sym, RightMostEdge.Oprev);
+            //     QuadEdge<T>.Connect(LeftMostEdge, addedE.Sym);
+            // }
 
             return true;
         }
@@ -134,6 +144,17 @@ namespace Delaunoi.Algorithms
             // Start at the far right
             QuadEdge<T> first = RightMostEdge;
             queue.Enqueue(first);
+
+            // // Will be true only when extermum are connected together
+            // // Should be the case for a sphere
+            // if (RightMostEdge.Rprev.Destination == LeftMostEdge.Destination)
+            // {
+            //     foreach (QuadEdge<T> current in first.RightEdges(CCW:false))
+            //     {
+            //         triangles.Add(current.Origin);
+            //         current.Tag = !_visitedTagState;
+            //     }
+            // }
 
             // Visit all edge of the convex hull in CW order and
             // add opposite edges to queue
@@ -561,7 +582,7 @@ namespace Delaunoi.Algorithms
         /// <summary>
         /// Return true if Geometry.RightOf(edge.Destination, baseEdge) is true.
         /// </summary>
-        private bool IsValid(QuadEdge<T> edge, QuadEdge<T> baseEdge)
+        public bool IsValid(QuadEdge<T> edge, QuadEdge<T> baseEdge)
         {
             // Geometry.Ccw called directly.
             return Geometry.Ccw(edge.Destination, baseEdge.Destination, baseEdge.Origin);

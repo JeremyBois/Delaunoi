@@ -12,15 +12,18 @@ using Delaunoi.DataStructures.Extensions;
 using Delaunoi.Tools.Extensions;
 
 
-public enum Generator
-{
-    Halton,
-    Poisson,
-    Grid
-}
+
 
 public class GuibasStolfiTest : MonoBehaviour
 {
+
+    private enum Generator
+    {
+        Halton,
+        Poisson,
+        Grid
+    }
+
     [Header("Generation Global Settings")]
     [SerializeField]
     private Generator usedGenerator;
