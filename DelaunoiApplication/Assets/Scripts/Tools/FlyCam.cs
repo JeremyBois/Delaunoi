@@ -117,11 +117,12 @@ public class FlyCam : MonoBehaviour
         else if (Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl))
         {
             currentSpeed -= acceleration * delta;
+            currentSpeed = Mathf.Max(0.0f, currentSpeed);
         }
         transform.position += transform.forward * currentSpeed * Input.GetAxis("Vertical") * delta;
         transform.position += transform.right * currentSpeed * Input.GetAxis("Horizontal") * delta;
 
-        if (Input.GetKey(KeyCode.Q)) { transform.position += transform.up * currentSpeed * delta; }
-        if (Input.GetKey(KeyCode.E)) { transform.position -= transform.up * currentSpeed * delta; }
+        if (Input.GetKey(KeyCode.E)) { transform.position += transform.up * currentSpeed * delta; }
+        if (Input.GetKey(KeyCode.Q)) { transform.position -= transform.up * currentSpeed * delta; }
     }
 }
