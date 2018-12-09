@@ -11,14 +11,14 @@ namespace Delaunoi
     using Delaunoi.Tools;
 
 
-    public class Mesh2D<T>: IFluentExtended<Face<T>>, IFluent<Vec3>
+    public class Mesh2D<TEdge, TFace>: IFluentExtended<Face<TEdge, TFace>>, IFluent<Vec3>
     {
         // Context use to implement fluent pattern
-        protected IEnumerable<Vec3>    _contextTriangles;
-        protected IEnumerable<Face<T>> _contextFaces;
+        protected IEnumerable<Vec3>               _contextTriangles;
+        protected IEnumerable<Face<TEdge, TFace>> _contextFaces;
 
         // Internal representation of the mesh
-        protected GuibasStolfi<T>      _mesh;
+        protected GuibasStolfi<TEdge>      _mesh;
 
 
     // CONSTRUCTOR
@@ -30,7 +30,7 @@ namespace Delaunoi
         /// <param name="alreadySorted">Points already sorted (base on x then y).</param>
         public Mesh2D(Vec3[] points, bool alreadySorted=false)
         {
-            _mesh = new GuibasStolfi<T>(points, alreadySorted);
+            _mesh = new GuibasStolfi<TEdge>(points, alreadySorted);
         }
 
 
@@ -40,7 +40,7 @@ namespace Delaunoi
         /// <summary>
         /// Return the leftmost edge if triangulation already done, else null.
         /// </summary>
-        public QuadEdge<T> LeftMostEdge
+        public QuadEdge<TEdge> LeftMostEdge
         {
             get {return _mesh.LeftMostEdge;}
         }
@@ -48,7 +48,7 @@ namespace Delaunoi
         /// <summary>
         /// Return the rightmost edge if triangulation already done, else null.
         /// </summary>
-        public QuadEdge<T> RightMostEdge
+        public QuadEdge<TEdge> RightMostEdge
         {
             get {return _mesh.RightMostEdge;}
         }
@@ -83,7 +83,7 @@ namespace Delaunoi
         /// <param name="faceType">Define the type of face used for extraction.</param>
         /// <param name="radius">Distance used to construct site that are at infinity.</param>
         /// <param name="useZCoord">If true face center compute in R^3 else in R^2 (matter only if voronoi).</param>
-        public IFluentExtended<Face<T>> Faces(FaceConfig faceType, double radius, bool useZCoord=true)
+        public IFluentExtended<Face<TEdge, TFace>> Faces(FaceConfig faceType, double radius, bool useZCoord=true)
         {
             switch (faceType)
             {
@@ -138,7 +138,7 @@ namespace Delaunoi
         /// <param name="pos">The position to locate</param>
         /// <param name="edge">Edge used to start locate process. Can be used to speed up search.</param>
         /// <param name="safe">If true, first check if pos in convex hull of triangulation</param>
-        public QuadEdge<T> Locate(Vec3 pos, QuadEdge<T> edge=null, bool safe=false)
+        public QuadEdge<TEdge> Locate(Vec3 pos, QuadEdge<TEdge> edge=null, bool safe=false)
         {
             return _mesh.Locate(pos, edge, safe);
         }
@@ -151,9 +151,9 @@ namespace Delaunoi
         /// <param name="newPos">The position to of new site</param>
         /// <param name="edge">Edge used to start locate process. Can be used to speed up search.</param>
         /// <param name="safe">If true, check if <paramref name="safe"/> inside the convex hull.</param>
-        public bool Insert(Vec3 newPos, QuadEdge<T> edge=null, bool safe=false)
+        public bool Insert(Vec3 newPos, QuadEdge<TEdge> edge=null, bool safe=false)
         {
-            return _mesh.InsertSite(newPos, edge, safe);
+            return _mesh.Insert(newPos, edge, safe);
         }
 
         /// <summary>
@@ -165,6 +165,17 @@ namespace Delaunoi
             return _mesh.InsideConvexHull(pos);
         }
 
+        /// <summary>
+        /// If <paramref name="pos"/> is outside the convex hull of the triangulation
+        /// return edge with <paramref name="pos"/> on its left face.
+        /// If inside the triangulation return null.
+        /// </summary>
+        /// <param name="pos">The position to locate</param>
+        public QuadEdge<TEdge> ClosestBoundingEdge(Vec3 pos)
+        {
+            return _mesh.ClosestBoundingEdge(pos);
+        }
+
 
 
     // FLUENT INTERFACE FOR TRIANGLES
@@ -172,9 +183,15 @@ namespace Delaunoi
         /// <summary>
         /// Can be used to use fluent extensions from LINQ (<see cref="System.Linq"/>).
         /// </summary>
-        IEnumerable<Vec3> IFluent<Vec3>.Select()
+        IEnumerable<Vec3> IFluent<Vec3>.Collection()
         {
             return _contextTriangles;
+        }
+
+        IFluent<Vec3> IFluent<Vec3>.ForEach(Func<Vec3, Vec3> selector)
+        {
+            _contextTriangles = _contextTriangles.Select(vec => selector(vec));
+            return this;
         }
 
         /// <summary>
@@ -200,15 +217,25 @@ namespace Delaunoi
         /// <summary>
         /// Can be used to use fluent extensions from LINQ (<see cref="System.Linq"/>).
         /// </summary>
-        IEnumerable<Face<T>> IFluentExtended<Face<T>>.Select()
+        IEnumerable<Face<TEdge, TFace>> IFluentExtended<Face<TEdge, TFace>>.Collection()
         {
             return _contextFaces;
         }
 
         /// <summary>
+        /// Can be use to apply an operation on each element of the collection
+        /// (<see cref="System.Linq.Select"/>).
+        /// </summary>
+        IFluentExtended<Face<TEdge, TFace>> IFluentExtended<Face<TEdge, TFace>>.ForEach(Func<Face<TEdge, TFace>, Face<TEdge, TFace>> selector)
+        {
+            _contextFaces = _contextFaces.Select(face => selector(face));
+            return this;
+        }
+
+        /// <summary>
         /// Build a list of face which accounts for previous operations.
         /// </summary>
-        List<Face<T>> IFluentExtended<Face<T>>.ToList()
+        List<Face<TEdge, TFace>> IFluentExtended<Face<TEdge, TFace>>.ToList()
         {
             return _contextFaces.ToList();
         }
@@ -216,7 +243,7 @@ namespace Delaunoi
         /// <summary>
         /// Build an array of face which accounts for previous operations.
         /// </summary>
-        Face<T>[] IFluentExtended<Face<T>>.ToArray()
+        Face<TEdge, TFace>[] IFluentExtended<Face<TEdge, TFace>>.ToArray()
         {
             return _contextFaces.ToArray();
         }
@@ -224,7 +251,7 @@ namespace Delaunoi
         /// <summary>
         /// Keep only faces with at least one boundary site at infinity.
         /// </summary>
-        public IFluentExtended<Face<T>> AtInfinity()
+        public IFluentExtended<Face<TEdge, TFace>> AtInfinity()
         {
             _contextFaces = _contextFaces.Where(x => x.Reconstructed);
             return this;
@@ -233,7 +260,7 @@ namespace Delaunoi
         /// <summary>
         /// Keep only faces on the convex hull boundary.
         /// </summary>
-        public IFluentExtended<Face<T>> Bounds()
+        public IFluentExtended<Face<TEdge, TFace>> Bounds()
         {
             _contextFaces = _contextFaces.Where(x => x.IsOnBounds);
             return this;
@@ -242,7 +269,7 @@ namespace Delaunoi
         /// <summary>
         /// Keep only faces on the convex hull boundary with finite face bounds.
         /// </summary>
-        public IFluentExtended<Face<T>> FiniteBounds()
+        public IFluentExtended<Face<TEdge, TFace>> FiniteBounds()
         {
             _contextFaces = _contextFaces.Where(x => (x.IsOnBounds && !x.Reconstructed));
             return this;
@@ -251,7 +278,7 @@ namespace Delaunoi
         /// <summary>
         /// Keep only faces with finite area.
         /// </summary>
-        public IFluentExtended<Face<T>> Finite()
+        public IFluentExtended<Face<TEdge, TFace>> Finite()
         {
             _contextFaces = _contextFaces.Where(x => !x.Reconstructed);
             return this;
@@ -260,7 +287,7 @@ namespace Delaunoi
         /// <summary>
         /// Keep only faces inside the convex hull excluding boundary faces.
         /// </summary>
-        public IFluentExtended<Face<T>> InsideHull()
+        public IFluentExtended<Face<TEdge, TFace>> InsideHull()
         {
             _contextFaces = _contextFaces.Where(x => !x.IsOnBounds);
             return this;
@@ -270,7 +297,7 @@ namespace Delaunoi
         /// Keep faces where their center is at a distance from <paramref name="origin"/>
         /// smaller than <paramref name="radius"/>.
         /// </summary>
-        public IFluentExtended<Face<T>> CenterCloseTo(Vec3 origin, double radius)
+        public IFluentExtended<Face<TEdge, TFace>> CenterCloseTo(Vec3 origin, double radius)
         {
             double radiusSq = Math.Pow(radius, 2.0);
             _contextFaces = _contextFaces.Where(x => Vec3.DistanceSquared(origin, x.Center) < radiusSq);
@@ -283,7 +310,7 @@ namespace Delaunoi
         /// </summary>
         /// <param name="origin">Origin used as reference for distance calculation.</param>
         /// <param name="radius">Minimal distance from origin.</param>
-        public IFluentExtended<Face<T>> CloseTo(Vec3 origin, double radius)
+        public IFluentExtended<Face<TEdge, TFace>> CloseTo(Vec3 origin, double radius)
         {
             double radiusSq = Math.Pow(radius, 2.0);
             _contextFaces = _contextFaces.Where(x => IsCloseTo(x, origin, radiusSq));
@@ -296,7 +323,7 @@ namespace Delaunoi
         /// <param name="origin">Origin used for the box.</param>
         /// <param name="origin">Size of the box.</param>
         /// </summary>
-        public IFluentExtended<Face<T>> Inside(Vec3 origin, Vec3 extends)
+        public IFluentExtended<Face<TEdge, TFace>> Inside(Vec3 origin, Vec3 extends)
         {
             _contextFaces = _contextFaces.Where(x => IsInBounds(x, origin, extends));
             return this;
@@ -307,7 +334,7 @@ namespace Delaunoi
 
     // PRIVATE METHOD
 
-        private bool IsCloseTo(Face<T> face, Vec3 origin, double radiusSq)
+        private bool IsCloseTo(Face<TEdge, TFace> face, Vec3 origin, double radiusSq)
         {
             foreach (Vec3 pos in face.Bounds)
             {
@@ -319,7 +346,7 @@ namespace Delaunoi
             return true;
         }
 
-        private bool IsInBounds(Face<T> face, Vec3 origin, Vec3 extends)
+        private bool IsInBounds(Face<TEdge, TFace> face, Vec3 origin, Vec3 extends)
         {
             Vec3 upBounds = origin + extends;
             foreach (Vec3 pos in face.Bounds)
@@ -347,15 +374,15 @@ namespace Delaunoi
         protected IEnumerable<Vec3> ExportTriangles()
         {
             // FIFO
-            var queue = new Queue<QuadEdge<T>>();
+            var queue = new Queue<QuadEdge<TEdge>>();
 
             // Start at the far right
-            QuadEdge<T> first = _mesh.RightMostEdge;
+            QuadEdge<TEdge> first = _mesh.RightMostEdge;
             queue.Enqueue(first);
 
             // Visit all edge of the convex hull in CW order and
             // add opposite edges to queue
-            foreach (QuadEdge<T> hullEdge in first.RightEdges(CCW:false))
+            foreach (QuadEdge<TEdge> hullEdge in first.RightEdges(CCW:false))
             {
                 // Enqueue same edge but with opposite direction
                 queue.Enqueue(hullEdge.Sym);
@@ -365,10 +392,10 @@ namespace Delaunoi
             // Convex hull now closed. Start triangles construction
             while (queue.Count > 0)
             {
-                QuadEdge<T> edge = queue.Dequeue();
+                QuadEdge<TEdge> edge = queue.Dequeue();
                 if (edge.Tag == _mesh.VisitedTagState)
                 {
-                    foreach (QuadEdge<T> current in edge.RightEdges(CCW:false))
+                    foreach (QuadEdge<TEdge> current in edge.RightEdges(CCW:false))
                     {
                         if (current.Sym.Tag == _mesh.VisitedTagState)
                         {
@@ -394,21 +421,21 @@ namespace Delaunoi
         /// is not guarantee to be constructed.
         /// </remarks>
         /// <param name="radius">Distance used to construct site that are at infinity.</param>
-        protected IEnumerable<Face<T>> ExportFaces(double radius, Func<Vec3, Vec3, Vec3, Vec3> centerCalculator)
+        protected IEnumerable<Face<TEdge, TFace>> ExportFaces(double radius, Func<Vec3, Vec3, Vec3, Vec3> centerCalculator)
         {
             // FIFO
-            var queue = new Queue<QuadEdge<T>>();
+            var queue = new Queue<QuadEdge<TEdge>>();
 
             // Start at the far left
-            QuadEdge<T> first = _mesh.LeftMostEdge;
+            QuadEdge<TEdge> first = _mesh.LeftMostEdge;
 
             // @TODO Bounds
-            List<QuadEdge<T>> bounds = new List<QuadEdge<T>>();
+            List<QuadEdge<TEdge>> bounds = new List<QuadEdge<TEdge>>();
 
 
             // Visit all edge of the convex hull to compute dual vertices
             // at infinity by looping in a CW order over edges with same left face.
-            foreach (QuadEdge<T> hullEdge in first.LeftEdges(CCW:false))
+            foreach (QuadEdge<TEdge> hullEdge in first.LeftEdges(CCW:false))
             {
                 // Construct a new face
                 // First infinite voronoi vertex
@@ -420,7 +447,7 @@ namespace Delaunoi
                 }
 
                 // Add other vertices by looping over hullEdge origin in CW order (Oprev)
-                foreach (QuadEdge<T> current in hullEdge.EdgesFrom(CCW:false))
+                foreach (QuadEdge<TEdge> current in hullEdge.EdgesFrom(CCW:false))
                 {
                     if (current.Rot.Origin == null)
                     {
@@ -440,7 +467,7 @@ namespace Delaunoi
                             // Speed up computation of point coordinates
                             // All edges sharing the same origin should have same
                             // geometrical origin
-                            foreach (QuadEdge<T> otherDual in current.Rot.EdgesFrom())
+                            foreach (QuadEdge<TEdge> otherDual in current.Rot.EdgesFrom())
                             {
                                 otherDual.Origin = current.Rot.Origin;
                             }
@@ -456,18 +483,18 @@ namespace Delaunoi
                 }
 
                 // After face construction over
-                yield return new Face<T>(hullEdge, true, true);
+                yield return new Face<TEdge, TFace>(hullEdge, true, true);
             }
 
             // Convex hull now closed --> Construct bounded voronoi faces
             while (queue.Count > 0)
             {
-                QuadEdge<T> edge = queue.Dequeue();
+                QuadEdge<TEdge> edge = queue.Dequeue();
 
                 if (edge.Tag == _mesh.VisitedTagState)
                 {
                     // Construct a new face
-                    foreach (QuadEdge<T> current in edge.EdgesFrom(CCW:false))
+                    foreach (QuadEdge<TEdge> current in edge.EdgesFrom(CCW:false))
                     {
                         if (current.Rot.Origin == null)
                         {
@@ -477,7 +504,7 @@ namespace Delaunoi
                             // Speed up computation of point coordinates
                             // All edges sharing the same origin have same
                             // geometrical origin
-                            foreach (QuadEdge<T> otherDual in current.Rot.EdgesFrom())
+                            foreach (QuadEdge<TEdge> otherDual in current.Rot.EdgesFrom())
                             {
                                 otherDual.Origin = current.Rot.Origin;
                             }
@@ -492,11 +519,11 @@ namespace Delaunoi
                     // After face construction over
                     if (bounds.Contains(edge))
                     {
-                        yield return new Face<T>(edge, true, false);
+                        yield return new Face<TEdge, TFace>(edge, true, false);
                     }
                     else
                     {
-                        yield return new Face<T>(edge, false, false);
+                        yield return new Face<TEdge, TFace>(edge, false, false);
                     }
                 }
             }
@@ -521,7 +548,7 @@ namespace Delaunoi
         /// If primalEdge.RotSym.Origin is null, then its value is computed first
         /// using CircumCenter2D because this vertex is always inside a delaunay triangle.
         /// </remarks>
-        protected Vec3 ConstructAtInfinity(QuadEdge<T> primalEdge, double radius,
+        protected Vec3 ConstructAtInfinity(QuadEdge<TEdge> primalEdge, double radius,
                                            Func<Vec3, Vec3, Vec3, Vec3> centerCalculator)
         {
             var rotSym = primalEdge.RotSym;

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 namespace Delaunoi.Interfaces
@@ -7,7 +8,9 @@ namespace Delaunoi.Interfaces
 
     public interface IFluent<T>
     {
-        IEnumerable<T> Select();
+        IEnumerable<T> Collection();
+
+        IFluent<T> ForEach(Func<T, T> selector);
 
         List<T> ToList();
 
@@ -16,7 +19,9 @@ namespace Delaunoi.Interfaces
 
     public interface IFluentExtended<T>
     {
-        IEnumerable<T> Select();
+        IEnumerable<T> Collection();
+
+        IFluentExtended<T> ForEach(Func<T, T> selector);
 
         List<T> ToList();
 

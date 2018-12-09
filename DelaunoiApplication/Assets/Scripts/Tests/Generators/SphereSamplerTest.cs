@@ -61,7 +61,7 @@ public class SphereSamplerTest : MonoBehaviour
     private bool triangulationOnSphere = false;
 
 
-    private SphericalMesh<int> sphereMeshUsed;
+    private SphericalMesh<int, int> sphereMeshUsed;
 
 
     void Start()
@@ -105,7 +105,7 @@ public class SphereSamplerTest : MonoBehaviour
         {
             // INIT  ---  ---  INIT  ---  ---  INIT
             previousTime = System.DateTime.Now;
-            sphereMeshUsed = new SphericalMesh<int>(points.Select(x => Geometry.StereographicProjection(x)).ToArray(), false);
+            sphereMeshUsed = new SphericalMesh<int, int>(points.Select(x => Geometry.StereographicProjection(x)).ToArray(), false);
             delta = System.DateTime.Now - previousTime;
             Debug.Log("***");
             Debug.Log(string.Format("*** INIT *** {0} secondes OU {1} milliseconds *** INIT",
@@ -123,7 +123,6 @@ public class SphereSamplerTest : MonoBehaviour
             // // START DEBUGTOOLS
             // // START DEBUGTOOLS
             // // START DEBUGTOOLS
-
 
             // var test = radius * sphereMeshUsed.RightMostEdge.Rot.Origin;
             // if (triangulationOnSphere)
@@ -193,59 +192,133 @@ public class SphereSamplerTest : MonoBehaviour
             List<Vec3> triangles;
             if (triangulationOnSphere)
             {
-                triangles = sphereMeshUsed.Triangles().ToList().Select(x => Geometry.InvStereographicProjection(x) * radius).ToList();
+                triangles = sphereMeshUsed.Triangles().ForEach(x => Geometry.InvStereographicProjection(x) * radius).ToList();
             }
             else
             {
-                triangles = sphereMeshUsed.Triangles().ToList().Select(x => x * radius).ToList();
+                triangles = sphereMeshUsed.Triangles().ForEach(x => x * radius).ToList();
             }
 
             // TriangleDrawer.DrawFace(triangles, transform, mat, gradient);
             TriangleDrawer.DrawLine(triangles, transform, mat, Color.black, lineScale);
             TriangleDrawer.DrawPoints(triangles, transform, shape, Color.red, scale);
 
-            List<Face<int>> faces = sphereMeshUsed.Faces(FaceConfig.Voronoi, radius).ToList();
+            List<Face<int, int>> faces = sphereMeshUsed.Faces(FaceConfig.Voronoi, radius).ToList();
+
 
 
             // // START DEBUGTOOLS
             // // START DEBUGTOOLS
             // // START DEBUGTOOLS
 
+            // int i = 0;
+            // foreach (QuadEdge<int> edge in sphereMeshUsed.RightMostEdge.Oprev.Sym.Lnext.Oprev.FaceLeftEdges())
+            // // foreach (QuadEdge<int> edge in sphereMeshUsed.RightMostEdge.Oprev.Rprev.EdgesFrom())
+            // {
+            //     var test3 = edge.Destination;
+            //     // test3 = radius * test3;
+            //     // if (triangulationOnSphere)
+            //     // {
+            //     //     test3 = radius * Geometry.InvStereographicProjection(edge.Destination);
+            //     // }
+            //     var newGo3 = GameObject.Instantiate(shape);
+            //     newGo3.transform.SetParent(transform);
+            //     newGo3.transform.position = test3.AsVector3();
+            //     newGo3.transform.localScale = new Vector3(1.0f, 1.0f, 1.0f);
+            //     // Color
+            //     var meshR3 = newGo3.GetComponent<MeshRenderer>();
+            //     if (meshR3 != null)
+            //     {
+            //         meshR3.materials[0].color = Color.yellow;
+            //     }
 
-            int i = 0;
-            foreach (QuadEdge<int> edge in sphereMeshUsed.RightMostEdge.Oprev.Sym.FaceLeftEdges())
-            {
-                var test3 = edge.Destination;
-                // test3 = radius * test3;
-                // if (triangulationOnSphere)
-                // {
-                //     test3 = radius * Geometry.InvStereographicProjection(edge.Destination);
-                // }
-                var newGo3 = GameObject.Instantiate(shape);
-                newGo3.transform.SetParent(transform);
-                newGo3.transform.position = test3.AsVector3();
-                newGo3.transform.localScale = new Vector3(2.0f, 2.0f, 2.0f);
-                // Color
-                var meshR3 = newGo3.GetComponent<MeshRenderer>();
-                if (meshR3 != null)
-                {
-                    meshR3.materials[0].color = Color.yellow;
-                }
+            //     if (i >= 1)
+            //     {
+            //         // Add fake point created
+            //         break;
+            //     }
+            //     else
+            //     {
+            //         test3 = Geometry.CircumCenter3D(Geometry.InvStereographicProjection(edge.RotSym.Origin),
+            //                                         Geometry.InvStereographicProjection(edge.RotSym.Destination),
+            //                                         Geometry.InvStereographicProjection(edge.RotSym.Oprev.Destination));
 
-                // if (i >= 1)
-                // {
-                //     break;
-                // }
-                // if (!Geometry.Ccw(edge.Destination, edge.Lprev.Destination, edge.Lprev.Origin))
-                // {
-                //     Debug.Log("FOUND");
-                //     if (meshR3 != null)
-                //     {
-                //         meshR3.materials[0].color = Color.magenta;
-                //     }
-                // }
-                i++;
-            }
+            //         Vec3 a = Geometry.InvStereographicProjection(edge.RotSym.Origin);
+            //         Vec3 b = Geometry.InvStereographicProjection(edge.RotSym.Destination);
+            //         Vec3 c  = Geometry.InvStereographicProjection(edge.RotSym.Oprev.Destination);
+
+            //         Debug.Log(a);
+            //         Debug.Log(b);
+            //         Debug.Log(c);
+
+            //         Vec3 ca = c - a;
+            //         Vec3 ba = b - a;
+
+            //         Vec3 baca = Vec3.Cross(ba, ca);
+            //         Debug.Log(baca.SquaredMagnitude);
+            //         Debug.Log(test3);
+
+
+
+            //         var newGo31 = GameObject.Instantiate(shape);
+            //         newGo31.transform.SetParent(transform);
+            //         newGo31.transform.position = (radius * Geometry.InvStereographicProjection(edge.RotSym.Origin)).AsVector3();
+            //         newGo31.transform.localScale = new Vector3(1.0f, 1.0f, 1.0f);
+            //         // Color
+            //         var meshR31 = newGo31.GetComponent<MeshRenderer>();
+            //         if (meshR31 != null)
+            //         {
+            //             meshR31.materials[0].color = Color.grey;
+            //         }
+
+            //         var newGo32 = GameObject.Instantiate(shape);
+            //         newGo32.transform.SetParent(transform);
+            //         newGo32.transform.position = (radius * Geometry.InvStereographicProjection(edge.RotSym.Destination)).AsVector3();
+            //         newGo32.transform.localScale = new Vector3(1.0f, 1.0f, 1.0f);
+            //         // Color
+            //         var meshR32 = newGo32.GetComponent<MeshRenderer>();
+            //         if (meshR32 != null)
+            //         {
+            //             meshR32.materials[0].color = Color.grey;
+            //         }
+
+            //         var newGo33 = GameObject.Instantiate(shape);
+            //         newGo33.transform.SetParent(transform);
+            //         newGo33.transform.position = (radius * Geometry.InvStereographicProjection(edge.RotSym.Oprev.Destination)).AsVector3();
+            //         newGo33.transform.localScale = new Vector3(1.0f, 1.0f, 1.0f);
+            //         // Color
+            //         var meshR33 = newGo33.GetComponent<MeshRenderer>();
+            //         if (meshR33 != null)
+            //         {
+            //             meshR33.materials[0].color = Color.grey;
+            //         }
+
+            //         double invDistanceScaled = radius / test3.Magnitude;
+            //         test3 *= invDistanceScaled;
+
+            //         var newGo34 = GameObject.Instantiate(shape);
+            //         newGo34.transform.SetParent(transform);
+            //         newGo34.transform.position = test3.AsVector3();
+            //         newGo34.transform.localScale = new Vector3(2.0f, 2.0f, 2.0f);
+            //         // Color
+            //         var meshR34 = newGo34.GetComponent<MeshRenderer>();
+            //         if (meshR34 != null)
+            //         {
+            //             meshR34.materials[0].color = Color.green;
+            //         }
+            //     }
+
+
+            //     // if (!Geometry.Ccw(edge.Destination, edge.Lprev.Destination, edge.Lprev.Origin))
+            //     // {
+            //     //     Debug.Log("FOUND");
+            //     //     if (meshR3 != null)
+            //     //     {
+            //     //         meshR3.materials[0].color = Color.magenta;
+            //     //     }
+            //     // }
+            //     i++;
+            // }
 
             // // END DEBUGTOOLS
             // // END DEBUGTOOLS
@@ -255,11 +328,11 @@ public class SphereSamplerTest : MonoBehaviour
 
             float nbCells = (float)faces.Count;
             int indcolor2 = 0;
-            foreach (Face<int> face in faces)
+            foreach (Face<int, int> face in faces)
             {
                 var color = gradient.Evaluate(indcolor2 / nbCells);
 
-                face.DrawFace(transform, mat, color, OnSphere:true);
+                face.DrawFace(transform, mat, color, scale:radius);
                 face.DrawLine(transform, mat, Color.white, lineScale, loop:true);
                 face.DrawPoints(transform, shape, mat, Color.blue, 0.6f * scale);
 

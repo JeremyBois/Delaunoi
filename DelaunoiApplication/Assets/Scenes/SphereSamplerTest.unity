@@ -142,7 +142,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   pointNumber: 1244
   radius: 50
-  usedGenerator: 0
+  usedGenerator: 2
   seed: 1535
   bases: 0200000003000000
   shape: {fileID: 1299362892703848, guid: 5bd056414346da7408618b5b49b996b1, type: 2}

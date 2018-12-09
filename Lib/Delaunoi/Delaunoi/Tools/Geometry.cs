@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using Delaunoi.DataStructures;
 
+// @TODO Fallback to exact arithmetic in case of denomicator is too close to zero.
+
 
 namespace Delaunoi.Tools
 {
@@ -48,7 +50,7 @@ namespace Delaunoi.Tools
         }
 
         /// <summary>
-        /// Compute SphereCircumcenter (3D).
+        /// Compute SphereCircumcenter (3D). Instable if denominator close to zero.
         /// </summary>
         /// <remarks>
         ///
@@ -58,6 +60,11 @@ namespace Delaunoi.Tools
         /// </remarks>
         public static Vec3 CircumCenter3D(Vec3 a, Vec3 b, Vec3 c)
         {
+            // @TODO Fallback to exact arithmetic in case of denomicator is too close to zero.
+            // https://docs.microsoft.com/en-us/dotnet/api/system.decimal
+            // Detect bad denominator --> baca.SquaredMagnitude < 0.00002
+            // Test case : Uniform on sphere with 1244 points with a seed of 1535
+
             Vec3 ca = c - a;
             Vec3 ba = b - a;
 
@@ -66,6 +73,7 @@ namespace Delaunoi.Tools
 
             Vec3 numerator =  Vec3.Cross(ca.SquaredMagnitude * baca, ba) +
                               ba.SquaredMagnitude * Vec3.Cross(ca, baca);
+
 
             return a + (numerator * invDenominator);
         }

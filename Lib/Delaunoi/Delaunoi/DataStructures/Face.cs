@@ -8,14 +8,18 @@ namespace Delaunoi.DataStructures
     /// <summary>
     /// Abstraction of a triangulation (primal graph) dual graph element.
     /// </summary>
-    public class Face<T>
+    public class Face<TEdge, TFace>
     {
         private static int nextID = 0;
         private int _id;
 
-        private QuadEdge<T> _primal;
+        private QuadEdge<TEdge> _primal;
         private bool        _onBounds;
         private bool        _reconstructed;
+
+        // Optional data
+        public TFace Data;
+
 
         /// <summary>
         /// Construct a face abstraction based on a <paramref name="primal"/> edge.
@@ -23,7 +27,7 @@ namespace Delaunoi.DataStructures
         /// <param name="primal">Delaunay edge with Origin as face center.</param>
         /// <param name="onBounds">Mark face as a face on the faces bounds.</param>
         /// <param name="reconstructed">Must be true if face has a site at infinity.</param>
-        public Face(QuadEdge<T> primal, bool onBounds, bool reconstructed)
+        public Face(QuadEdge<TEdge> primal, bool onBounds, bool reconstructed)
         {
             this._primal  = primal;
             this._onBounds = onBounds;
@@ -35,7 +39,7 @@ namespace Delaunoi.DataStructures
         /// <summary>
         /// Get primal Edge with Origin as face center.
         /// </summary>
-        public QuadEdge<T> PrimalEdge
+        public QuadEdge<TEdge> PrimalEdge
         {
             get {return _primal;}
         }

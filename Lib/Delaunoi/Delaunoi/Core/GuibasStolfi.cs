@@ -213,7 +213,7 @@ namespace Delaunoi
         ///
         /// If site outside the convex hull Locate will loop forever looking for
         /// a corresponding edge that does not exists ... unless you first check
-        /// you are in the convex hull or set <paramref name="checkBoundFirst"/> to true.
+        /// you are in the convex hull or set <paramref name="safe"/> to true.
         /// </summary>
         /// <param name="pos">The position to locate</param>
         /// <param name="edge">Edge used to start locate process. Can be used to speed up search.</param>
@@ -279,8 +279,8 @@ namespace Delaunoi
         /// </summary>
         /// <param name="newPos">The position to of new site</param>
         /// <param name="edge">Edge used to start locate process. Can be used to speed up search.</param>
-        /// <param name="safe">If true, check if <paramref name="safe"/> inside the convex hull.</param>
-        public bool InsertSite(Vec3 newPos, QuadEdge<T> edge=null, bool safe=false)
+        /// <param name="safe">If true, check if <paramref name="newPos"/> inside the convex hull.</param>
+        public bool Insert(Vec3 newPos, QuadEdge<T> edge=null, bool safe=false)
         {
             if (safe)
             {

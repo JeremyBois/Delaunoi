@@ -88,7 +88,7 @@ public class GuibasStolfiTest : MonoBehaviour
 
 
     private List<Vec3> points;
-    private Mesh2D<int> meshUsed;
+    private Mesh2D<int, int> meshUsed;
 
     void Awake ()
     {
@@ -134,7 +134,7 @@ public class GuibasStolfiTest : MonoBehaviour
     {
         // INIT  ---  ---  INIT  ---  ---  INIT
         System.DateTime previousTime = System.DateTime.Now;
-        meshUsed = new Mesh2D<int>(points.ToArray(), false);
+        meshUsed = new Mesh2D<int, int>(points.ToArray(), false);
         System.TimeSpan delta = System.DateTime.Now - previousTime;
         Debug.Log("***");
         Debug.Log(string.Format("*** INIT *** {0} secondes OU {1} milliseconds *** INIT",
@@ -216,10 +216,8 @@ public class GuibasStolfiTest : MonoBehaviour
             TriangleDrawer.DrawPoints(triangles, transform, shapes[0], Color.red, 1.1f * scale);
         }
 
-        // // Draw faces
-        // FaceBuilder<int> facesBuilder = new FaceBuilder<int>(triangulator);
-
-        List<Face<int>> faces = meshUsed.Faces(celltype, Mathf.Max(boundaries) * 5.0, true)
+        // Get faces
+        List<Face<int, int>> faces = meshUsed.Faces(celltype, Mathf.Max(boundaries) * 5.0, true)
                                             // .InsideHull()
                                             // .FiniteBounds()
                                             // .Finite()
@@ -233,7 +231,7 @@ public class GuibasStolfiTest : MonoBehaviour
 
         float nbCells = (float)faces.Count;
         int indcolor2 = 0;
-        foreach (Face<int> face in faces)
+        foreach (Face<int, int> face in faces)
         {
             var color = gradient.Evaluate(indcolor2 / nbCells);
 

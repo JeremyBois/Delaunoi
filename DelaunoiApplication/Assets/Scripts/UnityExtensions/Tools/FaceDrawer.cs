@@ -5,17 +5,18 @@ using UnityEngine;
 using System.Linq;
 
 
-namespace Delaunoi.DataStructures.Extensions
+namespace Delaunoi.Tools.Extensions
 {
 
-    using Delaunoi.Tools;
+    using Delaunoi.DataStructures;
+    using Delaunoi.DataStructures.Extensions;
 
 
     public static class FaceExtensions
     {
 
-        public static void DrawFace<T>(this Face<T> cell, Transform parent, Material mat,
-                                       Color color, bool OnSphere=false)
+        public static void DrawFace<TEdge, TFace>(this Face<TEdge, TFace> cell, Transform parent, Material mat,
+                                                  Color color, double scale=0.0)
         {
             GameObject newGo = new GameObject();
             newGo.name = "Face Face " + cell.ID.ToString();
@@ -35,9 +36,9 @@ namespace Delaunoi.DataStructures.Extensions
 
             foreach (Vec3 pt in cell.Points)
             {
-                if (OnSphere && pt == cell.Center)
+                if (scale != 0.0 && pt == cell.Center)
                 {
-                    points.Add((50.0f * Geometry.InvStereographicProjection(pt)).AsVector3());
+                    points.Add((scale * Geometry.InvStereographicProjection(pt)).AsVector3());
                 }
                 else
                 {
@@ -59,9 +60,9 @@ namespace Delaunoi.DataStructures.Extensions
             filter.mesh.triangles = trianglesInt.ToArray();
         }
 
-        public static void DrawPoints<T>(this Face<T> cell, Transform parent,
-                                         GameObject shape, Material mat,
-                                         Color color, float scale=0.5f)
+        public static void DrawPoints<TEdge, TFace>(this Face<TEdge, TFace> cell, Transform parent,
+                                                    GameObject shape, Material mat,
+                                                    Color color, float scale=0.5f)
         {
             Vector3[] bounds = cell.Bounds.Select(vec => vec.AsVector3()).ToArray();
 
@@ -82,8 +83,8 @@ namespace Delaunoi.DataStructures.Extensions
             }
         }
 
-        public static void DrawLine<T>(this Face<T> cell, Transform parent, Material mat,
-                                       Color color, float scale=1.0f, bool loop=true)
+        public static void DrawLine<TEdge, TFace>(this Face<TEdge, TFace> cell, Transform parent, Material mat,
+                                                  Color color, float scale=1.0f, bool loop=true)
         {
             GameObject newGo = new GameObject();
             newGo.name = string.Format("Face Line {0}", cell.ID.ToString());
@@ -104,7 +105,7 @@ namespace Delaunoi.DataStructures.Extensions
             lr.SetPositions(bounds);
         }
 
-        // public static void DrawCircumCercle<T>(this Face<T> cell, Transform parent,
+        // public static void DrawCircumCercle<TEdge, TFace>(this Face<TEdge, TFace> cell, Transform parent,
         //                                        Material mat, Color color, float scale=1.0f)
         // {
         //     GameObject newGo = new GameObject();
