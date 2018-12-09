@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 
-namespace Delaunoi.Algorithms
+namespace Delaunoi
 {
     using Delaunoi.DataStructures;
     using Delaunoi.Tools;
@@ -28,9 +28,9 @@ namespace Delaunoi.Algorithms
     {
 
 // FIELDS
-        private Vec3[]        _points;
-        private QuadEdge<T>[] _leftRightEdges;
-        private bool          _visitedTagState;
+        protected Vec3[]          _points;
+        protected QuadEdge<T>[]   _leftRightEdges;
+        protected bool            _visitedTagState;
 
 // CONSTRUCTORS
 
@@ -101,14 +101,31 @@ namespace Delaunoi.Algorithms
             }
         }
 
+        /// <summary>
+        /// Switch traversal flag.
+        /// </summary>
+        public bool VisitedTagState
+        {
+            get {return _visitedTagState;}
+        }
+
+        /// <summary>
+        /// Switch traversal flag.
+        /// </summary>
+        public bool SwitchInternalFlag()
+        {
+            _visitedTagState = !_visitedTagState;
+            return _visitedTagState;
+        }
+
+
 
 // METHODS (PUBLIC)
 
         /// <summary>
         /// Return an array of Vec3 from the triangulation.
         /// </summary>
-        /// <param name="isCycling">Cycling point set ? Needed when triangulated a sphere.</param>
-        public bool ComputeDelaunay(bool isCycling=false)
+        public virtual bool ComputeDelaunay()
         {
             // Reinit flag state
             _visitedTagState = false;
@@ -122,73 +139,9 @@ namespace Delaunoi.Algorithms
             // Triangulate recursively
             _leftRightEdges = Triangulate(_points);
 
-            // Connect left and right most edges together
-            if (isCycling)
-            {
-                CyclingMerge();
-            }
-
             return true;
         }
 
-        /// <summary>
-        /// Construct triangles based on Delaunay triangulation.
-        /// </summary>
-        public List<Vec3> ExportDelaunay()
-        {
-            // Container for triangles vertices
-            var triangles = new List<Vec3>();
-            // FIFO
-            var queue = new Queue<QuadEdge<T>>();
-
-            // Start at the far right
-            QuadEdge<T> first = RightMostEdge;
-            queue.Enqueue(first);
-
-            // @TODO Possible to handle it properly ???
-            // Will be true only when extermum are connected together
-            // Should be the case for a sphere
-            // Avoid false true when only one triangle
-            if (_points.Length > 3 && _leftRightEdges[0].Destination == _leftRightEdges[1].Origin)
-            {
-                foreach (QuadEdge<T> current in first.RightEdges(CCW:false))
-                {
-                    triangles.Add(current.Origin);
-                    current.Tag = !_visitedTagState;
-                }
-            }
-
-            // Visit all edge of the convex hull in CW order and
-            // add opposite edges to queue
-            foreach (QuadEdge<T> hullEdge in first.RightEdges(CCW:false))
-            {
-                // Enqueue same edge but with opposite direction
-                queue.Enqueue(hullEdge.Sym);
-                hullEdge.Tag = !_visitedTagState;
-            }
-
-            // Convex hull now closed. Start triangles construction
-            while (queue.Count > 0)
-            {
-                QuadEdge<T> edge = queue.Dequeue();
-                if (edge.Tag == _visitedTagState)
-                {
-                    foreach (QuadEdge<T> current in edge.RightEdges(CCW:false))
-                    {
-                        triangles.Add(current.Origin);
-                        if (current.Sym.Tag == _visitedTagState)
-                        {
-                            queue.Enqueue(current.Sym);
-                        }
-                        current.Tag = !_visitedTagState;
-                    }
-                }
-            }
-
-            // Inverse flag to be able to traverse again at next call
-            _visitedTagState = !_visitedTagState;
-            return triangles;
-        }
 
         /// <summary>
         /// If <paramref name="pos"/> is outside the convex hull of the triangulation
@@ -405,190 +358,17 @@ namespace Delaunoi.Algorithms
             return true;
         }
 
-        /// <summary>
-        /// Construct voronoi face based on Delaunay triangulation. Vertices at infinity
-        /// are define based on radius parameter. It should be large enough to avoid
-        /// some circumcenters (finite voronoi vertices) to be further on.
-        /// </summary>
-        /// <remarks>
-        /// Each face is yield just after their construction. Then it's neighborhood
-        /// is not guarantee to be constructed.
-        /// </remarks>
-        /// <param name="radius">Distance used to construct site that are at infinity.</param>
-        public IEnumerable<Face<T>> ExportFaces(double radius, Func<Vec3, Vec3, Vec3, Vec3> centerCalculator)
-        {
-            // FIFO
-            var queue = new Queue<QuadEdge<T>>();
 
-            // Start at the far left
-            QuadEdge<T> first = LeftMostEdge;
-
-            // @TODO Bounds
-            List<QuadEdge<T>> bounds = new List<QuadEdge<T>>();
-
-
-            // Visit all edge of the convex hull to compute dual vertices
-            // at infinity by looping in a CW order over edges with same left face.
-            foreach (QuadEdge<T> hullEdge in first.LeftEdges(CCW:false))
-            {
-                // Construct a new face
-                // First infinite voronoi vertex
-                if (hullEdge.Rot.Destination == null)
-                {
-                    hullEdge.Rot.Destination = ConstructAtInfinity(hullEdge.Sym,
-                                                                   radius,
-                                                                   centerCalculator);
-                }
-
-                // Add other vertices by looping over hullEdge origin in CW order (Oprev)
-                foreach (QuadEdge<T> current in hullEdge.EdgesFrom(CCW:false))
-                {
-                    if (current.Rot.Origin == null)
-                    {
-                        // Delaunay edge on the boundary
-                        if (Geometry.LeftOf(current.Oprev.Destination, current))
-                        {
-                            current.Rot.Origin = ConstructAtInfinity(current,
-                                                                     radius,
-                                                                     centerCalculator);
-                        }
-                        else
-                        {
-                            current.Rot.Origin = centerCalculator(current.Origin,
-                                                                  current.Destination,
-                                                                  current.Oprev.Destination);
-
-                            // Speed up computation of point coordinates
-                            // All edges sharing the same origin should have same
-                            // geometrical origin
-                            foreach (QuadEdge<T> otherDual in current.Rot.EdgesFrom())
-                            {
-                                otherDual.Origin = current.Rot.Origin;
-                            }
-                        }
-                    }
-
-                    if (current.Sym.Tag == _visitedTagState)
-                    {
-                        queue.Enqueue(current.Sym);
-                        bounds.Add(current.Sym);
-                    }
-                    current.Tag = !_visitedTagState;
-                }
-
-                // After face construction over
-                yield return new Face<T>(hullEdge, true, true);
-            }
-
-            // Convex hull now closed --> Construct bounded voronoi faces
-            while (queue.Count > 0)
-            {
-                QuadEdge<T> edge = queue.Dequeue();
-
-                if (edge.Tag == _visitedTagState)
-                {
-                    // Construct a new face
-                    foreach (QuadEdge<T> current in edge.EdgesFrom(CCW:false))
-                    {
-                        if (current.Rot.Origin == null)
-                        {
-                            current.Rot.Origin = centerCalculator(current.Origin,
-                                                                  current.Destination,
-                                                                  current.Oprev.Destination);
-                            // Speed up computation of point coordinates
-                            // All edges sharing the same origin have same
-                            // geometrical origin
-                            foreach (QuadEdge<T> otherDual in current.Rot.EdgesFrom())
-                            {
-                                otherDual.Origin = current.Rot.Origin;
-                            }
-                        }
-                        if (current.Sym.Tag  == _visitedTagState)
-                        {
-                            queue.Enqueue(current.Sym);
-                        }
-                        current.Tag = !_visitedTagState;
-                    }
-
-                    // After face construction over
-                    if (bounds.Contains(edge))
-                    {
-                        yield return new Face<T>(edge, true, false);
-                    }
-                    else
-                    {
-                        yield return new Face<T>(edge, false, false);
-                    }
-                }
-            }
-
-            // Inverse flag to be able to traverse again at next call
-            _visitedTagState = !_visitedTagState;
-        }
-
-
-// METHODS (PRIVATE)
-
-        /// <summary>
-        /// Find correct position for a voronoi site that should be at infinite
-        /// Assume primalEdge.Rot.Origin as the vertex to compute, that is
-        /// there should be no vertex on the right of primalEdge.
-        /// Site computed is the destination of a segment in a direction normal to
-        /// the tangent vector of the primalEdge (destination - origin) with
-        /// its symetrical (primalEdge.RotSym.Origin) as origin.
-        /// Radius should be choose higher enough to avoid neighbor voronoi points
-        /// to be further on. A good guest is the maximal distance between non infinite
-        /// voronoi vertices or five times the maximal distance between delaunay vertices.
-        /// </summary>
-        /// <remarks>
-        /// If primalEdge.RotSym.Origin is null, then its value is computed first
-        /// using CircumCenter2D because this vertex is always inside a delaunay triangle.
-        /// </remarks>
-        private Vec3 ConstructAtInfinity(QuadEdge<T> primalEdge, double radius,
-                                                Func<Vec3, Vec3, Vec3, Vec3> centerCalculator)
-        {
-            var rotSym = primalEdge.RotSym;
-
-            // Find previous voronoi site
-            if (rotSym.Origin == null)
-            {
-                rotSym.Origin = centerCalculator(primalEdge.Origin,
-                                                            primalEdge.Destination,
-                                                            primalEdge.Onext.Destination);
-            }
-            double xCenter = rotSym.Origin.X;
-            double yCenter = rotSym.Origin.Y;
-
-            // Compute normalized tangent of primal edge scaled by radius
-            double xTangent = primalEdge.Destination.X - primalEdge.Origin.X;
-            double yTangent = primalEdge.Destination.Y - primalEdge.Origin.Y;
-            double dist = Math.Sqrt(xTangent * xTangent + yTangent * yTangent);
-            xTangent /= dist;
-            yTangent /= dist;
-            xTangent *= radius;
-            yTangent *= radius;
-
-            // Add vertex using edge dual destination as origin
-            // in direction normal to the primal edge
-            Vec3 normal = new Vec3(xCenter - yTangent, yCenter + xTangent, rotSym.Origin.Z);
-
-            // If new voronoi vertex is on the left of the primal edge
-            // we used the wrong normal vector --> get its opposite
-            if (Geometry.LeftOf(normal, primalEdge))
-            {
-                normal = new Vec3(xCenter + yTangent, yCenter - xTangent, rotSym.Origin.Z);
-            }
-            return normal;
-        }
 
         /// <summary>
         /// Return true if Geometry.RightOf(edge.Destination, baseEdge) is true.
         /// </summary>
-        private bool IsValid(QuadEdge<T> edge, QuadEdge<T> baseEdge)
+        protected bool IsValid(QuadEdge<T> edge, QuadEdge<T> baseEdge)
         {
             // Geometry.Ccw called directly.
             return Geometry.Ccw(edge.Destination, baseEdge.Destination, baseEdge.Origin);
         }
+
 
         /// <summary>
         /// Triangulate the set of points using a divide and conquer approach.
@@ -732,39 +512,6 @@ namespace Delaunoi.Algorithms
                 }
             }
             return new QuadEdge<T>[] {ldo, rdo};
-        }
-
-        /// <summary>
-        /// Merge left and right most edges together to construct a cycling triangulation.
-        /// Needed for sphere for example after normal triangulation step.
-        /// </summary>
-        private void CyclingMerge()
-        {
-            QuadEdge<T> baseEdge = RightMostEdge.Rnext;
-            QuadEdge<T> lCand = baseEdge.Sym.Onext;
-            QuadEdge<T> rCand = baseEdge.Oprev;
-
-            // Get edges CCW order from left extremum until reach right extremum
-            // to complete the sphere triangulation
-            // All edges must be stored first because pointer are updated
-            // during construction and will eventually leads to infinite loop ...
-            var toCheckEdge = rCand.LeftEdges(true).ToList();
-            foreach (QuadEdge<T> rightEdge in toCheckEdge)
-            {
-                if (rightEdge.Destination != lCand.Destination)
-                {
-                    // Connect rightEdge.Destination to baseEdge.Destination
-                    // Construct a fan
-                    baseEdge = QuadEdge<T>.Connect(rightEdge, baseEdge.Sym);
-                }
-                else
-                {
-                    // Update extremums
-                    _leftRightEdges[1] = rightEdge;
-                    _leftRightEdges[0] = rightEdge.Sym;
-                    break;
-                }
-            }
         }
     }
 }

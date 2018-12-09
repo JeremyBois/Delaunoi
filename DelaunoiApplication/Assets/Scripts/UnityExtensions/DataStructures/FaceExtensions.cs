@@ -7,11 +7,15 @@ using System.Linq;
 
 namespace Delaunoi.DataStructures.Extensions
 {
+
+    using Delaunoi.Tools;
+
+
     public static class FaceExtensions
     {
 
         public static void DrawFace<T>(this Face<T> cell, Transform parent, Material mat,
-                                       Color color)
+                                       Color color, bool OnSphere=false)
         {
             GameObject newGo = new GameObject();
             newGo.name = "Face Face " + cell.ID.ToString();
@@ -26,7 +30,20 @@ namespace Delaunoi.DataStructures.Extensions
             renderer.materials[0].color = color;
 
             var trianglesInt = new List<int>();
-            var points = cell.Points.Select(vec => vec.AsVector3()).ToList();
+            List<Vector3> points = new List<Vector3>();
+
+
+            foreach (Vec3 pt in cell.Points)
+            {
+                if (OnSphere && pt == cell.Center)
+                {
+                    points.Add((50.0f * Geometry.InvStereographicProjection(pt)).AsVector3());
+                }
+                else
+                {
+                    points.Add(pt.AsVector3());
+                }
+            }
 
             for (int idP = 1; idP < points.Count - 1; idP++)
             {

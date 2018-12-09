@@ -5,7 +5,7 @@ using UnityEngine;
 using System.Linq;
 
 
-using Delaunoi.Algorithms;
+using Delaunoi;
 using Delaunoi.Generators;
 using Delaunoi.Tools;
 using Delaunoi.DataStructures;
@@ -61,7 +61,7 @@ public class SphereSamplerTest : MonoBehaviour
     private bool triangulationOnSphere = false;
 
 
-    private GuibasStolfi<int> triangulator;
+    private SphericalMesh<int> sphereMeshUsed;
 
 
     void Start()
@@ -105,7 +105,7 @@ public class SphereSamplerTest : MonoBehaviour
         {
             // INIT  ---  ---  INIT  ---  ---  INIT
             previousTime = System.DateTime.Now;
-            triangulator = new GuibasStolfi<int>(points.Select(x => Geometry.StereographicProjection(x)).ToArray(), false);
+            sphereMeshUsed = new SphericalMesh<int>(points.Select(x => Geometry.StereographicProjection(x)).ToArray(), false);
             delta = System.DateTime.Now - previousTime;
             Debug.Log("***");
             Debug.Log(string.Format("*** INIT *** {0} secondes OU {1} milliseconds *** INIT",
@@ -113,7 +113,7 @@ public class SphereSamplerTest : MonoBehaviour
 
             // TRIANGULATION  ---  ---  TRIANGULATION  ---  ---  TRIANGULATION
             previousTime = System.DateTime.Now;
-            triangulator.ComputeDelaunay(isCycling: true);
+            sphereMeshUsed.Construct();
             delta = System.DateTime.Now - previousTime;
             Debug.Log("***");
             Debug.Log(string.Format("*** TRIANGULATION *** {0} secondes OU {1} milliseconds *** TRIANGULATION",
@@ -125,11 +125,10 @@ public class SphereSamplerTest : MonoBehaviour
             // // START DEBUGTOOLS
 
 
-            // // LCand
-            // var test = radius * triangulator.LeftMostEdge.Destination;
+            // var test = radius * sphereMeshUsed.RightMostEdge.Rot.Origin;
             // if (triangulationOnSphere)
             // {
-            //     test = radius * Geometry.InvStereographicProjection(triangulator.LeftMostEdge.Destination);
+            //     test = radius * Geometry.InvStereographicProjection(sphereMeshUsed.RightMostEdge.Rot.Origin);
             // }
             // var newGo = GameObject.Instantiate(shape);
             // newGo.transform.SetParent(transform);
@@ -142,11 +141,10 @@ public class SphereSamplerTest : MonoBehaviour
             //     meshR.materials[0].color = Color.blue;
             // }
 
-            // // RCand
-            // var test2 = radius * triangulator.RightMostEdge.Destination;
+            // var test2 = radius * sphereMeshUsed.RightMostEdge.Destination;
             // if (triangulationOnSphere)
             // {
-            //     test2 = radius * Geometry.InvStereographicProjection(triangulator.RightMostEdge.Destination);
+            //     test2 = radius * Geometry.InvStereographicProjection(sphereMeshUsed.RightMostEdge.Destination);
             // }
             // var newGo2 = GameObject.Instantiate(shape);
             // newGo2.transform.SetParent(transform);
@@ -192,21 +190,87 @@ public class SphereSamplerTest : MonoBehaviour
 
 
             // DRAWING  ---  ---  DRAWING  ---  ---  DRAWING
-            var triangles = new List<Vec3>();
+            List<Vec3> triangles;
             if (triangulationOnSphere)
             {
-                triangles = triangulator.ExportDelaunay().Select(x => Geometry.InvStereographicProjection(x) * radius).ToList();
+                triangles = sphereMeshUsed.Triangles().ToList().Select(x => Geometry.InvStereographicProjection(x) * radius).ToList();
             }
             else
             {
-                triangles = triangulator.ExportDelaunay().Select(x => x * radius).ToList();
+                triangles = sphereMeshUsed.Triangles().ToList().Select(x => x * radius).ToList();
             }
 
-            TriangleDrawer.DrawFace(triangles, transform, mat, gradient);
+            // TriangleDrawer.DrawFace(triangles, transform, mat, gradient);
             TriangleDrawer.DrawLine(triangles, transform, mat, Color.black, lineScale);
             TriangleDrawer.DrawPoints(triangles, transform, shape, Color.red, scale);
-        }
 
+            List<Face<int>> faces = sphereMeshUsed.Faces(FaceConfig.Voronoi, radius).ToList();
+
+
+            // // START DEBUGTOOLS
+            // // START DEBUGTOOLS
+            // // START DEBUGTOOLS
+
+
+            int i = 0;
+            foreach (QuadEdge<int> edge in sphereMeshUsed.RightMostEdge.Oprev.Sym.FaceLeftEdges())
+            {
+                var test3 = edge.Destination;
+                // test3 = radius * test3;
+                // if (triangulationOnSphere)
+                // {
+                //     test3 = radius * Geometry.InvStereographicProjection(edge.Destination);
+                // }
+                var newGo3 = GameObject.Instantiate(shape);
+                newGo3.transform.SetParent(transform);
+                newGo3.transform.position = test3.AsVector3();
+                newGo3.transform.localScale = new Vector3(2.0f, 2.0f, 2.0f);
+                // Color
+                var meshR3 = newGo3.GetComponent<MeshRenderer>();
+                if (meshR3 != null)
+                {
+                    meshR3.materials[0].color = Color.yellow;
+                }
+
+                // if (i >= 1)
+                // {
+                //     break;
+                // }
+                // if (!Geometry.Ccw(edge.Destination, edge.Lprev.Destination, edge.Lprev.Origin))
+                // {
+                //     Debug.Log("FOUND");
+                //     if (meshR3 != null)
+                //     {
+                //         meshR3.materials[0].color = Color.magenta;
+                //     }
+                // }
+                i++;
+            }
+
+            // // END DEBUGTOOLS
+            // // END DEBUGTOOLS
+            // // END DEBUGTOOLS
+
+
+
+            float nbCells = (float)faces.Count;
+            int indcolor2 = 0;
+            foreach (Face<int> face in faces)
+            {
+                var color = gradient.Evaluate(indcolor2 / nbCells);
+
+                face.DrawFace(transform, mat, color, OnSphere:true);
+                face.DrawLine(transform, mat, Color.white, lineScale, loop:true);
+                face.DrawPoints(transform, shape, mat, Color.blue, 0.6f * scale);
+
+                indcolor2++;
+
+                // if (indcolor2 > 11)
+                // {
+                //     break;
+                // }
+            }
+        }
         else
         {
             // DRAWING  ---  ---  DRAWING  ---  ---  DRAWING

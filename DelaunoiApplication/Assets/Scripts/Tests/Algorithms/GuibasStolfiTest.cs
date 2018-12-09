@@ -4,7 +4,7 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 
-using Delaunoi.Algorithms;
+using Delaunoi;
 using Delaunoi.Generators;
 using Delaunoi.DataStructures;
 using Delaunoi.Tools;
@@ -88,7 +88,7 @@ public class GuibasStolfiTest : MonoBehaviour
 
 
     private List<Vec3> points;
-    private GuibasStolfi<int> triangulator;
+    private Mesh2D<int> meshUsed;
 
     void Awake ()
     {
@@ -134,7 +134,7 @@ public class GuibasStolfiTest : MonoBehaviour
     {
         // INIT  ---  ---  INIT  ---  ---  INIT
         System.DateTime previousTime = System.DateTime.Now;
-        triangulator = new GuibasStolfi<int>(points.ToArray(), false);
+        meshUsed = new Mesh2D<int>(points.ToArray(), false);
         System.TimeSpan delta = System.DateTime.Now - previousTime;
         Debug.Log("***");
         Debug.Log(string.Format("*** INIT *** {0} secondes OU {1} milliseconds *** INIT",
@@ -143,7 +143,7 @@ public class GuibasStolfiTest : MonoBehaviour
 
         // TRIANGULATION  ---  ---  TRIANGULATION  ---  ---  TRIANGULATION
         previousTime = System.DateTime.Now;
-        triangulator.ComputeDelaunay();
+        meshUsed.Construct();
         delta = System.DateTime.Now - previousTime;
         Debug.Log("***");
         Debug.Log(string.Format("*** TRIANGULATION *** {0} secondes OU {1} milliseconds *** TRIANGULATION",
@@ -170,13 +170,13 @@ public class GuibasStolfiTest : MonoBehaviour
             // }
             // Start locate
             previousTime = System.DateTime.Now;
-            var edge = triangulator.Locate(pos, safe: true);
+            var edge = meshUsed.Locate(pos, safe: true);
 
             delta = System.DateTime.Now - previousTime;
             Debug.Log("***");
             Debug.Log(string.Format("*** LOCATE *** {0} secondes OU {1} milliseconds *** LOCATE",
                       delta.TotalSeconds, delta.TotalMilliseconds));
-            Debug.Log("Point is inside: " + triangulator.InsideConvexHull(pos));
+            Debug.Log("Point is inside: " + meshUsed.InsideConvexHull(pos));
             Debug.Log("Edge origin is: " + edge.Origin);
 
 
@@ -184,13 +184,13 @@ public class GuibasStolfiTest : MonoBehaviour
             // points >= 10 | seed 154
             previousTime = System.DateTime.Now;
             pos = new Vec3(1.1 * boundaries[0], 0.8 * boundaries[1], 0.0);
-            bool result = triangulator.InsertSite(pos, safe:true);
+            bool result = meshUsed.Insert(pos, safe:true);
             Debug.Log("Site outside --> Not added: " + !result);
             pos = new Vec3(0.72265633333 * boundaries[0], 0.54732506667 * boundaries[1], 0.0);
-            result = triangulator.InsertSite(pos);
+            result = meshUsed.Insert(pos);
             Debug.Log("Site already existing --> Not added: " + !result);
             pos = new Vec3(0.76666666666667 * boundaries[0], pos.Y, pos.Z);
-            result = triangulator.InsertSite(pos);
+            result = meshUsed.Insert(pos);
             Debug.Log("Inside convex Hull --> Added: " + result);
             delta = System.DateTime.Now - previousTime;
             Debug.Log("***");
@@ -202,7 +202,7 @@ public class GuibasStolfiTest : MonoBehaviour
         previousTime = System.DateTime.Now;
 
         // Draw Delaunay
-        var triangles = triangulator.ExportDelaunay();
+        var triangles = meshUsed.Triangles().ToList();
         if (D_faces)
         {
             TriangleDrawer.DrawFace(triangles, transform, mat, gradient);
@@ -216,10 +216,10 @@ public class GuibasStolfiTest : MonoBehaviour
             TriangleDrawer.DrawPoints(triangles, transform, shapes[0], Color.red, 1.1f * scale);
         }
 
-        // Draw faces
-        FaceBuilder<int> facesBuilder = new FaceBuilder<int>(triangulator);
+        // // Draw faces
+        // FaceBuilder<int> facesBuilder = new FaceBuilder<int>(triangulator);
 
-        List<Face<int>> faces = facesBuilder.Faces(celltype, Mathf.Max(boundaries) * 5.0, true)
+        List<Face<int>> faces = meshUsed.Faces(celltype, Mathf.Max(boundaries) * 5.0, true)
                                             // .InsideHull()
                                             // .FiniteBounds()
                                             // .Finite()

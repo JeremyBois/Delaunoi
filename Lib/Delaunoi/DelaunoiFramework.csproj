@@ -44,6 +44,7 @@
     </Reference>
   </ItemGroup>
  -->
+
   <ItemGroup>
     <Reference Include="System"/>
 
@@ -66,8 +67,10 @@
     <Compile Include="Delaunoi/DataStructures/QuadEdge.cs" />
     <Compile Include="Delaunoi/DataStructures/Face.cs" />
 
-    <Compile Include="Delaunoi/Algorithms/GuibasStolfi.cs" />
-    <Compile Include="Delaunoi/Algorithms/FaceBuilder.cs" />
+    <Compile Include="Delaunoi/Core/GuibasStolfi.cs" />
+    <Compile Include="Delaunoi/Core/Mesh2D.cs" />
+    <Compile Include="Delaunoi/Core/SphericalMesh.cs" />
+    <Compile Include="Delaunoi/Core/FaceConfig.cs" />
 
     <Compile Include="Delaunoi/Generators/HaltonSequence.cs" />
     <Compile Include="Delaunoi/Generators/PoissonDisk2D.cs" />
@@ -76,6 +79,8 @@
     <Compile Include="Delaunoi/Tools/Geometry.cs" />
     <Compile Include="Delaunoi/Tools/RandGen.cs" />
     <Compile Include="Delaunoi/Tools/Helper.cs" />
+
+    <Compile Include="Delaunoi/Interfaces/IFluent.cs" />
 
     <Compile Include="../NetFrameworkProperties/AssemblyInfo.cs" />
   </ItemGroup>
