@@ -19,7 +19,7 @@ namespace Delaunoi.DataStructures.Extensions
         /// </summary>
         public static Vector3 AsVector3(this Vec3 vec)
         {
-            return new Vector3((float)vec.x, (float)vec.y, (float)vec.z);
+            return new Vector3((float)vec.X, (float)vec.Y, (float)vec.Z);
         }
     }
 }

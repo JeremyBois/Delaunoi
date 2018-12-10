@@ -33,6 +33,7 @@ ExportedObj/
 *.pidb.meta
 *.pdb.meta
 
+
 # Unity3D Generated File On Crash Reports
 sysinfo.txt
 
@@ -89,10 +90,10 @@ GitHub.sublime-settings
 # Edit at https://www.gitignore.io/?templates=visualstudiocode
 
 ### VisualStudioCode ###
-.vscode/*
+*/.vscode/*
 !.vscode/settings.json
 !.vscode/tasks.json
-!.vscode/launch.json
+# !.vscode/launch.json
 !.vscode/extensions.json
 
 ### VisualStudioCode Patch ###
@@ -110,3 +111,5 @@ GitHub.sublime-settings
 Plugins/*
 !Plugins/git.txt
 [Bb]in/
+*.dll.meta
+*.dll

@@ -34,7 +34,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
 
-<!-- UNITY DEBUG -->
+  <!-- UNITY DEBUG -->
 <!--   <ItemGroup>
     <Reference Include="UnityEngine">
       <HintPath>C:\Program Files\Unity\Hub\Editor\2018.2.12f1\Editor\Data\Managed/UnityEngine/UnityEngine.dll</HintPath>
@@ -42,7 +42,8 @@
     <Reference Include="UnityEngine.CoreModule">
       <HintPath>C:/Program Files/Unity/Hub/Editor/2018.2.12f1/Editor/Data/Managed/UnityEngine/UnityEngine.CoreModule.dll</HintPath>
     </Reference>
-  </ItemGroup> -->
+  </ItemGroup>
+ -->
 
   <ItemGroup>
     <Reference Include="System"/>
@@ -66,15 +67,21 @@
     <Compile Include="Delaunoi/DataStructures/QuadEdge.cs" />
     <Compile Include="Delaunoi/DataStructures/Face.cs" />
 
-    <Compile Include="Delaunoi/Algorithms/GuibasStolfi.cs" />
-    <Compile Include="Delaunoi/Algorithms/FaceBuilder.cs" />
+    <Compile Include="Delaunoi/Core/GuibasStolfi.cs" />
+    <Compile Include="Delaunoi/Core/BaseMesh.cs" />
+    <Compile Include="Delaunoi/Core/Mesh2D.cs" />
+    <Compile Include="Delaunoi/Core/SphericalMesh.cs" />
+    <Compile Include="Delaunoi/Core/FaceConfig.cs" />
 
     <Compile Include="Delaunoi/Generators/HaltonSequence.cs" />
     <Compile Include="Delaunoi/Generators/PoissonDisk2D.cs" />
+    <Compile Include="Delaunoi/Generators/SphereSampler.cs" />
 
     <Compile Include="Delaunoi/Tools/Geometry.cs" />
     <Compile Include="Delaunoi/Tools/RandGen.cs" />
     <Compile Include="Delaunoi/Tools/Helper.cs" />
+
+    <Compile Include="Delaunoi/Interfaces/IFluent.cs" />
 
     <Compile Include="../NetFrameworkProperties/AssemblyInfo.cs" />
   </ItemGroup>

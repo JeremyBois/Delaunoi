@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using Delaunoi.DataStructures;
 
+// @TODO Fallback to exact arithmetic in case of denomicator is too close to zero.
+
 
 namespace Delaunoi.Tools
 {
@@ -33,10 +35,10 @@ namespace Delaunoi.Tools
         /// </remarks>
         public static Vec3 CircumCenter2D(Vec3 a, Vec3 b, Vec3 c)
         {
-            double ByAy = b.y - a.y;
-            double CyAy = c.y - a.y;
-            double BxAx = b.x - a.x;
-            double CxAx = c.x - a.x;
+            double ByAy = b.Y - a.Y;
+            double CyAy = c.Y - a.Y;
+            double BxAx = b.X - a.X;
+            double CxAx = c.X - a.X;
             double BAsquared = BxAx * BxAx + ByAy * ByAy;
             double CAsquared = CxAx * CxAx + CyAy * CyAy;
 
@@ -44,11 +46,11 @@ namespace Delaunoi.Tools
             double xRel = denominator * (ByAy * CAsquared - CyAy * BAsquared);
             double yRel = denominator * (BxAx * CAsquared - CxAx * BAsquared);
 
-            return new Vec3(a.x - xRel, a.y + yRel, 0.0);
+            return new Vec3(a.X - xRel, a.Y + yRel, 0.0);
         }
 
         /// <summary>
-        /// Compute SphereCircumcenter (3D).
+        /// Compute SphereCircumcenter (3D). Instable if denominator close to zero.
         /// </summary>
         /// <remarks>
         ///
@@ -58,6 +60,11 @@ namespace Delaunoi.Tools
         /// </remarks>
         public static Vec3 CircumCenter3D(Vec3 a, Vec3 b, Vec3 c)
         {
+            // @TODO Fallback to exact arithmetic in case of denomicator is too close to zero.
+            // https://docs.microsoft.com/en-us/dotnet/api/system.decimal
+            // Detect bad denominator --> baca.SquaredMagnitude < 0.00002
+            // Test case : Uniform on sphere with 1244 points with a seed of 1535
+
             Vec3 ca = c - a;
             Vec3 ba = b - a;
 
@@ -66,6 +73,7 @@ namespace Delaunoi.Tools
 
             Vec3 numerator =  Vec3.Cross(ca.SquaredMagnitude * baca, ba) +
                               ba.SquaredMagnitude * Vec3.Cross(ca, baca);
+
 
             return a + (numerator * invDenominator);
         }
@@ -108,17 +116,17 @@ namespace Delaunoi.Tools
         ///
         public static double CircumCircleRadius(Vec3 a, Vec3 b, Vec3 c)
         {
-            double ByAy = b.y - a.y;
-            double CyAy = c.y - a.y;
-            double BxAx = b.x - a.x;
-            double CxAx = c.x - a.x;
+            double ByAy = b.Y - a.Y;
+            double CyAy = c.Y - a.Y;
+            double BxAx = b.X - a.X;
+            double CxAx = c.X - a.X;
             double BAsquared = BxAx * BxAx + ByAy * ByAy;
             double CAsquared = CxAx * CxAx + CyAy * CyAy;
 
             double denominator = 0.5 / (BxAx * CyAy - ByAy * CxAx);
 
-            double BxCx = b.x - c.x;
-            double ByCy = b.y - c.y;
+            double BxCx = b.X - c.X;
+            double ByCy = b.Y - c.Y;
             double BCsquared = BxCx * BxCx + ByCy * ByCy;
 
             // Costly operation but only needed after triangulation
@@ -182,10 +190,10 @@ namespace Delaunoi.Tools
         public static KeyValuePair<Vec3, double> CircumCenterAndRadius2D(Vec3 a, Vec3 b, Vec3 c)
         {
             // Center
-            double ByAy = b.y - a.y;
-            double CyAy = c.y - a.y;
-            double BxAx = b.x - a.x;
-            double CxAx = c.x - a.x;
+            double ByAy = b.Y - a.Y;
+            double CyAy = c.Y - a.Y;
+            double BxAx = b.X - a.X;
+            double CxAx = c.X - a.X;
             double BAsquared = BxAx * BxAx + ByAy * ByAy;
             double CAsquared = CxAx * CxAx + CyAy * CyAy;
 
@@ -194,14 +202,14 @@ namespace Delaunoi.Tools
             double yRel = denominator * (BxAx * CAsquared - CxAx * BAsquared);
 
             // Radius
-            double BxCx = b.x - c.x;
-            double ByCy = b.y - c.y;
+            double BxCx = b.X - c.X;
+            double ByCy = b.Y - c.Y;
             double BCsquared = BxCx * BxCx + ByCy * ByCy;
 
             // Costly operation but only needed after triangulation
             double r = denominator * Math.Sqrt(BAsquared * CAsquared * BCsquared);
 
-            return new KeyValuePair<Vec3, double>(new Vec3(a.x - xRel, a.y + yRel, 0.0), r);
+            return new KeyValuePair<Vec3, double>(new Vec3(a.X - xRel, a.Y + yRel, 0.0), r);
         }
 
         /// <summary>
@@ -217,14 +225,14 @@ namespace Delaunoi.Tools
         /// </remarks>
         public static bool InCircumCercle2D(Vec3 pt, Vec3 a, Vec3 b, Vec3 c)
         {
-            double Ax = a.x - pt.x;
-            double Ay = a.y - pt.y;
+            double Ax = a.X - pt.X;
+            double Ay = a.Y - pt.Y;
 
-            double Bx = b.x - pt.x;
-            double By = b.y - pt.y;
+            double Bx = b.X - pt.X;
+            double By = b.Y - pt.Y;
 
-            double Cx = c.x - pt.x;
-            double Cy = c.y - pt.y;
+            double Cx = c.X - pt.X;
+            double Cy = c.Y - pt.Y;
 
             double AxAy = Ax * Ax + Ay * Ay;
             double BxBy = Bx * Bx + By * By;
@@ -291,7 +299,7 @@ namespace Delaunoi.Tools
         /// </remarks>
         public static bool Ccw(Vec3 a, Vec3 b, Vec3 c)
         {
-            return ((a.x - c.x) * (b.y - c.y) - (a.y - c.y) * (b.x - c.x)) > 0.0;
+            return ((a.X - c.X) * (b.Y - c.Y) - (a.Y - c.Y) * (b.X - c.X)) > 0.0;
         }
 
         /// <summary>
@@ -320,7 +328,7 @@ namespace Delaunoi.Tools
             Vec3 ac = a - c;
             Vec3 bc = b - c;
 
-            return Math.Abs(ac.x * bc.y - ac.y * bc.x) < epsilon;
+            return Math.Abs(ac.X * bc.Y - ac.Y * bc.X) < epsilon;
         }
 
         /// <summary>
@@ -329,6 +337,67 @@ namespace Delaunoi.Tools
         public static bool AlmostEquals(Vec3 a, Vec3 b, double epsilon=0.0000001)
         {
             return Vec3.DistanceSquared(a, b) < epsilon;
+        }
+
+        /// <summary>
+        ///  Transform spherical coordinate (phi, theta) to euclidean coordinates (x, y, z).
+        /// </summary>
+        /// <remarks>
+        /// Mathematics convention used: Phi represent the elevation [0, PI]
+        /// and Theta the azimuth [0, 2*PI].
+        /// More at http://mathworld.wolfram.com/SphericalCoordinates.html and
+        /// https://en.wikipedia.org/wiki/Stereographic_projection
+        /// </remarks>
+        public static Vec3 SphericalToEuclidean(double phi, double theta)
+        {
+            double sinTheta = Math.Sin(theta);
+            return new Vec3
+            (
+                Math.Cos(phi) * sinTheta,
+                Math.Sin(phi) * sinTheta,
+                Math.Cos(theta)
+            );
+        }
+
+        /// <summary>
+        /// Projection of a UNIT sphere point into a plane.
+        /// </summary>
+        /// <remarks>
+        /// Mathematics convention used: Phi represent the elevation [0, PI]
+        /// and Theta the azimuth [0, 2*PI].
+        /// More at http://mathworld.wolfram.com/SphericalCoordinates.html and
+        /// https://en.wikipedia.org/wiki/Stereographic_projection
+        /// </remarks>
+        public static Vec3 StereographicProjection(Vec3 spherePoint)
+        {
+            double invDenominator = 1.0 / (1.0 - spherePoint.Z);
+            return new Vec3
+            (
+                spherePoint.X * invDenominator,
+                spherePoint.Y * invDenominator,
+                0.0
+            );
+        }
+
+        /// <summary>
+        /// Inverse projection of a UNIT sphere point into a plane. That is map points
+        /// on the plane to an UNIT sphere.
+        /// </summary>
+        /// <remarks>
+        /// https://en.wikipedia.org/wiki/Stereographic_projection
+        /// </remarks>
+        public static Vec3 InvStereographicProjection(Vec3 spherePoint)
+        {
+            double xSq = spherePoint.X * spherePoint.X;
+            double ySq = spherePoint.Y * spherePoint.Y;
+            double invDenominator = 1.0 / (1.0 + xSq + ySq);
+
+            return new Vec3
+            (
+                2.0 * spherePoint.X * invDenominator,
+                2.0 * spherePoint.Y * invDenominator,
+                (-1.0 + xSq + ySq) * invDenominator
+            );
         }
     }
 

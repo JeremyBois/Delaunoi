@@ -122,9 +122,11 @@ namespace Delaunoi.DataStructures
         ///   - (b) if the two are exactly the same ring, Splice will break it in two separate pieces
         ///   - (c) if the two are the same ring taken with opposite orientations, Splice will Flip (and reverse the order)
         ///         of a segment of that ring
-        /// Note: Splice is its own inverse and calling twice in a row revert it back to origin.
-        /// Note: Splice does not affect Rot neither Origin and Destination that have no topological meaning.
         /// </summary>
+        /// <remarks>
+        /// Splice is its own inverse and calling twice in a row revert it back to origin.
+        /// Splice does not affect Rot neither Origin and Destination that have no topological meaning.
+        /// </remarks>
         /// <param name="a">First QuadEdge<T></param>
         /// <param name="b">Second QuadEdge<T></param>
         public static void Splice(QuadEdge<T> a, QuadEdge<T> b)
@@ -162,7 +164,8 @@ namespace Delaunoi.DataStructures
         }
 
         /// <summary>
-        /// Swap an edge. Used to remove non delaunay triangulation.
+        /// Swap common segment between two triangles. Can be used to transform
+        /// a two non delaunay triangles to a pair of triangle respecting this constraint.
         /// </summary>
         /// <remarks>
         ///
@@ -188,7 +191,7 @@ namespace Delaunoi.DataStructures
             Splice(edge, a.Lnext);
             Splice(edge.Sym, b.Lnext);
 
-            // Update pointer
+            // Update pointers
             edge._origin = a.Destination;
             edge.Destination = b.Destination;
         }
@@ -328,6 +331,7 @@ namespace Delaunoi.DataStructures
             get {return _data;}
             set {_data = value;}
         }
+
 
     // Helpers enumerables used to abstract structure complexity
 

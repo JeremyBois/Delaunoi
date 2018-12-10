@@ -4,7 +4,7 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 
-using Delaunoi.Algorithms;
+using Delaunoi;
 using Delaunoi.Generators;
 using Delaunoi.DataStructures;
 using Delaunoi.Tools;
@@ -12,15 +12,18 @@ using Delaunoi.DataStructures.Extensions;
 using Delaunoi.Tools.Extensions;
 
 
-public enum Generator
-{
-    Halton,
-    Poisson,
-    Grid
-}
+
 
 public class GuibasStolfiTest : MonoBehaviour
 {
+
+    private enum Generator
+    {
+        Halton,
+        Poisson,
+        Grid
+    }
+
     [Header("Generation Global Settings")]
     [SerializeField]
     private Generator usedGenerator;
@@ -85,7 +88,7 @@ public class GuibasStolfiTest : MonoBehaviour
 
 
     private List<Vec3> points;
-    private GuibasStolfi<int> triangulator;
+    private Mesh2D<int, int> meshUsed;
 
     void Awake ()
     {
@@ -100,8 +103,8 @@ public class GuibasStolfiTest : MonoBehaviour
                 {
                     // Random sparse distribution
                     Vec3 temp = HaltonSequence.Halton2D(n, bases[0], bases[1]);
-                    points.Add(new Vec3(temp.x * boundaries[0] + transform.position.x,
-                                         temp.y * boundaries[1] + transform.position.y,
+                    points.Add(new Vec3(temp.X * boundaries[0] + transform.position.x,
+                                         temp.Y * boundaries[1] + transform.position.y,
                                          transform.position.z));
                     n++;
                 }
@@ -131,7 +134,7 @@ public class GuibasStolfiTest : MonoBehaviour
     {
         // INIT  ---  ---  INIT  ---  ---  INIT
         System.DateTime previousTime = System.DateTime.Now;
-        triangulator = new GuibasStolfi<int>(points.ToArray(), false);
+        meshUsed = new Mesh2D<int, int>(points.ToArray(), false);
         System.TimeSpan delta = System.DateTime.Now - previousTime;
         Debug.Log("***");
         Debug.Log(string.Format("*** INIT *** {0} secondes OU {1} milliseconds *** INIT",
@@ -140,7 +143,7 @@ public class GuibasStolfiTest : MonoBehaviour
 
         // TRIANGULATION  ---  ---  TRIANGULATION  ---  ---  TRIANGULATION
         previousTime = System.DateTime.Now;
-        triangulator.ComputeDelaunay();
+        meshUsed.Construct();
         delta = System.DateTime.Now - previousTime;
         Debug.Log("***");
         Debug.Log(string.Format("*** TRIANGULATION *** {0} secondes OU {1} milliseconds *** TRIANGULATION",
@@ -148,57 +151,58 @@ public class GuibasStolfiTest : MonoBehaviour
 
         Vec3 pos;
 
-        // LOCATE  ---  ---  LOCATE  ---  ---  LOCATE
-        // points >= 10 | seed 154
-        pos = new Vec3(0.72 * boundaries[0], 0.546 * boundaries[1], 0.0);
-        // var newGo = GameObject.Instantiate(shapes[0]);
-        // newGo.name = "PointLocated";
-        // newGo.transform.SetParent(transform);
-        // newGo.transform.position = pos.AsVector3();
-        // newGo.transform.localScale = new Vector3(5.0f, 5.0f, 5.0f);
-        // // Color
-        // var meshR = newGo.GetComponent<MeshRenderer>();
-        // if (meshR != null)
-        // {
-        //     meshR.materials[0].color = Color.green;
-        // }
-        // Start locate
-        previousTime = System.DateTime.Now;
-        var edge = triangulator.Locate(pos, safe: true);
+        // Avoid infinite because safe not used some Insert method (needed for testing)
+        if (points.Count > 10)
+        {
+            // LOCATE  ---  ---  LOCATE  ---  ---  LOCATE
+            // points >= 10 | seed 154
+            pos = new Vec3(0.72 * boundaries[0], 0.546 * boundaries[1], 0.0);
+            // var newGo = GameObject.Instantiate(shapes[0]);
+            // newGo.name = "PointLocated";
+            // newGo.transform.SetParent(transform);
+            // newGo.transform.position = pos.AsVector3();
+            // newGo.transform.localScale = new Vector3(5.0f, 5.0f, 5.0f);
+            // // Color
+            // var meshR = newGo.GetComponent<MeshRenderer>();
+            // if (meshR != null)
+            // {
+            //     meshR.materials[0].color = Color.green;
+            // }
+            // Start locate
+            previousTime = System.DateTime.Now;
+            var edge = meshUsed.Locate(pos, safe: true);
 
-        delta = System.DateTime.Now - previousTime;
-        Debug.Log("***");
-        Debug.Log(string.Format("*** LOCATE *** {0} secondes OU {1} milliseconds *** LOCATE",
-                  delta.TotalSeconds, delta.TotalMilliseconds));
-        Debug.Log("Point is inside: " + triangulator.InsideConvexHull(pos));
-        Debug.Log("Edge origin is: " + edge.Origin);
-
-
-        // INSERT  ---  ---  INSERT  ---  ---  INSERT
-        // points >= 10 | seed 154
-        previousTime = System.DateTime.Now;
-        pos = new Vec3(1.1 * boundaries[0], 0.8 * boundaries[1], 0.0);
-        bool result = triangulator.InsertSite(pos, safe:true);
-        Debug.Log("Site outside --> Not added: " + !result);
-        pos = new Vec3(0.72265633333 * boundaries[0], 0.54732506667 * boundaries[1], 0.0);
-        result = triangulator.InsertSite(pos);
-        Debug.Log("Site already existing --> Not added: " + !result);
-        pos = new Vec3(0.76666666666667 * boundaries[0], pos.y, pos.z);
-        result = triangulator.InsertSite(pos);
-        Debug.Log("Inside convex Hull --> Added: " + result);
-        delta = System.DateTime.Now - previousTime;
-        Debug.Log("***");
-        Debug.Log(string.Format("*** INSERT *** {0} secondes OU {1} milliseconds *** INSERT",
-                  delta.TotalSeconds, delta.TotalMilliseconds));
+            delta = System.DateTime.Now - previousTime;
+            Debug.Log("***");
+            Debug.Log(string.Format("*** LOCATE *** {0} secondes OU {1} milliseconds *** LOCATE",
+                      delta.TotalSeconds, delta.TotalMilliseconds));
+            Debug.Log("Point is inside: " + meshUsed.InsideConvexHull(pos));
+            Debug.Log("Edge origin is: " + edge.Origin);
 
 
-
+            // INSERT  ---  ---  INSERT  ---  ---  INSERT
+            // points >= 10 | seed 154
+            previousTime = System.DateTime.Now;
+            pos = new Vec3(1.1 * boundaries[0], 0.8 * boundaries[1], 0.0);
+            bool result = meshUsed.Insert(pos, safe:true);
+            Debug.Log("Site outside --> Not added: " + !result);
+            pos = new Vec3(0.72265633333 * boundaries[0], 0.54732506667 * boundaries[1], 0.0);
+            result = meshUsed.Insert(pos);
+            Debug.Log("Site already existing --> Not added: " + !result);
+            pos = new Vec3(0.76666666666667 * boundaries[0], pos.Y, pos.Z);
+            result = meshUsed.Insert(pos);
+            Debug.Log("Inside convex Hull --> Added: " + result);
+            delta = System.DateTime.Now - previousTime;
+            Debug.Log("***");
+            Debug.Log(string.Format("*** INSERT *** {0} secondes OU {1} milliseconds *** INSERT",
+                      delta.TotalSeconds, delta.TotalMilliseconds));
+        }
 
         // DRAWING  ---  ---  DRAWING  ---  ---  DRAWING
         previousTime = System.DateTime.Now;
 
         // Draw Delaunay
-        var triangles = triangulator.ExportDelaunay();
+        var triangles = meshUsed.Triangles().ToList();
         if (D_faces)
         {
             TriangleDrawer.DrawFace(triangles, transform, mat, gradient);
@@ -212,10 +216,8 @@ public class GuibasStolfiTest : MonoBehaviour
             TriangleDrawer.DrawPoints(triangles, transform, shapes[0], Color.red, 1.1f * scale);
         }
 
-        // Draw faces
-        FaceBuilder<int> facesBuilder = new FaceBuilder<int>(triangulator);
-
-        List<Face<int>> faces = facesBuilder.Faces(celltype, Mathf.Max(boundaries) * 5.0, true)
+        // Get faces
+        List<Face<int, int>> faces = meshUsed.Faces(celltype, Mathf.Max(boundaries) * 5.0, true)
                                             // .InsideHull()
                                             // .FiniteBounds()
                                             // .Finite()
@@ -229,7 +231,7 @@ public class GuibasStolfiTest : MonoBehaviour
 
         float nbCells = (float)faces.Count;
         int indcolor2 = 0;
-        foreach (Face<int> face in faces)
+        foreach (Face<int, int> face in faces)
         {
             var color = gradient.Evaluate(indcolor2 / nbCells);
 
@@ -273,8 +275,8 @@ public class GuibasStolfiTest : MonoBehaviour
         if (!alreadySorted)
         {
             return points.Select(val => new Vec3(x:val.x, y:val.y, z:val.z))
-                                          .OrderBy(vec => vec.x)
-                                          .ThenBy(vec => vec.y)
+                                          .OrderBy(vec => vec.X)
+                                          .ThenBy(vec => vec.Y)
                                           .ToArray();
         }
         else

@@ -32,17 +32,17 @@ namespace Delaunoi.DataStructures
             this._z = z;
         }
 
-        public double x
+        public double X
         {
             get {return _x;}
         }
 
-        public double y
+        public double Y
         {
             get {return _y;}
         }
 
-        public double z
+        public double Z
         {
             get {return _z;}
         }
@@ -55,8 +55,8 @@ namespace Delaunoi.DataStructures
             // Null values should throw an exception so
             // no need to test it, let it crash !
             // Sort using x, then y
-            return (other.x == this.x) ? this.y.CompareTo(other.y)
-                                       : this.x.CompareTo(other.x);
+            return (other.X == this.X) ? this.Y.CompareTo(other.Y)
+                                       : this.X.CompareTo(other.X);
         }
 
         public override string ToString()
@@ -103,9 +103,9 @@ namespace Delaunoi.DataStructures
         {
             return new Vec3
                 (
-                    first.x + second.x,
-                    first.y + second.y,
-                    first.z + second.z
+                    first.X + second.X,
+                    first.Y + second.Y,
+                    first.Z + second.Z
                 );
         }
 
@@ -113,9 +113,9 @@ namespace Delaunoi.DataStructures
         {
             return new Vec3
                 (
-                    first.x - second.x,
-                    first.y - second.y,
-                    first.z - second.z
+                    first.X - second.X,
+                    first.Y - second.Y,
+                    first.Z - second.Z
                 );
         }
 
@@ -123,9 +123,9 @@ namespace Delaunoi.DataStructures
         {
             return new Vec3
                 (
-                    first.x * scale,
-                    first.y * scale,
-                    first.z * scale
+                    first.X * scale,
+                    first.Y * scale,
+                    first.Z * scale
                 );
         }
 
@@ -133,9 +133,9 @@ namespace Delaunoi.DataStructures
         {
             return new Vec3
                 (
-                    first.x * scale,
-                    first.y * scale,
-                    first.z * scale
+                    first.X * scale,
+                    first.Y * scale,
+                    first.Z * scale
                 );
         }
 
@@ -143,24 +143,24 @@ namespace Delaunoi.DataStructures
         {
             return new Vec3
                 (
-                    first.y * second.z - first.z * second.y,
-                    first.z * second.x - first.x * second.z,
-                    first.x * second.y - first.y * second.x
+                    first.Y * second.Z - first.Z * second.Y,
+                    first.Z * second.X - first.X * second.Z,
+                    first.X * second.Y - first.Y * second.X
                 );
         }
 
         public static double Dot(Vec3 first, Vec3 second)
         {
-            return first.x * second.x + first.y * second.y + first.z * second.z;
+            return first.X * second.X + first.Y * second.Y + first.Z * second.Z;
         }
 
         public static Vec3 Substract(Vec3 first, Vec3 second)
         {
             return new Vec3
                 (
-                    first.x - second.x,
-                    first.y - second.y,
-                    first.z - second.z
+                    first.X - second.X,
+                    first.Y - second.Y,
+                    first.Z - second.Z
                 );
         }
 

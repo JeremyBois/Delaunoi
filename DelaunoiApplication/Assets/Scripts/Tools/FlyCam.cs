@@ -28,8 +28,8 @@ public class FlyCam : MonoBehaviour
     private float currentSpeed;
 
     // Rotation
-    private float rotationX = 0.0f;
-    private float rotationY = 0.0f;
+    public float rotationX = 0.0f;
+    public float rotationY = 0.0f;
 
     // Move world
     private Vector3 previousMousePos;
@@ -41,13 +41,15 @@ public class FlyCam : MonoBehaviour
     void Start()
     {
         currentSpeed = normalMoveSpeed;
+
+        // Get init value from transform
+        rotationX = transform.rotation.eulerAngles.y;
+        rotationY = transform.rotation.eulerAngles.x;
     }
 
     void Update()
     {
         float delta = Time.deltaTime;
-
-
 
         // Zoom
         Camera.main.fieldOfView -= Input.GetAxis("Mouse ScrollWheel") *
@@ -115,11 +117,12 @@ public class FlyCam : MonoBehaviour
         else if (Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl))
         {
             currentSpeed -= acceleration * delta;
+            currentSpeed = Mathf.Max(0.0f, currentSpeed);
         }
         transform.position += transform.forward * currentSpeed * Input.GetAxis("Vertical") * delta;
         transform.position += transform.right * currentSpeed * Input.GetAxis("Horizontal") * delta;
 
-        if (Input.GetKey(KeyCode.Q)) { transform.position += transform.up * currentSpeed * delta; }
-        if (Input.GetKey(KeyCode.E)) { transform.position -= transform.up * currentSpeed * delta; }
+        if (Input.GetKey(KeyCode.E)) { transform.position += transform.up * currentSpeed * delta; }
+        if (Input.GetKey(KeyCode.Q)) { transform.position -= transform.up * currentSpeed * delta; }
     }
 }
