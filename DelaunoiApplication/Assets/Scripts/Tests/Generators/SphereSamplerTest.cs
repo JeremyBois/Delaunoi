@@ -200,7 +200,7 @@ public class SphereSamplerTest : MonoBehaviour
             }
 
             // TriangleDrawer.DrawFace(triangles, transform, mat, gradient);
-            TriangleDrawer.DrawLine(triangles, transform, mat, Color.black, lineScale);
+            // TriangleDrawer.DrawLine(triangles, transform, mat, Color.black, lineScale);
             TriangleDrawer.DrawPoints(triangles, transform, shape, Color.red, scale);
 
             List<Face<int, int>> faces = sphereMeshUsed.Faces(FaceConfig.Voronoi, radius).ToList();

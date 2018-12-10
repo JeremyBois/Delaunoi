@@ -18,16 +18,8 @@ namespace Delaunoi
     /// Create a cycling mesh representing a sphere. Wrap primal (Delaunay) and
     /// dual (Voronoi, Centroid, ...) meshes.
     /// </summary>
-    public class SphericalMesh<TEdge, TFace>: IFluent<Face<TEdge, TFace>>, IFluent<Vec3>
+    public class SphericalMesh<TEdge, TFace>: BaseMesh<TEdge, TFace>, IFluent<Face<TEdge, TFace>>
     {
-        // Context use to implement fluent pattern
-        protected IEnumerable<Vec3>               _contextTriangles;
-        protected IEnumerable<Face<TEdge, TFace>> _contextFaces;
-
-        // Internal representation of the mesh
-        protected GuibasStolfi<TEdge>      _mesh;
-
-
     // CONSTRUCTOR
 
         /// <summary>
@@ -36,50 +28,16 @@ namespace Delaunoi
         /// <param name="points">An array of points to triangulate.</param>
         /// <param name="alreadySorted">Points already sorted (base on x then y).</param>
         public SphericalMesh(Vec3[] points, bool alreadySorted=false)
+            : base(points, alreadySorted)
         {
             if (points.Length < 8)
             {
                 throw new NotSupportedException("At least 8 points is needed to triangulate a sphere.");
             }
-
-            _mesh = new GuibasStolfi<TEdge>(points, alreadySorted);
-
         }
-
-
-
-    // PROPERTIES
-
-        /// <summary>
-        /// Return the leftmost edge if triangulation already done, else null.
-        /// </summary>
-        public QuadEdge<TEdge> LeftMostEdge
-        {
-            get {return _mesh.LeftMostEdge;}
-        }
-
-        /// <summary>
-        /// Return the rightmost edge if triangulation already done, else null.
-        /// </summary>
-        public QuadEdge<TEdge> RightMostEdge
-        {
-            get {return _mesh.RightMostEdge;}
-        }
-
 
 
     // PUBLIC METHODS
-
-        /// <summary>
-        /// Export Triangles based on Delaunay triangulation. Note that vertices
-        /// inside the triangulation are not projected back into the sphere.
-        /// See <see cref="Delaunoi.Geometry.InvStereographicProjection"/>.
-        /// </summary>
-        public IFluent<Vec3> Triangles()
-        {
-            _contextTriangles = ExportTriangles();
-            return this;
-        }
 
         /// <summary>
         /// Construct all faces based on Delaunay triangulation sites. Each face site
@@ -123,7 +81,7 @@ namespace Delaunoi
         /// <summary>
         /// Return an array of Vec3 from the triangulation.
         /// </summary>
-        public bool Construct()
+        public override bool Construct()
         {
             _mesh.ComputeDelaunay();
 
@@ -132,47 +90,6 @@ namespace Delaunoi
 
             return true;
         }
-
-
-
-
-    // FLUENT INTERFACE FOR TRIANGLES
-
-        /// <summary>
-        /// Can be used to use to expose collection to fluent extensions from LINQ
-        /// (<see cref="System.Linq"/>).
-        /// </summary>
-        IEnumerable<Vec3> IFluent<Vec3>.Collection()
-        {
-            return _contextTriangles;
-        }
-
-        /// <summary>
-        /// Can be use to apply an operation on each element of the collection
-        /// (<see cref="System.Linq.Select"/>).
-        /// </summary>
-        IFluent<Vec3> IFluent<Vec3>.ForEach(Func<Vec3, Vec3> selector)
-        {
-            _contextTriangles = _contextTriangles.Select(vec => selector(vec));
-            return this;
-        }
-
-        /// <summary>
-        /// Build a list of face which accounts for previous operations.
-        /// </summary>
-        List<Vec3> IFluent<Vec3>.ToList()
-        {
-            return _contextTriangles.ToList();
-        }
-
-        /// <summary>
-        /// Build an array of face which accounts for previous operations.
-        /// </summary>
-        Vec3[] IFluent<Vec3>.ToArray()
-        {
-            return _contextTriangles.ToArray();
-        }
-
 
 
     // FLUENT INTERFACE FOR FACES
@@ -213,12 +130,6 @@ namespace Delaunoi
         }
 
 
-
-    // PRIVATE METHODS
-
-
-
-
     // PROTECTED METHODS
 
         /// <summary>
@@ -256,7 +167,7 @@ namespace Delaunoi
         /// <summary>
         /// Construct triangles based on Delaunay triangulation.
         /// </summary>
-        protected IEnumerable<Vec3> ExportTriangles()
+        protected override IEnumerable<Vec3> ExportTriangles()
         {
             // FIFO
             var queue = new Queue<QuadEdge<TEdge>>();
@@ -309,7 +220,7 @@ namespace Delaunoi
         /// is not guarantee to be constructed.
         /// </remarks>
         protected IEnumerable<Face<TEdge, TFace>> ExportFaces(Func<Vec3, Vec3, Vec3, Vec3> centerCalculator,
-                                                   double scaleFactor)
+                                                              double scaleFactor)
         {
             // FIFO
             var queue = new Queue<QuadEdge<TEdge>>();

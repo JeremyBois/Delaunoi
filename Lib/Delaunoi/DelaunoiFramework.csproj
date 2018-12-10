@@ -68,6 +68,7 @@
     <Compile Include="Delaunoi/DataStructures/Face.cs" />
 
     <Compile Include="Delaunoi/Core/GuibasStolfi.cs" />
+    <Compile Include="Delaunoi/Core/BaseMesh.cs" />
     <Compile Include="Delaunoi/Core/Mesh2D.cs" />
     <Compile Include="Delaunoi/Core/SphericalMesh.cs" />
     <Compile Include="Delaunoi/Core/FaceConfig.cs" />

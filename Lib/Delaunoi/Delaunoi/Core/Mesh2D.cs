@@ -11,16 +11,8 @@ namespace Delaunoi
     using Delaunoi.Tools;
 
 
-    public class Mesh2D<TEdge, TFace>: IFluentExtended<Face<TEdge, TFace>>, IFluent<Vec3>
+    public class Mesh2D<TEdge, TFace>: BaseMesh<TEdge, TFace>, IFluentExtended<Face<TEdge, TFace>>
     {
-        // Context use to implement fluent pattern
-        protected IEnumerable<Vec3>               _contextTriangles;
-        protected IEnumerable<Face<TEdge, TFace>> _contextFaces;
-
-        // Internal representation of the mesh
-        protected GuibasStolfi<TEdge>      _mesh;
-
-
     // CONSTRUCTOR
 
         /// <summary>
@@ -29,43 +21,12 @@ namespace Delaunoi
         /// <param name="points">An array of points to triangulate.</param>
         /// <param name="alreadySorted">Points already sorted (base on x then y).</param>
         public Mesh2D(Vec3[] points, bool alreadySorted=false)
+            : base(points, alreadySorted)
         {
-            _mesh = new GuibasStolfi<TEdge>(points, alreadySorted);
         }
-
-
-
-    // PROPERTIES
-
-        /// <summary>
-        /// Return the leftmost edge if triangulation already done, else null.
-        /// </summary>
-        public QuadEdge<TEdge> LeftMostEdge
-        {
-            get {return _mesh.LeftMostEdge;}
-        }
-
-        /// <summary>
-        /// Return the rightmost edge if triangulation already done, else null.
-        /// </summary>
-        public QuadEdge<TEdge> RightMostEdge
-        {
-            get {return _mesh.RightMostEdge;}
-        }
-
-
 
 
     // PUBLIC METHODS
-
-        /// <summary>
-        /// Export Triangles based on Delaunay triangulation.
-        /// </summary>
-        public IFluent<Vec3> Triangles()
-        {
-            _contextTriangles = ExportTriangles();
-            return this;
-        }
 
         /// <summary>
         /// Construct all faces based on Delaunay triangulation. Vertices at infinity
@@ -88,42 +49,32 @@ namespace Delaunoi
             switch (faceType)
             {
                 case FaceConfig.Centroid:
-                    _contextFaces = ExportFaces(radius, Geometry.Centroid);
+                    _contextFaces = ExportFaces(Geometry.Centroid, radius);
                     break;
                 case FaceConfig.Voronoi:
                     if (useZCoord)
                     {
-                        _contextFaces = ExportFaces(radius, Geometry.CircumCenter3D);
+                        _contextFaces = ExportFaces(Geometry.CircumCenter3D, radius);
                     }
                     else
                     {
-                        _contextFaces = ExportFaces(radius, Geometry.CircumCenter2D);
+                        _contextFaces = ExportFaces(Geometry.CircumCenter2D, radius);
                     }
                     break;
                 case FaceConfig.InCenter:
-                    _contextFaces = ExportFaces(radius, Geometry.InCenter);
+                    _contextFaces = ExportFaces(Geometry.InCenter, radius);
                     break;
                 case FaceConfig.RandomUniform:
-                    _contextFaces = ExportFaces(radius, RandGen.TriangleUniform);
+                    _contextFaces = ExportFaces(RandGen.TriangleUniform, radius);
                     break;
                 case FaceConfig.RandomNonUniform:
-                    _contextFaces = ExportFaces(radius, RandGen.TriangleNonUniform);
+                    _contextFaces = ExportFaces(RandGen.TriangleNonUniform, radius);
                     break;
                 default:
                     throw new NotImplementedException();
             }
 
             return this;
-        }
-
-        /// <summary>
-        /// Return an array of Vec3 from the triangulation.
-        /// </summary>
-        public bool Construct()
-        {
-            _mesh.ComputeDelaunay();
-
-            return true;
         }
 
         /// <summary>
@@ -175,42 +126,6 @@ namespace Delaunoi
         {
             return _mesh.ClosestBoundingEdge(pos);
         }
-
-
-
-    // FLUENT INTERFACE FOR TRIANGLES
-
-        /// <summary>
-        /// Can be used to use fluent extensions from LINQ (<see cref="System.Linq"/>).
-        /// </summary>
-        IEnumerable<Vec3> IFluent<Vec3>.Collection()
-        {
-            return _contextTriangles;
-        }
-
-        IFluent<Vec3> IFluent<Vec3>.ForEach(Func<Vec3, Vec3> selector)
-        {
-            _contextTriangles = _contextTriangles.Select(vec => selector(vec));
-            return this;
-        }
-
-        /// <summary>
-        /// Build a list of face which accounts for previous operations.
-        /// </summary>
-        List<Vec3> IFluent<Vec3>.ToList()
-        {
-            return _contextTriangles.ToList();
-        }
-
-        /// <summary>
-        /// Build an array of face which accounts for previous operations.
-        /// </summary>
-        Vec3[] IFluent<Vec3>.ToArray()
-        {
-            return _contextTriangles.ToArray();
-        }
-
-
 
     // FLUENT INTERFACE FOR FACES
 
@@ -369,49 +284,6 @@ namespace Delaunoi
     // PROTECTED METHOD
 
         /// <summary>
-        /// Construct triangles based on Delaunay triangulation.
-        /// </summary>
-        protected IEnumerable<Vec3> ExportTriangles()
-        {
-            // FIFO
-            var queue = new Queue<QuadEdge<TEdge>>();
-
-            // Start at the far right
-            QuadEdge<TEdge> first = _mesh.RightMostEdge;
-            queue.Enqueue(first);
-
-            // Visit all edge of the convex hull in CW order and
-            // add opposite edges to queue
-            foreach (QuadEdge<TEdge> hullEdge in first.RightEdges(CCW:false))
-            {
-                // Enqueue same edge but with opposite direction
-                queue.Enqueue(hullEdge.Sym);
-                hullEdge.Tag = !_mesh.VisitedTagState;
-            }
-
-            // Convex hull now closed. Start triangles construction
-            while (queue.Count > 0)
-            {
-                QuadEdge<TEdge> edge = queue.Dequeue();
-                if (edge.Tag == _mesh.VisitedTagState)
-                {
-                    foreach (QuadEdge<TEdge> current in edge.RightEdges(CCW:false))
-                    {
-                        if (current.Sym.Tag == _mesh.VisitedTagState)
-                        {
-                            queue.Enqueue(current.Sym);
-                        }
-                        current.Tag = !_mesh.VisitedTagState;
-                        yield return current.Origin;
-                    }
-                }
-            }
-
-            // Inverse flag to be able to traverse again at next call
-            _mesh.SwitchInternalFlag();
-        }
-
-        /// <summary>
         /// Construct voronoi face based on Delaunay triangulation. Vertices at infinity
         /// are define based on radius parameter. It should be large enough to avoid
         /// some circumcenters (finite voronoi vertices) to be further on.
@@ -421,7 +293,8 @@ namespace Delaunoi
         /// is not guarantee to be constructed.
         /// </remarks>
         /// <param name="radius">Distance used to construct site that are at infinity.</param>
-        protected IEnumerable<Face<TEdge, TFace>> ExportFaces(double radius, Func<Vec3, Vec3, Vec3, Vec3> centerCalculator)
+        protected IEnumerable<Face<TEdge, TFace>> ExportFaces(Func<Vec3, Vec3, Vec3, Vec3> centerCalculator,
+                                                              double radius)
         {
             // FIFO
             var queue = new Queue<QuadEdge<TEdge>>();
@@ -584,6 +457,5 @@ namespace Delaunoi
             }
             return normal;
         }
-
     }
 }
