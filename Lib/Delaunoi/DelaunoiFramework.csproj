@@ -35,7 +35,7 @@
   </PropertyGroup>
 
   <!-- UNITY DEBUG -->
-<!--   <ItemGroup>
+  <ItemGroup>
     <Reference Include="UnityEngine">
       <HintPath>C:\Program Files\Unity\Hub\Editor\2018.2.12f1\Editor\Data\Managed/UnityEngine/UnityEngine.dll</HintPath>
     </Reference>
@@ -43,7 +43,7 @@
       <HintPath>C:/Program Files/Unity/Hub/Editor/2018.2.12f1/Editor/Data/Managed/UnityEngine/UnityEngine.CoreModule.dll</HintPath>
     </Reference>
   </ItemGroup>
- -->
+
 
   <ItemGroup>
     <Reference Include="System"/>
@@ -75,6 +75,7 @@
 
     <Compile Include="Delaunoi/Generators/HaltonSequence.cs" />
     <Compile Include="Delaunoi/Generators/PoissonDisk2D.cs" />
+    <Compile Include="Delaunoi/Generators/PoissonDisk3D.cs" />
     <Compile Include="Delaunoi/Generators/SphereSampler.cs" />
 
     <Compile Include="Delaunoi/Tools/Geometry.cs" />
