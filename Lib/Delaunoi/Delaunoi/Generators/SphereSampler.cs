@@ -1,6 +1,9 @@
 using System;
 using System.Collections.Generic;
 
+using UnityEngine;
+
+
 
 namespace Delaunoi.Generators
 {
@@ -34,6 +37,33 @@ namespace Delaunoi.Generators
 
                 double theta = Math.Acos(1.0 - (2.0 * (double)ind + 1.0) * oneDivN);
 
+
+                yield return Geometry.SphericalToEuclidean(phi, theta);
+            }
+       }
+
+       /// <summary>
+       /// Return an iterator of points in 3D euclidean space representing an uniform
+       /// distribution on points on a unit sphere.
+       /// </summary>
+       /// <remarks>
+       /// Based on the paper `Spherical Fibonacci Mapping, Benjamin Keinert et al.
+       /// Journal ACM Transactions on Graphics, Volume 34 Issue 6, November 2015`.
+       /// </remarks>
+       public static IEnumerable<Vec3> Fibonnaci(int number, double jitter)
+       {
+            // Multiplication cheaper than division
+            double oneDivN = 1.0 / (double)number;
+
+            for (uint ind = 0; ind < number; ind++)
+            {
+                // Keep only decimal part of x
+                double x = InvGoldenRatio * ind + jitter * RandGen.NextDouble();
+                double phi = TwoPi * (x - Math.Truncate(x));
+
+                // @Todo make it more random
+                double theta = Math.Acos(1.0 - (2.0 * (double)ind + 1.0) * oneDivN);
+
                 yield return Geometry.SphericalToEuclidean(phi, theta);
             }
        }
@@ -58,6 +88,22 @@ namespace Delaunoi.Generators
 
                 yield return Geometry.SphericalToEuclidean(phi, theta);
                 seed++;
+            }
+       }
+
+
+       /// <summary>
+       /// Return an iterator of points in 3D euclidean space regarding a disk
+       /// sampling point distribution on a unit sphere.
+       /// </summary>
+       public static IEnumerable<Vec3> Poisson(int number, float radius, int maxAttempt=60)
+       {
+            var generator = new PoissonDisk2D(radius, (float)TwoPi, (float)Math.PI, maxAttempt);
+            generator.BuildSample(number);
+
+            foreach (Vec3 pt in generator)
+            {
+                yield return Geometry.SphericalToEuclidean(pt.X, pt.Y);
             }
        }
     }

@@ -19,7 +19,8 @@ public class SphereSamplerTest : MonoBehaviour
     {
         Fibonnaci,
         Halton,
-        Uniform
+        Uniform,
+        Poisson
     }
 
     [Tooltip("Number of points to compute.")]
@@ -90,7 +91,15 @@ public class SphereSamplerTest : MonoBehaviour
                 }
                 break;
             case Generator.Fibonnaci:
-                points = SphereSampler.Fibonnaci(pointNumber).ToList();
+                points = SphereSampler.Fibonnaci(pointNumber, 100.0).ToList();
+                break;
+            case Generator.Poisson:
+                points = SphereSampler.Poisson(pointNumber, 0.5f).ToList();
+                foreach (Vec3 pt in points)
+                {
+                    Debug.Log(pt);
+                }
+                Debug.Log(points.Count);
                 break;
         }
 

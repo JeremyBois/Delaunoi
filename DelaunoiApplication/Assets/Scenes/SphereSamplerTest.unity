@@ -140,10 +140,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2d36b7ed996fb17419e4462b79e2db83, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  pointNumber: 1244
+  pointNumber: 432
   radius: 50
-  usedGenerator: 2
-  seed: 1535
+  usedGenerator: 3
+  seed: 213
   bases: 0200000003000000
   shape: {fileID: 1299362892703848, guid: 5bd056414346da7408618b5b49b996b1, type: 2}
   scale: 0.5
