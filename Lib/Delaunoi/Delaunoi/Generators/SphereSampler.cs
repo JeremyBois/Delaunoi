@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 
-using UnityEngine;
 
 
 
@@ -14,7 +13,7 @@ namespace Delaunoi.Generators
     public static class SphereSampler
     {
        public static readonly double InvGoldenRatio = 2.0 / (Math.Sqrt(5.0) + 1);
-	   public static readonly double TwoPi = Math.PI * 2.0;
+	   public static readonly double TWOPI = Math.PI * 2.0;
 
        /// <summary>
        /// Return an iterator of points in 3D euclidean space representing an uniform
@@ -33,7 +32,7 @@ namespace Delaunoi.Generators
             {
                 // Keep only decimal part of x
                 double x = InvGoldenRatio * ind;
-                double phi = TwoPi * (x - Math.Truncate(x));
+                double phi = TWOPI * (x - Math.Truncate(x));
 
                 double theta = Math.Acos(1.0 - (2.0 * (double)ind + 1.0) * oneDivN);
 
@@ -58,11 +57,11 @@ namespace Delaunoi.Generators
             for (uint ind = 0; ind < number; ind++)
             {
                 // Keep only decimal part of x
+                // double x = InvGoldenRatio * ind;
                 double x = InvGoldenRatio * ind + jitter * RandGen.NextDouble();
-                double phi = TwoPi * (x - Math.Truncate(x));
+                double phi = TWOPI * (x - Math.Truncate(x));
 
-                // @Todo make it more random
-                double theta = Math.Acos(1.0 - (2.0 * (double)ind + 1.0) * oneDivN);
+                double theta = Math.Acos(1.0 - (2.0 * (double)ind + 1.0 + jitter * RandGen.NextDouble()) * oneDivN);
 
                 yield return Geometry.SphericalToEuclidean(phi, theta);
             }
@@ -98,7 +97,8 @@ namespace Delaunoi.Generators
        /// </summary>
        public static IEnumerable<Vec3> Poisson(int number, float radius, int maxAttempt=60)
        {
-            var generator = new PoissonDisk2D(radius, (float)TwoPi, (float)Math.PI, maxAttempt);
+            /// @TODO Reduce Clustering next to poles
+            var generator = new PoissonDisk2D(radius, (float)TWOPI, (float)Math.PI, maxAttempt);
             generator.BuildSample(number);
 
             foreach (Vec3 pt in generator)
