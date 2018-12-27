@@ -19,7 +19,8 @@ public class SphereSamplerTest : MonoBehaviour
     {
         Fibonnaci,
         Halton,
-        Uniform
+        Uniform,
+        Poisson
     }
 
     [Tooltip("Number of points to compute.")]
@@ -90,7 +91,12 @@ public class SphereSamplerTest : MonoBehaviour
                 }
                 break;
             case Generator.Fibonnaci:
+                // points = SphereSampler.Fibonnaci(pointNumber, 0.8).ToList();
                 points = SphereSampler.Fibonnaci(pointNumber).ToList();
+                break;
+            case Generator.Poisson:
+                points = SphereSampler.Poisson(pointNumber, 0.1f).ToList();
+                Debug.Log(points.Count);
                 break;
         }
 
@@ -190,21 +196,25 @@ public class SphereSamplerTest : MonoBehaviour
 
             // DRAWING  ---  ---  DRAWING  ---  ---  DRAWING
             List<Vec3> triangles;
+
+
             if (triangulationOnSphere)
             {
                 triangles = sphereMeshUsed.Triangles().ForEach(x => Geometry.InvStereographicProjection(x) * radius).ToList();
             }
             else
             {
+                // Remove first triangles
                 triangles = sphereMeshUsed.Triangles().ForEach(x => x * radius).ToList();
             }
 
-            // TriangleDrawer.DrawFace(triangles, transform, mat, gradient);
-            // TriangleDrawer.DrawLine(triangles, transform, mat, Color.black, lineScale);
+            TriangleDrawer.DrawLine(triangles, transform, mat, Color.black, lineScale);
+            TriangleDrawer.DrawFace(triangles, transform, mat, gradient);
             TriangleDrawer.DrawPoints(triangles, transform, shape, Color.red, scale);
 
+            // Remove first face (reconstructed hole)
+            // List<Face<int, int>> faces = sphereMeshUsed.Faces(FaceConfig.Voronoi, radius).Collection().Skip(1).ToList();
             List<Face<int, int>> faces = sphereMeshUsed.Faces(FaceConfig.Voronoi, radius).ToList();
-
 
 
             // // START DEBUGTOOLS
@@ -325,24 +335,27 @@ public class SphereSamplerTest : MonoBehaviour
             // // END DEBUGTOOLS
 
 
-
-            float nbCells = (float)faces.Count;
-            int indcolor2 = 0;
-            foreach (Face<int, int> face in faces)
+            if (triangulationOnSphere)
             {
-                var color = gradient.Evaluate(indcolor2 / nbCells);
+                float nbCells = (float)faces.Count;
+                int indcolor2 = 0;
+                foreach (Face<int, int> face in faces)
+                {
+                    var color = gradient.Evaluate(indcolor2 / nbCells);
 
-                face.DrawFace(transform, mat, color, scale:radius);
-                face.DrawLine(transform, mat, Color.white, lineScale, loop:true);
-                face.DrawPoints(transform, shape, mat, Color.blue, 0.6f * scale);
+                    face.DrawFace(transform, mat, color, scale: radius);
+                    face.DrawLine(transform, mat, Color.white, lineScale, loop: true);
+                    face.DrawPoints(transform, shape, mat, Color.blue, 0.6f * scale);
 
-                indcolor2++;
+                    indcolor2++;
 
-                // if (indcolor2 > 11)
-                // {
-                //     break;
-                // }
+                    // if (indcolor2 > 11)
+                    // {
+                    //     break;
+                    // }
+                }
             }
+
         }
         else
         {

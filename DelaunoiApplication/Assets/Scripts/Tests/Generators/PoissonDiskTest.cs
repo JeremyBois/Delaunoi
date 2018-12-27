@@ -22,7 +22,7 @@ public class PoissonDiskTest : MonoBehaviour
 
     [Tooltip("Boundaries used for drawing.")]
     [SerializeField]
-    private int[] boundaries = {200, 200};
+    private int[] boundaries = {200, 200, 200};
     [SerializeField]
     private int maxAttemp = 30;
 
@@ -34,8 +34,18 @@ public class PoissonDiskTest : MonoBehaviour
     [SerializeField]
     private float scale;
 
+    [SerializeField]
+    private Dimension dim;
 
-    private PoissonDisk2D generator;
+    private enum Dimension
+    {
+        Two,
+        Three
+    }
+
+
+    private PoissonDisk3D generator3D;
+    private PoissonDisk2D generator2D;
 
 
 
@@ -44,9 +54,16 @@ public class PoissonDiskTest : MonoBehaviour
     {
         RandGen.Init(seed);
 
-        generator = new PoissonDisk2D(minimalDistance, boundaries[0], boundaries[1],
-                                      maxAttemp);
-
+        if (dim == Dimension.Two)
+        {
+            generator2D = new PoissonDisk2D(minimalDistance, boundaries[0], boundaries[1],
+                                          maxAttemp);
+        }
+        else
+        {
+            generator3D = new PoissonDisk3D(minimalDistance, boundaries[0], boundaries[1], boundaries[2],
+                                            maxAttemp);
+        }
 
         // Place camera
         var cam = Camera.main;
@@ -57,30 +74,67 @@ public class PoissonDiskTest : MonoBehaviour
     {
         // BUILDING  ---  ---  BUILDING  ---  ---  BUILDING
         System.DateTime previousTime = System.DateTime.Now;
-        generator.BuildSample(pointNumber);
-        System.TimeSpan delta = System.DateTime.Now - previousTime;
-        Debug.Log(string.Format("BUILDING *** {0} secondes OU {1} milliseconds *** BUILDING",
-                  delta.TotalSeconds, delta.TotalMilliseconds));
-        Debug.Log("Total generated points: " + generator.Count);
+        if (dim == Dimension.Two)
+        {
+            generator2D.BuildSample(pointNumber);
+            System.TimeSpan delta = System.DateTime.Now - previousTime;
+            Debug.Log(string.Format("BUILDING *** {0} secondes OU {1} milliseconds *** BUILDING",
+                      delta.TotalSeconds, delta.TotalMilliseconds));
+            Debug.Log("Total generated points: " + generator2D.Count);
+        }
+        else
+        {
+            generator3D.BuildSample(pointNumber);
+            System.TimeSpan delta = System.DateTime.Now - previousTime;
+            Debug.Log(string.Format("BUILDING *** {0} secondes OU {1} milliseconds *** BUILDING",
+                      delta.TotalSeconds, delta.TotalMilliseconds));
+            Debug.Log("Total generated points: " + generator3D.Count);
+        }
+
+
 
         // DRAWING  ---  ---  DRAWING  ---  ---  DRAWING
         int ptId = 0;
-        foreach (Vec3 point in generator)
-        {
-            var newGo = GameObject.Instantiate(shape);
-            newGo.name = string.Format("Poisson Disk Sample {0}", ptId.ToString());
-            newGo.transform.SetParent(transform);
-            newGo.transform.position = point.AsVector3();
-            newGo.transform.localScale = new Vector3(scale, scale, scale);
-            // Color
-            var meshR = newGo.GetComponent<MeshRenderer>();
-            if (meshR != null)
-            {
-                meshR.materials[0].color = Color.black;
-            }
 
-            ptId++;
+        if (dim == Dimension.Two)
+        {
+            foreach (Vec3 point in generator2D)
+            {
+                var newGo = GameObject.Instantiate(shape);
+                newGo.name = string.Format("Poisson Disk Sample {0}", ptId.ToString());
+                newGo.transform.SetParent(transform);
+                newGo.transform.position = point.AsVector3();
+                newGo.transform.localScale = new Vector3(scale, scale, scale);
+                // Color
+                var meshR = newGo.GetComponent<MeshRenderer>();
+                if (meshR != null)
+                {
+                    meshR.materials[0].color = Color.black;
+                }
+
+                ptId++;
+            }
         }
+        else
+        {
+            foreach (Vec3 point in generator3D)
+            {
+                var newGo = GameObject.Instantiate(shape);
+                newGo.name = string.Format("Poisson Disk Sample {0}", ptId.ToString());
+                newGo.transform.SetParent(transform);
+                newGo.transform.position = point.AsVector3();
+                newGo.transform.localScale = new Vector3(scale, scale, scale);
+                // Color
+                var meshR = newGo.GetComponent<MeshRenderer>();
+                if (meshR != null)
+                {
+                    meshR.materials[0].color = Color.black;
+                }
+
+                ptId++;
+            }
+        }
+
     }
 
 	// Update is called once per frame

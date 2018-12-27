@@ -83,6 +83,20 @@ namespace Delaunoi.Tools
         }
 
         /// <summary>
+        /// Return a random number in a sphere with minimal magnitude defined
+        /// by minRadius and maximal by maxRadius.
+        /// </summary>
+        public static Vec3 InSphere(double minRadius, double maxRadius)
+        {
+            double r = minRadius + (maxRadius - minRadius) * NextDouble();
+
+            double phi = NextDouble(TWOPI);
+            double theta = System.Math.Acos(2.0 * RandGen.NextDouble() - 1.0);
+
+            return r * Geometry.SphericalToEuclidean(phi, theta);
+        }
+
+        /// <summary>
         /// Return a random number in a unit circle perimeter.
         /// </summary>
         public static Vec3 UnitCircle()
@@ -130,6 +144,17 @@ namespace Delaunoi.Tools
             double denominatorInv = 1.0 / (alpha + beta + gamma);
 
             return (a * alpha + b * beta + c * gamma) * denominatorInv;
+        }
+
+        /// <summary>
+        /// Generates a normally distributed number.
+        /// </summary>
+        public static double NextGaussian(double mu=0, double sigma=1)
+        {
+            var randNormal = Math.Sqrt(-2.0 * Math.Log((1.0 - NextDouble()))) *
+                             Math.Sin(2.0 * Math.PI *  (1.0 - NextDouble()));
+
+            return mu + sigma * randNormal;
         }
     }
 }
