@@ -100,7 +100,6 @@ public class PoissonDiskTest : MonoBehaviour
         {
             foreach (Vec3 point in generator2D)
             {
-                Debug.Log(point);
                 var newGo = GameObject.Instantiate(shape);
                 newGo.name = string.Format("Poisson Disk Sample {0}", ptId.ToString());
                 newGo.transform.SetParent(transform);
@@ -120,7 +119,6 @@ public class PoissonDiskTest : MonoBehaviour
         {
             foreach (Vec3 point in generator3D)
             {
-                Debug.Log(point);
                 var newGo = GameObject.Instantiate(shape);
                 newGo.name = string.Format("Poisson Disk Sample {0}", ptId.ToString());
                 newGo.transform.SetParent(transform);

@@ -41,6 +41,8 @@ namespace Delaunoi.Generators
 
         private int _count;
 
+        private Func<double, double, Vec3> randomFunc;
+
 
         /// <summary>
         /// Initialize a PoissonDisk2D generator.
@@ -81,8 +83,27 @@ namespace Delaunoi.Generators
         /// then eventually lower that the required sampleSize as a parameter.
         /// </summary>
         /// <param name="sampleSize">Maximal number of point to sample.</param>
+        /// Arguments are radius and radius x 2</param>
         public void BuildSample(int sampleSize)
         {
+            BuildSample(sampleSize, RandGen.InCircle);
+        }
+
+        /// <summary>
+        /// Construct a set of point. Note that maximal number of point if limited
+        /// due to radius parameter in a finite rectangular shape (with, height).
+        /// That is, a finite maximal number of sample exists and sample size will
+        /// then eventually lower that the required sampleSize as a parameter.
+        /// </summary>
+        /// <param name="sampleSize">Maximal number of point to sample.</param>
+        /// <param name="randInCircle">Used to compute random delta from a sample.
+        /// Arguments are radius and radius x 2</param>
+        public void BuildSample(int sampleSize,
+                                Func<double, double, Vec3> randInCircle)
+        {
+            // Register random function used
+            randomFunc = randInCircle;
+
             // Cols represent the number of cell for the width (x coordinate)
             // Initialize will null by default
             _grid = new Vec3[_rows, _cols];
@@ -97,16 +118,16 @@ namespace Delaunoi.Generators
             // Try adding sampleSize - 1 other samples
             while (_count < sampleSize && _activeList.Count > 0)
             {
-                    // Select a site from the list
-                    int sampleIndex = RandGen.NextInt(0, _activeList.Count);
-                    Vec3 sample = _activeList[sampleIndex];
+                // Select a site from the list
+                int sampleIndex = RandGen.NextInt(0, _activeList.Count);
+                Vec3 sample = _activeList[sampleIndex];
 
-                    // Try adding a new sample
-                    if (!TryAddCandidate(sample))
-                    {
-                        // If not possible remove sample from active list
-                        _activeList.RemoveAt(sampleIndex);
-                    }
+                // Try adding a new sample
+                if (!TryAddCandidate(sample))
+                {
+                    // If not possible remove sample from active list
+                    _activeList.RemoveAt(sampleIndex);
+                }
             }
         }
 
@@ -120,7 +141,7 @@ namespace Delaunoi.Generators
             {
                 // New candidate chosen uniformly from the spherical annulus
                 // between _radius and 2 x _radius.
-                Vec3 cand = sample + RandGen.InCircle(_radius, _radius * 2.0f);
+                Vec3 cand = sample + randomFunc(_radius, _radius * 2.0f);
 
                 Coord canCoord = GridCoord(cand);
                 // Inside bounds and not in an already used cell
@@ -129,7 +150,10 @@ namespace Delaunoi.Generators
                     bool notTooClose = true;
                     foreach (Vec3 adj in Adjacents(canCoord))
                     {
-                        if (Vec3.DistanceSquared(cand, adj) < _radiusSq)
+                        Vec3 first = Geometry.SphericalToEuclidean(cand.X, cand.Y);
+                        Vec3 second = Geometry.SphericalToEuclidean(adj.X, adj.Y);
+                        if (Vec3.DistanceSquared(first, second) < _radiusSq)
+                        // if (Vec3.DistanceSquared(cand, adj) < _radiusSq)
                         {
                             notTooClose = false;
                             break;
@@ -229,6 +253,26 @@ namespace Delaunoi.Generators
                     // Account for bounds limits
                     int row = coord.Row + i;
                     int col = coord.Col + j;
+
+                    // Cyclic
+                    if (row < 0)
+                    {
+                        row = _rows - row;
+                    }
+                    else if (row > _rows)
+                    {
+                        row = row - _rows;
+                    }
+
+                    if (col < 0)
+                    {
+                        col = _cols - col;
+                    }
+                    else if (col > _cols)
+                    {
+                        col = col - _cols;
+                    }
+
                     if (row >= 0 && row < _rows && col >= 0 && col < _cols)
                     {
                         Vec3 adj =  _grid[row, col];

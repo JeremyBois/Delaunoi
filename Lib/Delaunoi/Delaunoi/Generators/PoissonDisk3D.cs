@@ -42,6 +42,9 @@ namespace Delaunoi.Generators
 
         private int _count;
 
+        private Func<double, double, Vec3> randomFunc;
+
+
         /// <summary>
         /// Initialize a PoissonDisk3D generator.
         /// </summary>
@@ -80,6 +83,23 @@ namespace Delaunoi.Generators
         /// <param name="sampleSize">Maximal number of point to sample.</param>
         public void BuildSample(int sampleSize)
         {
+            BuildSample(sampleSize, RandGen.InSphere);
+        }
+
+        /// <summary>
+        /// Construct a set of point. Note that maximal number of point if limited
+        /// due to radius parameter in a finite rectangular shape (with, height).
+        /// That is, a finite maximal number of sample exists and sample size will
+        /// then eventually lower that the required sampleSize as a parameter.
+        /// </summary>
+        /// <param name="sampleSize">Maximal number of point to sample.</param>
+        /// <param name="randInCircle">Used to compute random delta from a sample.
+        /// Arguments are radius and radius x 2</param>
+        public void BuildSample(int sampleSize, Func<double, double, Vec3> randInSphere)
+        {
+            // Register random function used
+            randomFunc = randInSphere;
+
             // Cols represent the number of cell for the width (x coordinate)
             // Initialize will null by default
             _grid = new Vec3[_rows, _cols, _depths];
@@ -208,7 +228,7 @@ namespace Delaunoi.Generators
             {
                 // New candidate chosen uniformly from the spherical annulus
                 // between _radius and 2 x _radius.
-                Vec3 cand = sample + RandGen.InSphere(_radius, _radius * 2.0f);
+                Vec3 cand = sample + randomFunc(_radius, _radius * 2.0f);
 
                 Coord canCoord = GridCoord(cand);
                 // Inside bounds and not in an already used cell

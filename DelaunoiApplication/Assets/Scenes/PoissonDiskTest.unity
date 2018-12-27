@@ -142,8 +142,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   seed: 23
   pointNumber: 2452
-  minimalDistance: 15
-  boundaries: c8000000c8000000
+  minimalDistance: 20
+  boundaries: c8000000c8000000c8000000
   maxAttemp: 20
   shape: {fileID: 1299362892703848, guid: 5bd056414346da7408618b5b49b996b1, type: 2}
   scale: 3
