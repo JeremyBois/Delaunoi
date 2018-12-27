@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>a6f374c1-42c3-48a0-975c-ab33799a9c64</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Delaunoi</RootNamespace>
+    <AssemblyName>Delaunoi</AssemblyName>
+    <TargetFramework>.NETFramework</TargetFramework>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <Deterministic>true</Deterministic>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+
+  <!-- UNITY DEBUG -->
+  <!-- <ItemGroup>
+    <Reference Include="UnityEngine">
+      <HintPath>C:\Program Files\Unity\Hub\Editor\2018.2.12f1\Editor\Data\Managed/UnityEngine/UnityEngine.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.CoreModule">
+      <HintPath>C:/Program Files/Unity/Hub/Editor/2018.2.12f1/Editor/Data/Managed/UnityEngine/UnityEngine.CoreModule.dll</HintPath>
+    </Reference>
+  </ItemGroup> -->
+
+
+  <ItemGroup>
+    <Reference Include="System"/>
+
+    <Reference Include="System.Core"/>
+    <Reference Include="System.Xml.Linq"/>
+    <Reference Include="System.Data.DataSetExtensions"/>
+
+
+    <Reference Include="Microsoft.CSharp"/>
+
+    <Reference Include="System.Data"/>
+
+    <Reference Include="System.Net.Http"/>
+
+    <Reference Include="System.Xml"/>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="Delaunoi/DataStructures/Vec3.cs" />
+    <Compile Include="Delaunoi/DataStructures/QuadEdge.cs" />
+    <Compile Include="Delaunoi/DataStructures/Face.cs" />
+
+    <Compile Include="Delaunoi/Core/GuibasStolfi.cs" />
+    <Compile Include="Delaunoi/Core/BaseMesh.cs" />
+    <Compile Include="Delaunoi/Core/Mesh2D.cs" />
+    <Compile Include="Delaunoi/Core/SphericalMesh.cs" />
+    <Compile Include="Delaunoi/Core/FaceConfig.cs" />
+
+    <Compile Include="Delaunoi/Generators/HaltonSequence.cs" />
+    <Compile Include="Delaunoi/Generators/PoissonDisk2D.cs" />
+    <Compile Include="Delaunoi/Generators/PoissonDisk3D.cs" />
+    <Compile Include="Delaunoi/Generators/SphereSampler.cs" />
+
+    <Compile Include="Delaunoi/Tools/Geometry.cs" />
+    <Compile Include="Delaunoi/Tools/RandGen.cs" />
+    <Compile Include="Delaunoi/Tools/Helper.cs" />
+
+    <Compile Include="Delaunoi/Interfaces/IFluent.cs" />
+
+    <Compile Include="../NetFrameworkProperties/AssemblyInfo.cs" />
+  </ItemGroup>
+
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+ </Project>

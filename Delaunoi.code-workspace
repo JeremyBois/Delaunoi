@@ -1,0 +1,17 @@
+{
+	"folders": [
+		{
+			"path": "Lib",
+			"name": "Delaunoi"
+		},
+		{
+			"path": "DelaunoiApplication",
+			"name": "Application"
+		},
+		{
+			"path": ".",
+			"name": "Root"
+		}
+	],
+	"settings": {}
+}
