@@ -20,6 +20,8 @@ namespace Delaunoi
     /// </summary>
     public class SphericalMesh<TEdge, TFace>: BaseMesh<TEdge, TFace>, IFluent<Face<TEdge, TFace>>
     {
+        protected bool closed;
+
     // CONSTRUCTOR
 
         /// <summary>
@@ -34,6 +36,8 @@ namespace Delaunoi
             {
                 throw new NotSupportedException("At least 8 points is needed to triangulate a sphere.");
             }
+
+            closed = false;
         }
 
 
@@ -85,10 +89,40 @@ namespace Delaunoi
         {
             _mesh.ComputeDelaunay();
 
-            // Connect left and right most edges together
-            CyclingMerge();
-
             return true;
+        }
+
+        /// <summary>
+        /// Merge left and right most edges together to construct a cycling triangulation.
+        /// Needed for sphere for example after normal triangulation step.
+        /// </summary>
+        public void CyclingMerge()
+        {
+            // @TODO Make sure CyclingMerge compute a valide triangulation
+            QuadEdge<TEdge> baseEdge = _mesh.RightMostEdge.Rnext;
+            QuadEdge<TEdge> lCand = baseEdge.Sym.Onext;
+            QuadEdge<TEdge> rCand = baseEdge.Oprev;
+
+            // Get edges CCW order from left extremum until reach right extremum
+            // to complete the sphere triangulation
+            // All edges must be stored first because pointer are updated
+            // during construction and will eventually leads to infinite loop ...
+            var toCheckEdge = rCand.LeftEdges(true).ToList();
+            foreach (QuadEdge<TEdge> rightEdge in toCheckEdge)
+            {
+                if (rightEdge.Destination != lCand.Destination)
+                {
+                    // Connect rightEdge.Destination to baseEdge.Destination
+                    // Construct a fan
+                    baseEdge = QuadEdge<TEdge>.Connect(rightEdge, baseEdge.Sym);
+                }
+                else
+                {
+                    break;
+                }
+            }
+
+            closed = true;
         }
 
 
@@ -133,38 +167,6 @@ namespace Delaunoi
     // PROTECTED METHODS
 
         /// <summary>
-        /// Merge left and right most edges together to construct a cycling triangulation.
-        /// Needed for sphere for example after normal triangulation step.
-        /// </summary>
-        protected void CyclingMerge()
-        {
-            // @TODO Make sure CyclingMerge compute a valide triangulation
-            QuadEdge<TEdge> baseEdge = _mesh.RightMostEdge.Rnext;
-            QuadEdge<TEdge> lCand = baseEdge.Sym.Onext;
-            QuadEdge<TEdge> rCand = baseEdge.Oprev;
-
-            // Get edges CCW order from left extremum until reach right extremum
-            // to complete the sphere triangulation
-            // All edges must be stored first because pointer are updated
-            // during construction and will eventually leads to infinite loop ...
-            var toCheckEdge = rCand.LeftEdges(true).ToList();
-            foreach (QuadEdge<TEdge> rightEdge in toCheckEdge)
-            {
-                if (rightEdge.Destination != lCand.Destination)
-                {
-                    // Connect rightEdge.Destination to baseEdge.Destination
-                    // Construct a fan
-                    baseEdge = QuadEdge<TEdge>.Connect(rightEdge, baseEdge.Sym);
-                }
-                else
-                {
-                    break;
-                }
-            }
-        }
-
-
-        /// <summary>
         /// Construct triangles based on Delaunay triangulation.
         /// </summary>
         protected override IEnumerable<Vec3> ExportTriangles()
@@ -184,8 +186,11 @@ namespace Delaunoi
                 queue.Enqueue(hullEdge.Sym);
                 hullEdge.Tag = !_mesh.VisitedTagState;
 
-                // Because mesh does not have any boundary this is also a triangle
-                yield return hullEdge.Origin;
+                if (closed)
+                {
+                    // Because mesh does not have any boundary this is also a triangle
+                    yield return hullEdge.Origin;
+                }
             }
 
             // Convex hull now closed. Start triangles construction
@@ -228,7 +233,6 @@ namespace Delaunoi
             // Start at the far left
             QuadEdge<TEdge> first = LeftMostEdge;
 
-            // @TODO Make sure CyclingMerge compute a valide triangulation
             // Construct first face using Centroid because
             // triangulation is not necessary delaunay
             foreach (QuadEdge<TEdge> current in first.EdgesFrom(CCW:false))
