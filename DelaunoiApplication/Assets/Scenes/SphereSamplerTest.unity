@@ -179,7 +179,8 @@ MonoBehaviour:
     m_NumColorKeys: 5
     m_NumAlphaKeys: 2
   triangulate: 1
-  triangulationOnSphere: 1
+  circleMerge: 0
+  triangulationOnSphere: 0
 --- !u!4 &66717360
 Transform:
   m_ObjectHideFlags: 0
