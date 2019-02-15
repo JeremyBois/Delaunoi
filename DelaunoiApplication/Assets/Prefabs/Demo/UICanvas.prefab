@@ -20,8 +20,28 @@ GameObject:
   m_Component:
   - component: {fileID: 224844311660788930}
   - component: {fileID: 114593265525297320}
+  - component: {fileID: 114751072260805254}
   m_Layer: 5
   m_Name: points
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!1 &1006761142699808
+GameObject:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 224039133982998348}
+  - component: {fileID: 222639905943872546}
+  - component: {fileID: 114447702392335928}
+  - component: {fileID: 114386168907397804}
+  - component: {fileID: 114627385164117966}
+  m_Layer: 5
+  m_Name: Panel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -276,6 +296,7 @@ GameObject:
   - component: {fileID: 222283368489973662}
   - component: {fileID: 114781421654864542}
   - component: {fileID: 114267689159189634}
+  - component: {fileID: 114697990424488354}
   m_Layer: 5
   m_Name: NbPoints
   m_TagString: Untagged
@@ -360,6 +381,7 @@ GameObject:
   - component: {fileID: 222754672260203884}
   - component: {fileID: 114344699205149748}
   - component: {fileID: 114897789866379318}
+  - component: {fileID: 114822138399571728}
   m_Layer: 5
   m_Name: Dropdown
   m_TagString: Untagged
@@ -412,6 +434,7 @@ GameObject:
   - component: {fileID: 222565554551847580}
   - component: {fileID: 114997872518888116}
   - component: {fileID: 114594783442483740}
+  - component: {fileID: 114175920260990782}
   m_Layer: 5
   m_Name: Shapes
   m_TagString: Untagged
@@ -531,6 +554,7 @@ GameObject:
   - component: {fileID: 222221253788869162}
   - component: {fileID: 114454477709965498}
   - component: {fileID: 114998536892628760}
+  - component: {fileID: 114301489204126502}
   m_Layer: 5
   m_Name: Seed
   m_TagString: Untagged
@@ -598,6 +622,7 @@ GameObject:
   m_Component:
   - component: {fileID: 224901212632745526}
   - component: {fileID: 114443610820523404}
+  - component: {fileID: 114238209980752842}
   m_Layer: 5
   m_Name: faces
   m_TagString: Untagged
@@ -664,6 +689,7 @@ GameObject:
   m_Component:
   - component: {fileID: 224215416441290704}
   - component: {fileID: 114343177275175358}
+  - component: {fileID: 114284678034802360}
   m_Layer: 5
   m_Name: points
   m_TagString: Untagged
@@ -714,6 +740,7 @@ GameObject:
   m_Component:
   - component: {fileID: 224041875756405798}
   - component: {fileID: 114814757395754542}
+  - component: {fileID: 114334756488863648}
   m_Layer: 5
   m_Name: Poisson
   m_TagString: Untagged
@@ -782,6 +809,7 @@ GameObject:
   - component: {fileID: 222729482888075662}
   - component: {fileID: 114555908444834200}
   - component: {fileID: 114365079936057040}
+  - component: {fileID: 114401747509141726}
   m_Layer: 5
   m_Name: Dropdown
   m_TagString: Untagged
@@ -921,6 +949,7 @@ GameObject:
   - component: {fileID: 222951014005945086}
   - component: {fileID: 114853386973820734}
   - component: {fileID: 114290403180170204}
+  - component: {fileID: 114842498181549470}
   m_Layer: 5
   m_Name: Lines
   m_TagString: Untagged
@@ -1038,6 +1067,7 @@ GameObject:
   m_Component:
   - component: {fileID: 224189317067040948}
   - component: {fileID: 114946892982717438}
+  - component: {fileID: 114845139015517246}
   m_Layer: 5
   m_Name: lines
   m_TagString: Untagged
@@ -1054,6 +1084,7 @@ GameObject:
   m_Component:
   - component: {fileID: 224312471916022402}
   - component: {fileID: 114197405595763350}
+  - component: {fileID: 114812517440767284}
   m_Layer: 5
   m_Name: Halton
   m_TagString: Untagged
@@ -1307,6 +1338,7 @@ GameObject:
   m_Component:
   - component: {fileID: 224250146691567758}
   - component: {fileID: 114425542779088226}
+  - component: {fileID: 114926651021789990}
   m_Layer: 5
   m_Name: lines
   m_TagString: Untagged
@@ -1511,6 +1543,7 @@ GameObject:
   m_Component:
   - component: {fileID: 224756018195339692}
   - component: {fileID: 114685357753082386}
+  - component: {fileID: 114241829737957136}
   m_Layer: 5
   m_Name: faces
   m_TagString: Untagged
@@ -1518,6 +1551,39 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!1 &1831366057493930
+GameObject:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 224980788345420818}
+  - component: {fileID: 222729429000210196}
+  - component: {fileID: 114526889638658104}
+  m_Layer: 5
+  m_Name: FakeText
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!1 &1848632481029238
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 224791130997950778}
+  - component: {fileID: 222052935681947598}
+  m_Layer: 5
+  m_Name: Popup
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
 --- !u!1 &1855208579700874
 GameObject:
   m_ObjectHideFlags: 1
@@ -2123,7 +2189,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Triangle
+  m_Text: Triangles
 --- !u!114 &114153530520535620
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2233,6 +2299,20 @@ MonoBehaviour:
     m_VerticalOverflow: 1
     m_LineSpacing: 1
   m_Text: Option A
+--- !u!114 &114175920260990782
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1251074517553080}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f82561148c2ef2b4789a1498b453c4f8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  displayName: Scale size used to draw points
+  popup: {fileID: 1848632481029238}
+  YShift: 0
 --- !u!114 &114181715219130420
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2293,7 +2373,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Lines size
+  m_Text: Line thickness
 --- !u!114 &114185492666263490
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2467,6 +2547,20 @@ MonoBehaviour:
     m_VerticalOverflow: 0
     m_LineSpacing: 1
   m_Text: 
+--- !u!114 &114238209980752842
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1313179549978830}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f82561148c2ef2b4789a1498b453c4f8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  displayName: If checked, cells will be filled
+  popup: {fileID: 1848632481029238}
+  YShift: 0
 --- !u!114 &114240287181812604
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2512,6 +2606,20 @@ MonoBehaviour:
     m_TypeName: UnityEngine.UI.Toggle+ToggleEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
   m_IsOn: 1
+--- !u!114 &114241829737957136
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1811620811991024}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f82561148c2ef2b4789a1498b453c4f8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  displayName: If checked, triangles will be filled
+  popup: {fileID: 1848632481029238}
+  YShift: 0
 --- !u!114 &114267689159189634
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2635,6 +2743,20 @@ MonoBehaviour:
   m_FillAmount: 1
   m_FillClockwise: 1
   m_FillOrigin: 0
+--- !u!114 &114284678034802360
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1393344253503398}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f82561148c2ef2b4789a1498b453c4f8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  displayName: If checked, triangles points will be drawn
+  popup: {fileID: 1848632481029238}
+  YShift: 0
 --- !u!114 &114290403180170204
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2657,6 +2779,20 @@ MonoBehaviour:
   m_ChildForceExpandHeight: 1
   m_ChildControlWidth: 0
   m_ChildControlHeight: 0
+--- !u!114 &114301489204126502
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1281958334383630}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f82561148c2ef2b4789a1498b453c4f8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  displayName: Initial value (seed) used for random generation
+  popup: {fileID: 1848632481029238}
+  YShift: 0
 --- !u!114 &114303522322738746
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2754,6 +2890,20 @@ MonoBehaviour:
   m_BlockingMask:
     serializedVersion: 2
     m_Bits: 4294967295
+--- !u!114 &114334756488863648
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1422272874577324}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f82561148c2ef2b4789a1498b453c4f8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  displayName: Minimal distance needed between point in generated sample
+  popup: {fileID: 1848632481029238}
+  YShift: 0
 --- !u!114 &114336015233432444
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2972,6 +3122,42 @@ MonoBehaviour:
     m_VerticalOverflow: 0
     m_LineSpacing: 1
   m_Text: Lines
+--- !u!114 &114386168907397804
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1006761142699808}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -405508275, guid: f70555f144d8491a825f0804e09c671c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Padding:
+    m_Left: 10
+    m_Right: 10
+    m_Top: 20
+    m_Bottom: 20
+  m_ChildAlignment: 4
+  m_Spacing: 0
+  m_ChildForceExpandWidth: 0
+  m_ChildForceExpandHeight: 0
+  m_ChildControlWidth: 1
+  m_ChildControlHeight: 1
+--- !u!114 &114401747509141726
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1448848862002238}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f82561148c2ef2b4789a1498b453c4f8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  displayName: Generator used to create points sample
+  popup: {fileID: 1848632481029238}
+  YShift: 0
 --- !u!114 &114420077581593976
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -3190,6 +3376,33 @@ MonoBehaviour:
     m_VerticalOverflow: 0
     m_LineSpacing: 1
   m_Text: Seed
+--- !u!114 &114447702392335928
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1006761142699808}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -765806418, guid: f70555f144d8491a825f0804e09c671c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 0.30980393, g: 0.6039216, b: 0.8117648, a: 0.7254902}
+  m_RaycastTarget: 0
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
+      Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
+  m_Sprite: {fileID: 10907, guid: 0000000000000000f000000000000000, type: 0}
+  m_Type: 2
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
 --- !u!114 &114454477709965498
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -3353,6 +3566,39 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_ShowMaskGraphic: 0
+--- !u!114 &114526889638658104
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1831366057493930}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 708705254, guid: f70555f144d8491a825f0804e09c671c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 0, g: 0, b: 0, a: 1}
+  m_RaycastTarget: 0
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
+      Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
+  m_FontData:
+    m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
+    m_FontSize: 25
+    m_FontStyle: 0
+    m_BestFit: 1
+    m_MinSize: 20
+    m_MaxSize: 30
+    m_Alignment: 4
+    m_AlignByGeometry: 0
+    m_RichText: 1
+    m_HorizontalOverflow: 0
+    m_VerticalOverflow: 0
+    m_LineSpacing: 1
+  m_Text: 'Coucou je suis l''aide !! '
 --- !u!114 &114536901460055766
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -3685,6 +3931,19 @@ MonoBehaviour:
   m_FillAmount: 1
   m_FillClockwise: 1
   m_FillOrigin: 0
+--- !u!114 &114627385164117966
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1006761142699808}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 1741964061, guid: f70555f144d8491a825f0804e09c671c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_HorizontalFit: 0
+  m_VerticalFit: 2
 --- !u!114 &114628895939267182
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -3798,7 +4057,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Faces
+  m_Text: Cells
 --- !u!114 &114665901597010740
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -3904,6 +4163,20 @@ MonoBehaviour:
     m_VerticalOverflow: 0
     m_LineSpacing: 1
   m_Text: 0
+--- !u!114 &114697990424488354
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1126883416018760}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f82561148c2ef2b4789a1498b453c4f8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  displayName: How many points to sample
+  popup: {fileID: 1848632481029238}
+  YShift: 0
 --- !u!114 &114738904876393552
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -3926,6 +4199,20 @@ MonoBehaviour:
   m_ChildForceExpandHeight: 1
   m_ChildControlWidth: 0
   m_ChildControlHeight: 0
+--- !u!114 &114751072260805254
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1002744611088392}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f82561148c2ef2b4789a1498b453c4f8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  displayName: If checked, cells points will be drawn
+  popup: {fileID: 1848632481029238}
+  YShift: 0
 --- !u!114 &114761201467684412
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -4224,6 +4511,20 @@ MonoBehaviour:
     m_VerticalOverflow: 1
     m_LineSpacing: 1
   m_Text: Base
+--- !u!114 &114812517440767284
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1622612821967110}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f82561148c2ef2b4789a1498b453c4f8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  displayName: Power number used to construct Halton sequence (prime works better)
+  popup: {fileID: 1848632481029238}
+  YShift: 0
 --- !u!114 &114814757395754542
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -4246,6 +4547,20 @@ MonoBehaviour:
   m_ChildForceExpandHeight: 1
   m_ChildControlWidth: 0
   m_ChildControlHeight: 0
+--- !u!114 &114822138399571728
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1199999535741838}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f82561148c2ef2b4789a1498b453c4f8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  displayName: Method used to construct cells
+  popup: {fileID: 1848632481029238}
+  YShift: 25
 --- !u!114 &114822794449652226
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -4318,6 +4633,20 @@ MonoBehaviour:
   m_FillAmount: 1
   m_FillClockwise: 1
   m_FillOrigin: 0
+--- !u!114 &114842498181549470
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1546384790747290}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f82561148c2ef2b4789a1498b453c4f8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  displayName: Scale size used to draw lines
+  popup: {fileID: 1848632481029238}
+  YShift: 0
 --- !u!114 &114843415551398558
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -4416,6 +4745,20 @@ MonoBehaviour:
   m_Text: 'Points
 
 '
+--- !u!114 &114845139015517246
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1592510934178486}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f82561148c2ef2b4789a1498b453c4f8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  displayName: If checked, triangles segments will be drawn
+  popup: {fileID: 1848632481029238}
+  YShift: 0
 --- !u!114 &114850468405321784
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -4729,7 +5072,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Shapes size
+  m_Text: Circle size
 --- !u!114 &114913369121086904
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -4806,6 +5149,20 @@ MonoBehaviour:
   m_FillAmount: 1
   m_FillClockwise: 1
   m_FillOrigin: 0
+--- !u!114 &114926651021789990
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1726805822893022}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f82561148c2ef2b4789a1498b453c4f8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  displayName: If checked, cells segments will be drawn
+  popup: {fileID: 1848632481029238}
+  YShift: 0
 --- !u!114 &114926926575630534
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -5257,6 +5614,13 @@ CanvasRenderer:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1545329010765626}
   m_CullTransparentMesh: 0
+--- !u!222 &222052935681947598
+CanvasRenderer:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1848632481029238}
+  m_CullTransparentMesh: 0
 --- !u!222 &222053181299548012
 CanvasRenderer:
   m_ObjectHideFlags: 1
@@ -5544,6 +5908,13 @@ CanvasRenderer:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1745055215396928}
   m_CullTransparentMesh: 0
+--- !u!222 &222639905943872546
+CanvasRenderer:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1006761142699808}
+  m_CullTransparentMesh: 0
 --- !u!222 &222645082630236864
 CanvasRenderer:
   m_ObjectHideFlags: 1
@@ -5592,6 +5963,13 @@ CanvasRenderer:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1805605293347248}
+  m_CullTransparentMesh: 0
+--- !u!222 &222729429000210196
+CanvasRenderer:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1831366057493930}
   m_CullTransparentMesh: 0
 --- !u!222 &222729482888075662
 CanvasRenderer:
@@ -5878,6 +6256,25 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!224 &224039133982998348
+RectTransform:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1006761142699808}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children:
+  - {fileID: 224980788345420818}
+  m_Father: {fileID: 224791130997950778}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
+  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!224 &224041875756405798
 RectTransform:
   m_ObjectHideFlags: 1
@@ -6060,6 +6457,7 @@ RectTransform:
   m_Children:
   - {fileID: 4341481929034286}
   - {fileID: 224908430290027952}
+  - {fileID: 224791130997950778}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -7238,6 +7636,25 @@ RectTransform:
   m_AnchoredPosition: {x: 10, y: -10}
   m_SizeDelta: {x: 50, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!224 &224791130997950778
+RectTransform:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1848632481029238}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children:
+  - {fileID: 224039133982998348}
+  m_Father: {fileID: 224127237932152008}
+  m_RootOrder: 2
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 300, y: 0}
+  m_SizeDelta: {x: 400, y: 50}
+  m_Pivot: {x: 0, y: 1}
 --- !u!224 &224791217364763992
 RectTransform:
   m_ObjectHideFlags: 1
@@ -7628,4 +8045,22 @@ RectTransform:
   m_AnchorMax: {x: 1, y: 0.2}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 20, y: 20}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!224 &224980788345420818
+RectTransform:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1831366057493930}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 224039133982998348}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 167.99213, y: -32.755905}
+  m_SizeDelta: {x: 235.98425, y: 25.51181}
   m_Pivot: {x: 0.5, y: 0.5}
