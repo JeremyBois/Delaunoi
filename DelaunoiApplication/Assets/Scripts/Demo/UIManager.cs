@@ -83,6 +83,43 @@ public class UIManager : MonoBehaviour
         // Dropdown
         GeneratorTypeDrop.value = (int)DelaunoiHandler.usedGenerator;
         FaceTypeDrop.value = (int)DelaunoiHandler.celltype;
+
+        // Input fields
+        nbPointsInput.onValidateInput += delegate (string input, int charIndex, char addedChar)
+            {
+                return UnsignedIntValidator(input, charIndex, addedChar);
+            };
+        seedInput.onValidateInput += delegate (string input, int charIndex, char addedChar)
+            {
+                return UnsignedIntValidator(input, charIndex, addedChar);
+            };
+        HaltonField.onValidateInput += delegate (string input, int charIndex, char addedChar)
+            {
+                return UnsignedIntValidator(input, charIndex, addedChar);
+            };
+        MinimalDistance.onValidateInput += delegate (string input, int charIndex, char addedChar)
+            {
+                return UnsignedIntValidator(input, charIndex, addedChar);
+            };
+    }
+
+    /// Avoid Negative and 0
+    private char UnsignedIntValidator(string input, int charIndex, char addedChar)
+    {
+        //Checks if a dollar sign is entered....
+        if (addedChar == '-')
+        {
+            // ... if it is change it to an empty character.
+            addedChar = '\0';
+        }
+        else if(addedChar == '0')
+        {
+            if  (input == string.Empty)
+            {
+                addedChar = '\0';
+            }
+        }
+        return addedChar;
     }
 
 
