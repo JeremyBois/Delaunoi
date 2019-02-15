@@ -17,6 +17,7 @@ namespace Delaunoi.Tools.Extensions
             float nbTriangles = points.Count / 3.0f;
             int currentId = 0;
 
+            // @TODO Draw a unique mesh
             for (int i = 0; i < points.Count; i = i + 3)
             {
                 GameObject newGo = new GameObject();
@@ -33,7 +34,7 @@ namespace Delaunoi.Tools.Extensions
                                                            points[i + 1].AsVector3(),
                                                            points[i + 2].AsVector3()}
                                         );
-                filter.mesh.triangles = new []{0, 1, 2};
+                filter.mesh.triangles = new []{0, 1, 2};//, 1, 0, 2};
 
                 currentId++;
             }
@@ -43,6 +44,8 @@ namespace Delaunoi.Tools.Extensions
                                       GameObject shape, Color color, float scale=2.0f)
         {
             // Iteration without duplicated
+            Material defaultMat = shape.GetComponent<MeshRenderer>().sharedMaterial;
+            defaultMat.color = color;
             int ptId = 0;
             foreach (Vec3 vec in points.Distinct())
             {
@@ -51,12 +54,6 @@ namespace Delaunoi.Tools.Extensions
                 newGo.transform.SetParent(parent);
                 newGo.transform.position = vec.AsVector3();
                 newGo.transform.localScale = new Vector3(scale, scale, scale);
-                // Color
-                var meshR = newGo.GetComponent<MeshRenderer>();
-                if (meshR != null)
-                {
-                    meshR.materials[0].color = color;
-                }
 
                 ptId++;
             }

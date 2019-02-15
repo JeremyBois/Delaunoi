@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
+using System.Linq;
+
+
 using Delaunoi;
 using Delaunoi.Generators;
 using Delaunoi.DataStructures;
@@ -46,6 +49,7 @@ public class GuibasStolfiPlane : MonoBehaviour
     public bool V_lines = false;
     public bool V_faces = false;
 
+
     void Awake()
     {
         // // Place camera
@@ -85,7 +89,13 @@ public class GuibasStolfiPlane : MonoBehaviour
         }
         if (D_points)
         {
-            TriangleDrawer.DrawPoints(triangles, transform, shapes[0], Color.red, 1.1f * scale);
+            // CPU instances
+            // TriangleDrawer.DrawPoints(triangles, transform, shapes[0], Color.red, 1.1f * scale);
+
+            var GoDrawer = new GameObject();
+            GoDrawer.transform.SetParent(transform);
+            var ptsDrawer = GoDrawer.AddComponent<DelaunoiMeshDrawer>();
+            ptsDrawer.DrawInstances(triangles.Distinct().ToList(), 1.1f * scale, shapes[0]);
         }
 
         // Get faces
@@ -106,11 +116,20 @@ public class GuibasStolfiPlane : MonoBehaviour
             {
                 face.DrawLine(transform, mat, Color.white, lineScale, loop: true);
             }
-            if (V_points)
-            {
-                face.DrawPoints(transform, shapes[1], mat, Color.blue, 0.8f * scale);
-            }
+            // if (V_points)
+            // {
+            //     face.DrawPoints(transform, shapes[1], mat, Color.blue, 0.8f * scale);
+            // }
             indcolor2++;
+        }
+
+        // @TODO Change to draw with triangles
+        if (V_points)
+        {
+            var GoDrawer = new GameObject();
+            GoDrawer.transform.SetParent(transform);
+            var ptsDrawer = GoDrawer.AddComponent<DelaunoiMeshDrawer>();
+            ptsDrawer.DrawInstances(faces.SelectMany(face => face.Bounds).Distinct().ToList(), 0.8f * scale, shapes[1]);
         }
 	}
 

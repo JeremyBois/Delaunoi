@@ -112,9 +112,9 @@ public class UIManager : MonoBehaviour
             // ... if it is change it to an empty character.
             addedChar = '\0';
         }
-        else if(addedChar == '0')
+        else if(addedChar == '0' || addedChar == '1')
         {
-            if  (input == string.Empty)
+            if (input == string.Empty)
             {
                 addedChar = '\0';
             }
@@ -138,7 +138,7 @@ public class UIManager : MonoBehaviour
         if (HaltonField.text != String.Empty)
         {
             int base1 = Convert.ToInt32(HaltonField.text);
-            int base2 = DelaunoiHandler.bases[0] + 1;
+            int base2 = base1 + 1;
 
             // Find closest coprime
             int maxTest = 1;
@@ -148,9 +148,9 @@ public class UIManager : MonoBehaviour
                 ++maxTest;
             }
 
-            Debug.Log(base2);
             if (maxTest < 10)
             {
+                Debug.Log(base2);
                 DelaunoiHandler.bases[0] = base1;
                 DelaunoiHandler.bases[1] = base2;
             }

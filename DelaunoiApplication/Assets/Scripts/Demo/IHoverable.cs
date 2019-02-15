@@ -16,15 +16,23 @@ public class IHoverable : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
 
     public void OnPointerEnter(PointerEventData eventData)
     {
-        popup.SetActive(true);
-        popup.GetComponentInChildren<Text>().text = displayName;
+        if (Input.GetMouseButton(1))
+        {
+            popup.SetActive(false);
+        }
+        else
+        {
+            popup.SetActive(true);
+            popup.GetComponentInChildren<Text>().text = displayName;
 
-        var trueBack = popup.transform.GetChild(0).GetComponent<RectTransform>();
-        var refBack = popup.transform.GetChild(0).GetChild(0).GetComponent<RectTransform>();
+            var trueBack = popup.transform.GetChild(0).GetComponent<RectTransform>();
+            var refBack = popup.transform.GetChild(0).GetChild(0).GetComponent<RectTransform>();
 
-        Vector3 pos = popup.transform.position;
-        pos.y = transform.position.y + YShift;
-        popup.transform.position = pos;
+            Vector3 pos = popup.transform.position;
+            pos.y = transform.position.y + YShift;
+            popup.transform.position = pos;
+        }
+
 
     }
 
