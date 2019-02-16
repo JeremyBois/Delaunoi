@@ -160,5 +160,51 @@ namespace Delaunoi
             _mesh.SwitchInternalFlag();
         }
 
+        /// <summary>
+        /// Clear buffered cells.true Needed to be able to construct another diagram without reconstruction of
+        /// triangulation.
+        /// </summary>
+        protected virtual void ClearDualData()
+        {
+            // FIFO
+            var queue = new Queue<QuadEdge<TEdge>>();
+
+            // Start at the far right
+            QuadEdge<TEdge> first = _mesh.RightMostEdge;
+            queue.Enqueue(first);
+
+            // Visit all edge of the convex hull in CW order and
+            // add opposite edges to queue
+            foreach (QuadEdge<TEdge> hullEdge in first.RightEdges(CCW: false))
+            {
+                // Enqueue same edge but with opposite direction
+                queue.Enqueue(hullEdge.Sym);
+                hullEdge.Tag = !_mesh.VisitedTagState;
+            }
+
+            // Convex hull now closed. Start triangles construction
+            while (queue.Count > 0)
+            {
+                QuadEdge<TEdge> edge = queue.Dequeue();
+                if (edge.Tag == _mesh.VisitedTagState)
+                {
+                    foreach (QuadEdge<TEdge> current in edge.RightEdges(CCW: false))
+                    {
+                        if (current.Sym.Tag == _mesh.VisitedTagState)
+                        {
+                            queue.Enqueue(current.Sym);
+                        }
+                        current.Tag = !_mesh.VisitedTagState;
+
+                        // Clear Dual data
+                        current.Rot.Origin = null;
+                    }
+                }
+            }
+
+            // Inverse flag to be able to traverse again at next call
+            _mesh.SwitchInternalFlag();
+        }
+
     }
 }
