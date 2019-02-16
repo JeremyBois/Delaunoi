@@ -32,7 +32,7 @@ public class GuibasStolfiPlane : MonoBehaviour
 
     // Drawing
     [SerializeField]
-    private GameObject[] shapes = new GameObject[2];
+    private GameObject shape;
     [SerializeField]
     private Material mat;
     [SerializeField]
@@ -50,6 +50,12 @@ public class GuibasStolfiPlane : MonoBehaviour
     public bool V_faces = false;
 
 
+    // Reuse memory
+    List<Face<int, int>> faces;
+    List<Vec3> triangles;
+    DelaunoiPointDrawer ptsDrawerComponent;
+    IEnumerable ptsEnumerable;
+
     void Awake()
     {
         // // Place camera
@@ -57,15 +63,38 @@ public class GuibasStolfiPlane : MonoBehaviour
         // cam.transform.position = new Vector3(boundaries[0] / 2.0f, boundaries[1] / 2.0f, -0.8f * Mathf.Max(boundaries));
     }
 
-	public void UpdateTriangulation()
+	public void UpdateTriangulation(bool reconstructTriangulation, bool clearCells)
 	{
 		foreach (Transform child in transform)
 		{
 			Destroy(child.gameObject);
 		}
 
-        BuildSample();
-        ConstructMesh();
+        if (clearCells)
+        {
+            meshUsed.ClearFacesData();
+        }
+
+        // Flag to avoid to retriangulate
+        if (reconstructTriangulation)
+        {
+            BuildSample();
+            ConstructMesh();
+
+            // Init GPU instancing for points
+            if (ptsDrawerComponent)
+            {
+                Destroy(ptsDrawerComponent.gameObject);
+            }
+            var ptsDrawer = new GameObject("Points Drawer");
+            ptsDrawerComponent = ptsDrawer.AddComponent<DelaunoiPointDrawer>();
+        }
+        // We don't want pts to be drawn
+        else if (!V_points && !D_points && ptsDrawerComponent != null)
+        {
+            Destroy(ptsDrawerComponent.gameObject);
+        }
+
         DrawMesh();
     }
 
@@ -77,8 +106,12 @@ public class GuibasStolfiPlane : MonoBehaviour
 
 	void DrawMesh()
 	{
+        // Clear data stored
+        ptsDrawerComponent.ClearDataStored();
+
+
         // Draw Delaunay
-        var triangles = meshUsed.Triangles().ToList();
+        triangles = meshUsed.Triangles().ToList();
         if (D_faces)
         {
             TriangleDrawer.DrawFace(triangles, transform, mat, gradient);
@@ -90,16 +123,14 @@ public class GuibasStolfiPlane : MonoBehaviour
         if (D_points)
         {
             // CPU instances
-            // TriangleDrawer.DrawPoints(triangles, transform, shapes[0], Color.red, 1.1f * scale);
+            // TriangleDrawer.DrawPoints(triangles, transform, shape, Color.red, 1.1f * scale);
 
-            var GoDrawer = new GameObject();
-            GoDrawer.transform.SetParent(transform);
-            var ptsDrawer = GoDrawer.AddComponent<DelaunoiMeshDrawer>();
-            ptsDrawer.DrawInstances(triangles.Distinct().ToList(), 1.1f * scale, shapes[0]);
+            // GPU instancing below
+            ptsDrawerComponent.AppendData(triangles, Color.red);
         }
 
         // Get faces
-        List<Face<int, int>> faces = meshUsed.Faces(celltype, Mathf.Max(boundaries) * 5.0, true)
+        faces = meshUsed.Faces(celltype, Mathf.Max(boundaries) * 5.0, true)
                                              .ToList();
 
         float nbCells = (float)faces.Count;
@@ -116,6 +147,7 @@ public class GuibasStolfiPlane : MonoBehaviour
             {
                 face.DrawLine(transform, mat, Color.white, lineScale, loop: true);
             }
+            // CPU
             // if (V_points)
             // {
             //     face.DrawPoints(transform, shapes[1], mat, Color.blue, 0.8f * scale);
@@ -123,15 +155,18 @@ public class GuibasStolfiPlane : MonoBehaviour
             indcolor2++;
         }
 
-        // @TODO Change to draw with triangles
+        // Append also Cells points
         if (V_points)
         {
-            var GoDrawer = new GameObject();
-            GoDrawer.transform.SetParent(transform);
-            var ptsDrawer = GoDrawer.AddComponent<DelaunoiMeshDrawer>();
-            ptsDrawer.DrawInstances(faces.SelectMany(face => face.Bounds).Distinct().ToList(), 0.8f * scale, shapes[1]);
+            // GPU
+            ptsDrawerComponent.AppendData(faces.SelectMany(face => face.Bounds).Distinct(), Color.blue);
         }
-	}
+
+        // Draw all points
+        if (V_points || D_points)
+            ptsDrawerComponent.DrawInstances(1.1f * scale, shape);
+
+    }
 
     void BuildSample()
     {

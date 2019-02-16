@@ -32,11 +32,12 @@
 
         #ifdef UNITY_PROCEDURAL_INSTANCING_ENABLED
             StructuredBuffer<float4> transformBuffer;
+            StructuredBuffer<float4> colorBuffer;
         #endif
 
         half _Glossiness;
         half _Metallic;
-        fixed4 _Color;
+        float4 _Color;
 
 
         void setup()
@@ -52,6 +53,9 @@
             unity_WorldToObject = unity_ObjectToWorld;
             unity_WorldToObject._14_24_34 *= -1;
             unity_WorldToObject._11_22_33 = 1.0f / unity_WorldToObject._11_22_33;
+
+            // Color
+            _Color = colorBuffer[unity_InstanceID];
         #endif
         }
 

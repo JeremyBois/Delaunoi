@@ -33,6 +33,7 @@ namespace Delaunoi.Tools.Extensions
                 filter.mesh.SetVertices(new List<Vector3> {points[i].AsVector3(),
                                                            points[i + 1].AsVector3(),
                                                            points[i + 2].AsVector3()}
+
                                         );
                 filter.mesh.triangles = new []{0, 1, 2};//, 1, 0, 2};
 

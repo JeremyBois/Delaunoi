@@ -23,7 +23,7 @@ public class IHoverable : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
         else
         {
             popup.SetActive(true);
-            popup.GetComponentInChildren<Text>().text = displayName;
+            popup.GetComponentInChildren<Text>().text = displayName.Replace("\\n", "\n"); ;
 
             var trueBack = popup.transform.GetChild(0).GetComponent<RectTransform>();
             var refBack = popup.transform.GetChild(0).GetChild(0).GetComponent<RectTransform>();
