@@ -11,17 +11,61 @@ namespace Delaunoi.Tools.Extensions
 {
     public static class TriangleDrawer
     {
+        // public static void DrawFace(List<Vec3> points, Transform parent,
+        //                             Material mat, Gradient gradient)
+        // {
+        //     float nbTriangles = points.Count / 3.0f;
+        //     int currentId = 0;
+
+        //     // @TODO Draw a unique mesh
+        //     for (int i = 0; i < points.Count; i = i + 3)
+        //     {
+        //         GameObject newGo = new GameObject();
+        //         newGo.name = string.Format("Triangle Face {0}", currentId.ToString());
+        //         newGo.transform.SetParent(parent);
+
+        //         newGo.AddComponent<MeshFilter>();
+        //         newGo.AddComponent<MeshRenderer>();
+        //         var filter = newGo.GetComponent<MeshFilter>();
+        //         var renderer = newGo.GetComponent<MeshRenderer>();
+        //         renderer.material = mat;
+        //         renderer.materials[0].color = gradient.Evaluate(currentId / nbTriangles);
+        //         filter.mesh.SetVertices(new List<Vector3> {points[i].AsVector3(),
+        //                                                    points[i + 1].AsVector3(),
+        //                                                    points[i + 2].AsVector3()}
+
+        //                                 );
+        //         filter.mesh.triangles = new []{0, 1, 2};//, 1, 0, 2};
+
+        //         currentId++;
+        //     }
+        // }
+
         public static void DrawFace(List<Vec3> points, Transform parent,
                                     Material mat, Gradient gradient)
         {
+            // Unity max vertex per mesh is 65535 but we need to be able to divide it by 3
+            const int maxVertices = 60000;
+
             float nbTriangles = points.Count / 3.0f;
             int currentId = 0;
+            int meshID = 0;
 
-            // @TODO Draw a unique mesh
-            for (int i = 0; i < points.Count; i = i + 3)
+            for (int iChunk = 0; iChunk < points.Count;)
             {
+                // Get chunk index
+                int iMin = iChunk;
+                int iMax = iMin + Mathf.Min(maxVertices, points.Count - iChunk);
+
+                // Start and End is the same
+                int diff = iMax - iMin;
+                if (diff < 1)
+                {
+                    break;
+                }
+
                 GameObject newGo = new GameObject();
-                newGo.name = string.Format("Triangle Face {0}", currentId.ToString());
+                newGo.name = string.Format("Triangle Faces mesh {0}", meshID);
                 newGo.transform.SetParent(parent);
 
                 newGo.AddComponent<MeshFilter>();
@@ -29,16 +73,42 @@ namespace Delaunoi.Tools.Extensions
                 var filter = newGo.GetComponent<MeshFilter>();
                 var renderer = newGo.GetComponent<MeshRenderer>();
                 renderer.material = mat;
-                renderer.materials[0].color = gradient.Evaluate(currentId / nbTriangles);
-                filter.mesh.SetVertices(new List<Vector3> {points[i].AsVector3(),
-                                                           points[i + 1].AsVector3(),
-                                                           points[i + 2].AsVector3()}
 
-                                        );
-                filter.mesh.triangles = new []{0, 1, 2};//, 1, 0, 2};
+                var vertices = new List<Vector3>();
+                var colors = new List<Color>();
+                var indices = new int[diff];
 
-                currentId++;
+                // Draw minimal number of triangles
+                Color color;
+                for (int i = 0; i < diff; i = i + 3)
+                {
+
+                    // Vertices
+                    color = gradient.Evaluate(currentId / nbTriangles);
+                    vertices.Add(points[iMin + i].AsVector3());
+                    vertices.Add(points[iMin + i + 1].AsVector3());
+                    vertices.Add(points[iMin + i + 2].AsVector3());
+
+                    // Colors
+                    colors.Add(color);
+                    colors.Add(color);
+                    colors.Add(color);
+
+                    // indices
+                    indices[i] = i;
+                    indices[i + 1] = i + 1;
+                    indices[i + 2] = i + 2;
+                    currentId++;
+                }
+
+                filter.mesh.SetVertices(vertices);
+                filter.mesh.SetColors(colors);
+                filter.mesh.triangles = indices;
+
+                iChunk = iMax;
             }
+
+
         }
 
         public static void DrawPoints(List<Vec3> points, Transform parent,

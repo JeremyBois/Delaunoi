@@ -24,13 +24,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1910628999977368}
-  m_LocalRotation: {x: -0, y: 1, z: -0, w: 0}
+  m_LocalRotation: {x: 0, y: -1, z: 0, w: 0.00000028088027}
   m_LocalPosition: {x: 0, y: 0, z: 100}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: -179.99998, z: 0}
 --- !u!114 &114622666092682516
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -49,7 +49,8 @@ MonoBehaviour:
   usedGenerator: 0
   minimalDistance: 15
   shape: {fileID: 1299362892703848, guid: 5bd056414346da7408618b5b49b996b1, type: 3}
-  mat: {fileID: 2100000, guid: 55b3a03e98edfad42b2c3bb5e8452cfa, type: 2}
+  matFace: {fileID: 2100000, guid: 27fdcd134e634994e9f85c36f123866e, type: 2}
+  matLines: {fileID: 2100000, guid: 55b3a03e98edfad42b2c3bb5e8452cfa, type: 2}
   gradient:
     serializedVersion: 2
     key0: {r: 0.23137254, g: 0.77254903, b: 0.33787942, a: 1}
