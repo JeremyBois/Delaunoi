@@ -684,7 +684,7 @@ MonoBehaviour:
     Halton, Poisson, Fibonnaci)\r\n\r\nDelauno\xEF is fast, triangulation and diagram
     construction for 1 000 000 points only take around 30 secondes (Drawing is the
     bootleneck).\r\nIn order to reduce drawing impact (for triangles and cells), Points
-    are drawn using GPU instancing and Faces are group into some large meshes.\r\nSo
+    are drawn using GPU instancing and Faces are assembled into some large meshes.\r\nSo
     currently drawing lines for large number of points will kill the framerate.\r\n\nHave
     fun !\r"
 --- !u!114 &857180778
