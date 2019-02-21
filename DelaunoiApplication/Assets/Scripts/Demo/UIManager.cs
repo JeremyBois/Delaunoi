@@ -340,6 +340,8 @@ public class UIManager : MonoBehaviour
             default:
                 break;
         }
+
+        triangulationIsDirty = true;
     }
 
 
