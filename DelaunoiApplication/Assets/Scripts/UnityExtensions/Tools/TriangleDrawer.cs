@@ -11,35 +11,34 @@ namespace Delaunoi.Tools.Extensions
 {
     public static class TriangleDrawer
     {
-        // public static void DrawFace(List<Vec3> points, Transform parent,
-        //                             Material mat, Gradient gradient)
-        // {
-        //     float nbTriangles = points.Count / 3.0f;
-        //     int currentId = 0;
+        public static void DrawFaceOld(List<Vec3> points, Transform parent,
+                                    Material mat, Gradient gradient)
+        {
+            float nbTriangles = points.Count / 3.0f;
+            int currentId = 0;
 
-        //     // @TODO Draw a unique mesh
-        //     for (int i = 0; i < points.Count; i = i + 3)
-        //     {
-        //         GameObject newGo = new GameObject();
-        //         newGo.name = string.Format("Triangle Face {0}", currentId.ToString());
-        //         newGo.transform.SetParent(parent);
+            for (int i = 0; i < points.Count; i = i + 3)
+            {
+                GameObject newGo = new GameObject();
+                newGo.name = string.Format("Triangle Face {0}", currentId.ToString());
+                newGo.transform.SetParent(parent);
 
-        //         newGo.AddComponent<MeshFilter>();
-        //         newGo.AddComponent<MeshRenderer>();
-        //         var filter = newGo.GetComponent<MeshFilter>();
-        //         var renderer = newGo.GetComponent<MeshRenderer>();
-        //         renderer.material = mat;
-        //         renderer.materials[0].color = gradient.Evaluate(currentId / nbTriangles);
-        //         filter.mesh.SetVertices(new List<Vector3> {points[i].AsVector3(),
-        //                                                    points[i + 1].AsVector3(),
-        //                                                    points[i + 2].AsVector3()}
+                newGo.AddComponent<MeshFilter>();
+                newGo.AddComponent<MeshRenderer>();
+                var filter = newGo.GetComponent<MeshFilter>();
+                var renderer = newGo.GetComponent<MeshRenderer>();
+                renderer.material = mat;
+                renderer.materials[0].color = gradient.Evaluate(currentId / nbTriangles);
+                filter.mesh.SetVertices(new List<Vector3> {points[i].AsVector3(),
+                                                           points[i + 1].AsVector3(),
+                                                           points[i + 2].AsVector3()}
 
-        //                                 );
-        //         filter.mesh.triangles = new []{0, 1, 2};//, 1, 0, 2};
+                                        );
+                filter.mesh.triangles = new []{0, 1, 2};//, 1, 0, 2};
 
-        //         currentId++;
-        //     }
-        // }
+                currentId++;
+            }
+        }
 
         public static void DrawFace(List<Vec3> points, Transform parent,
                                     Material mat, Gradient gradient)

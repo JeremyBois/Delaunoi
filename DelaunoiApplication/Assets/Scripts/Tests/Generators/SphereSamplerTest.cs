@@ -215,9 +215,9 @@ public class SphereSamplerTest : MonoBehaviour
                 triangles = sphereMeshUsed.Triangles().ForEach(x => x * radius).ToList();
             }
 
-            TriangleDrawer.DrawLine(triangles, transform, mat, Color.black, lineScale);
-            TriangleDrawer.DrawFace(triangles, transform, mat, gradient);
-            TriangleDrawer.DrawPoints(triangles, transform, shape, Color.red, scale);
+            // TriangleDrawer.DrawLine(triangles, transform, mat, Color.black, lineScale);
+            // TriangleDrawer.DrawFaceOld(triangles, transform, mat, gradient);
+            // TriangleDrawer.DrawPoints(triangles, transform, shape, Color.red, scale);
 
             // Remove first face (reconstructed hole)
             // List<Face<int, int>> faces = sphereMeshUsed.Faces(FaceConfig.Voronoi, radius).Collection().Skip(1).ToList();
@@ -350,9 +350,9 @@ public class SphereSamplerTest : MonoBehaviour
                 {
                     var color = gradient.Evaluate(indcolor2 / nbCells);
 
-                    // face.DrawFace(transform, mat, color, scale: radius);
-                    // face.DrawLine(transform, mat, Color.white, lineScale, loop: true);
-                    // face.DrawPoints(transform, shape, mat, Color.blue, 0.6f * scale);
+                    face.DrawFace(transform, mat, color, scale: radius);
+                    face.DrawLine(transform, mat, Color.white, lineScale, loop: true);
+                    face.DrawPoints(transform, shape, mat, Color.blue, 0.6f * scale);
 
                     indcolor2++;
 
