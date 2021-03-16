@@ -1,0 +1,91 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &1910628999977368
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4030287548015086}
+  - component: {fileID: 114622666092682516}
+  m_Layer: 0
+  m_Name: Triangulation
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4030287548015086
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1910628999977368}
+  m_LocalRotation: {x: 0, y: -1, z: 0, w: 0.00000028088027}
+  m_LocalPosition: {x: 0, y: 0, z: 100}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: -179.99998, z: 0}
+--- !u!114 &114622666092682516
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1910628999977368}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 62c4c4452bc029a4cbf523bd769c068b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  pointNumber: 10
+  seed: 154
+  bases: 0200000003000000
+  usedGenerator: 0
+  minimalDistance: 15
+  shape: {fileID: 1299362892703848, guid: 5bd056414346da7408618b5b49b996b1, type: 3}
+  matFace: {fileID: 2100000, guid: 27fdcd134e634994e9f85c36f123866e, type: 2}
+  matLines: {fileID: 2100000, guid: 55b3a03e98edfad42b2c3bb5e8452cfa, type: 2}
+  gradient:
+    serializedVersion: 2
+    key0: {r: 0.23137254, g: 0.77254903, b: 0.33787942, a: 1}
+    key1: {r: 0.70682526, g: 0.76862746, b: 0.1764706, a: 1}
+    key2: {r: 0.76862746, g: 0.1764706, b: 0.41794014, a: 0}
+    key3: {r: 0.17710002, g: 0.41441852, b: 0.77, a: 0}
+    key4: {r: 0.17710002, g: 0.77, b: 0.52328354, a: 0}
+    key5: {r: 0, g: 0, b: 0, a: 0}
+    key6: {r: 0, g: 0, b: 0, a: 0}
+    key7: {r: 0, g: 0, b: 0, a: 0}
+    ctime0: 0
+    ctime1: 16384
+    ctime2: 32768
+    ctime3: 49151
+    ctime4: 65535
+    ctime5: 0
+    ctime6: 0
+    ctime7: 0
+    atime0: 0
+    atime1: 65535
+    atime2: 0
+    atime3: 0
+    atime4: 0
+    atime5: 0
+    atime6: 0
+    atime7: 0
+    m_Mode: 0
+    m_NumColorKeys: 5
+    m_NumAlphaKeys: 2
+  scale: 1
+  lineScale: 1.5
+  D_points: 1
+  D_lines: 1
+  D_faces: 1
+  celltype: 0
+  V_points: 0
+  V_lines: 0
+  V_faces: 0

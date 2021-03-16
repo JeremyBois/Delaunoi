@@ -28,6 +28,11 @@ namespace Delaunoi
 
     // PUBLIC METHODS
 
+        public void ClearFacesData()
+        {
+            ClearDualData();
+        }
+
         /// <summary>
         /// Construct all faces based on Delaunay triangulation. Vertices at infinity
         /// are define based on radius parameter. It should be large enough to avoid
@@ -281,7 +286,7 @@ namespace Delaunoi
 
 
 
-    // PROTECTED METHOD
+        // PROTECTED METHOD
 
         /// <summary>
         /// Construct voronoi face based on Delaunay triangulation. Vertices at infinity

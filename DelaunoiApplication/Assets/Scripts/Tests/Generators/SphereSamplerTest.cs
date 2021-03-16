@@ -59,6 +59,8 @@ public class SphereSamplerTest : MonoBehaviour
     [SerializeField]
     private bool triangulate = false;
     [SerializeField]
+    private bool circleMerge = true;
+    [SerializeField]
     private bool triangulationOnSphere = false;
 
 
@@ -120,6 +122,11 @@ public class SphereSamplerTest : MonoBehaviour
             // TRIANGULATION  ---  ---  TRIANGULATION  ---  ---  TRIANGULATION
             previousTime = System.DateTime.Now;
             sphereMeshUsed.Construct();
+
+            if (circleMerge)
+            {
+                sphereMeshUsed.CyclingMerge();
+            }
             delta = System.DateTime.Now - previousTime;
             Debug.Log("***");
             Debug.Log(string.Format("*** TRIANGULATION *** {0} secondes OU {1} milliseconds *** TRIANGULATION",
@@ -208,9 +215,9 @@ public class SphereSamplerTest : MonoBehaviour
                 triangles = sphereMeshUsed.Triangles().ForEach(x => x * radius).ToList();
             }
 
-            TriangleDrawer.DrawLine(triangles, transform, mat, Color.black, lineScale);
-            TriangleDrawer.DrawFace(triangles, transform, mat, gradient);
-            TriangleDrawer.DrawPoints(triangles, transform, shape, Color.red, scale);
+            // TriangleDrawer.DrawLine(triangles, transform, mat, Color.black, lineScale);
+            // TriangleDrawer.DrawFaceOld(triangles, transform, mat, gradient);
+            // TriangleDrawer.DrawPoints(triangles, transform, shape, Color.red, scale);
 
             // Remove first face (reconstructed hole)
             // List<Face<int, int>> faces = sphereMeshUsed.Faces(FaceConfig.Voronoi, radius).Collection().Skip(1).ToList();
