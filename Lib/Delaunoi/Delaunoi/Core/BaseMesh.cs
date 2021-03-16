@@ -161,7 +161,7 @@ namespace Delaunoi
         }
 
         /// <summary>
-        /// Clear buffered cells.true Needed to be able to construct another diagram without reconstruction of
+        /// Clear buffered cells. Needed to be able to construct another diagram without reconstruction of
         /// triangulation.
         /// </summary>
         protected virtual void ClearDualData()

@@ -43,6 +43,12 @@
         void setup()
         {
 
+        // Not working on GNU/Linux (OpenGL 4.5) Why ???
+        // On the C# side nothing seems incorrect with the buffers construction.
+        // Position is correct when color is not set from buffer (colorBuffer).
+        // However if color is set from buffer (colorBuffer), then position is broken (all in the same place) ...
+        // FIXED - Now working on Unity 2020
+        // I guess Linux support improved ...
         #ifdef UNITY_PROCEDURAL_INSTANCING_ENABLED
             float4 data = transformBuffer[unity_InstanceID];
 
@@ -55,6 +61,8 @@
             unity_WorldToObject._11_22_33 = 1.0f / unity_WorldToObject._11_22_33;
 
             // Color
+            // Broken on Unity 2018
+            // Worked on Unity 2020
             _Color = colorBuffer[unity_InstanceID];
         #endif
         }
